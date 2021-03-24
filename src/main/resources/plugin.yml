@@ -1,0 +1,8 @@
+name: TangledMaze
+version: ${project.version}
+main: me.gorgeousone.tangledmaze.TangledMaze
+api-version: 1.13
+
+commands:
+    tangledmaze:
+        aliases: [maze, tm]
