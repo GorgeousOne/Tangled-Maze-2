@@ -1,34 +1,29 @@
 package me.gorgeousone.tangledmaze.event;
 
 import me.gorgeousone.tangledmaze.clip.Clip;
-import me.gorgeousone.tangledmaze.clip.ClipAction;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class ClipActionProcessEvent extends Event {
+import java.util.UUID;
+
+public class ClipDeleteEvent extends Event {
 	
 	private static final HandlerList HANDLERS = new HandlerList();
 	private final Clip clip;
-	private final ClipAction action;
-	//	private final UUID playerId;
+	private final UUID playerId;
 	
-	public ClipActionProcessEvent(Clip clip, ClipAction action) {
+	public ClipDeleteEvent(Clip clip, UUID playerId) {
 		this.clip = clip;
-		this.action = action;
-		//		this.playerId = playerId;
+		this.playerId = playerId;
 	}
 	
 	public Clip getClip() {
 		return clip;
 	}
 	
-	public ClipAction getAction() {
-		return action;
+	public UUID getPlayerId() {
+		return playerId;
 	}
-	
-	//	public UUID getPlayerId() {
-	//		return playerId;
-	//	}
 	
 	@Override
 	public HandlerList getHandlers() {

@@ -29,9 +29,9 @@ public class Argument {
 	public ArgValue createValue(String input) {
 		if (input != null) {
 			return new ArgValue(input);
-		}else if (defaultValue != null) {
+		} else if (defaultValue != null) {
 			return defaultValue;
-		}else {
+		} else {
 			throw new IllegalArgumentException("");
 		}
 	}

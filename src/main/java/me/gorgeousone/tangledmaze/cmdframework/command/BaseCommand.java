@@ -15,7 +15,7 @@ public abstract class BaseCommand {
 	private final String name;
 	private final Set<String> aliases;
 	
-	protected BaseCommand(String name) {
+	public BaseCommand(String name) {
 		this.name = name.toLowerCase();
 		aliases = new HashSet<>();
 		aliases.add(this.name);

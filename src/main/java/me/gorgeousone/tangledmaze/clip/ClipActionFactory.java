@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ClipActionFactory {
-
+	
 	public static ClipAction addClip(Clip maze, Clip clip) {
 		if (!maze.getWorld().equals(clip.getWorld())) {
 			return null;
@@ -19,7 +19,7 @@ public class ClipActionFactory {
 		addProtrudingClipFill(addition, maze, clip);
 		//return null if the clip is totally covered by the maze
 		if (addition.getAddedFill().isEmpty()) {
-			return null;
+			return addition;
 		}
 		addProtrudingClipBorder(addition, maze, clip);
 		removeEnclosedMazeBorder(addition, maze);
@@ -41,9 +41,9 @@ public class ClipActionFactory {
 	}
 	
 	private static void addProtrudingClipBorder(ClipAction addition, Clip maze, Clip clip) {
-		for (Map.Entry<Vec2, Integer> otherFill : clip.getFill().entrySet()) {
-			if (!maze.contains(otherFill.getKey())) {
-				addition.addFill(otherFill.getKey(), otherFill.getValue());
+		for (Vec2 otherBorder : clip.getBorder()) {
+			if (!maze.contains(otherBorder)) {
+				addition.addBorder(otherBorder);
 			}
 		}
 	}
@@ -74,6 +74,7 @@ public class ClipActionFactory {
 	/**
 	 * Creates a {@link ClipAction} of the part of the passed clip that will be removed from the maze.
 	 * Returns null if worlds are not matching or the clip is not intersecting the maze.
+	 *
 	 * @param clip Clip to be removed from the maze
 	 * @return ClipAction of the deletion
 	 */
@@ -150,6 +151,7 @@ public class ClipActionFactory {
 	
 	/**
 	 * Add directly surrounding blocks to the maze border
+	 *
 	 * @param maze
 	 * @param loc
 	 * @param expansion

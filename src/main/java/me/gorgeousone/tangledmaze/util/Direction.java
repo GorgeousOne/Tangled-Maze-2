@@ -12,7 +12,7 @@ public enum Direction {
 	SOUTH_WEST(new Vec2(-1, 1)),
 	NORTH_EAST(new Vec2(1, -1));
 	
-	private Vec2 facing;
+	private final Vec2 facing;
 	
 	Direction(Vec2 facing) {
 		this.facing = facing;

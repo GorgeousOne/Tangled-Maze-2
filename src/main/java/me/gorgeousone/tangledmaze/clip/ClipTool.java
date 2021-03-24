@@ -12,7 +12,7 @@ public class ClipTool {
 	
 	private final UUID playerId;
 	private final ArrayList<Block> vertices;
-	private ClipShape shape;
+	private final ClipShape shape;
 	
 	public ClipTool(UUID playerId, ClipShape shape) {
 		this.playerId = playerId;
@@ -45,16 +45,13 @@ public class ClipTool {
 		if (vertexCount >= requiredVertexCount) {
 			vertices.clear();
 			vertices.add(vertex);
-			Bukkit.broadcastMessage("Restarted " + shape.toString().toLowerCase());
 			Bukkit.getPluginManager().callEvent(new ClipToolChangeEvent(this, ClipToolChangeEvent.Cause.RESTART));
 		} else if (vertexCount == requiredVertexCount - 1) {
 			vertices.add(vertex);
 			setVertices(ClipFactory.createVertices(getVertices(), shape));
-			Bukkit.broadcastMessage("Completed " + shape.toString().toLowerCase());
 			Bukkit.getPluginManager().callEvent(new ClipToolChangeEvent(this, ClipToolChangeEvent.Cause.COMPLETE));
 		} else {
 			vertices.add(vertex);
-			Bukkit.broadcastMessage("Continued " + shape.toString().toLowerCase());
 			Bukkit.getPluginManager().callEvent(new ClipToolChangeEvent(this, ClipToolChangeEvent.Cause.PROGRESS));
 		}
 	}

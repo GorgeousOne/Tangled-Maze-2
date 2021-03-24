@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -29,7 +30,7 @@ public class RenderSession {
 	private final Map<Integer, BlockData> layerMats;
 	
 	public RenderSession(UUID playerId) {
-		this.playerId = playerId;
+		this.playerId = Objects.requireNonNull(playerId);
 		layers = new TreeMap<>(Collections.reverseOrder());
 		layerMats = new HashMap<>();
 	}
@@ -77,7 +78,7 @@ public class RenderSession {
 			Vec2 loc = entry.getKey();
 			int topLayerIndex = getTopLayer(loc);
 			
-			//display the block of the layer if layers containing the same blocks are lower than this one
+			//displays the block of the layer if layers containing the same blocks are lower than this one
 			if (layerIndex >= topLayerIndex) {
 				Location blockLoc = loc.toLocation(world, entry.getValue());
 				player.sendBlockChange(blockLoc, material);
@@ -112,7 +113,7 @@ public class RenderSession {
 	}
 	
 	private void hideBlocks(Player player, int layerIndex, Map<Vec2, Integer> blocks) {
-		World world= player.getWorld();
+		World world = player.getWorld();
 		
 		for (Map.Entry<Vec2, Integer> entry : blocks.entrySet()) {
 			Vec2 loc = entry.getKey();

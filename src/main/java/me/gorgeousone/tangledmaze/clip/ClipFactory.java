@@ -39,7 +39,7 @@ public class ClipFactory {
 		switch (shape) {
 			case RECTANGLE:
 				return createRectClip(vertices.get(0), vertices.get(2),
-						Math.max(vertices.get(0).getY(), vertices.get(2).getY()));
+				                      Math.max(vertices.get(0).getY(), vertices.get(2).getY()));
 			case ELLIPSE:
 				return null;
 			case TRIANGLE:

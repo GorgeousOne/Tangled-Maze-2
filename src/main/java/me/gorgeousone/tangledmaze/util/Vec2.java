@@ -66,9 +66,9 @@ public class Vec2 implements Comparable<Vec2> {
 		if (!(other instanceof Vec2)) {
 			return false;
 		}
-		Vec2 vec2 = (Vec2) other;
-		return x == vec2.x &&
-		       z == vec2.z;
+		Vec2 vec = (Vec2) other;
+		return x == vec.x &&
+		       z == vec.z;
 	}
 	
 	@Override

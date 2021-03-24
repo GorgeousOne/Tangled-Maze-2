@@ -28,6 +28,7 @@ public class ClipToolChangeEvent extends Event {
 	public UUID getPlayerId() {
 		return tool.getPlayerId();
 	}
+	
 	public Cause getCause() {
 		return cause;
 	}

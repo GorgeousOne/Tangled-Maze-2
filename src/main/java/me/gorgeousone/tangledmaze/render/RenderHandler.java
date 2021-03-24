@@ -2,9 +2,10 @@ package me.gorgeousone.tangledmaze.render;
 
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.clip.ClipAction;
-import me.gorgeousone.tangledmaze.event.ClipActionProcessEvent;
 import me.gorgeousone.tangledmaze.clip.ClipHandler;
 import me.gorgeousone.tangledmaze.clip.ClipTool;
+import me.gorgeousone.tangledmaze.event.ClipActionProcessEvent;
+import me.gorgeousone.tangledmaze.event.ClipDeleteEvent;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
 import me.gorgeousone.tangledmaze.event.MazeStartEvent;
 import org.bukkit.Material;
@@ -28,7 +29,7 @@ public class RenderHandler implements Listener {
 	private final static int MAZE_EXIT_LAYER = 20;
 	private final static int CLIP_BORDER_LAYER = 30;
 	private final static int CLIP_VERTEX_LAYER = 40;
-
+	
 	private final static BlockData MAZE_BORDER_MAT = Material.REDSTONE_BLOCK.createBlockData();
 	private final static BlockData MAZE_MAIN_EXIT_MAT = Material.DIAMOND_BLOCK.createBlockData();
 	private final static BlockData MAZE_EXIT_MAT = Material.EMERALD_BLOCK.createBlockData();
@@ -49,6 +50,7 @@ public class RenderHandler implements Listener {
 		for (RenderSession session : renderings.values()) {
 			session.clear();
 		}
+		renderings.clear();
 	}
 	
 	RenderSession getRenderSession(UUID playerId) {
@@ -104,12 +106,22 @@ public class RenderHandler implements Listener {
 	}
 	
 	@EventHandler
-	public void onClipActionProcess(ClipActionProcessEvent event) {
+	public void onClipDelete(ClipDeleteEvent event) {
 		RenderSession session = getRenderSession(event.getPlayerId());
+		session.removeLayer(CLIP_BORDER_LAYER, true);
+		session.removeLayer(CLIP_VERTEX_LAYER, true);
+		
+	}
+	
+	@EventHandler
+	public void onClipActionProcess(ClipActionProcessEvent event) {
+		UUID playerId = clipHandler.getClipOwner(event.getClip());
+		
+		RenderSession session = getRenderSession(playerId);
 		ClipAction change = event.getAction();
 		
-		session.removeFromLayer(MAZE_EXIT_LAYER, change.getRemovedExits(), false);
 		session.removeFromLayer(MAZE_BORDER_LAYER, change.getRemovedBorder(), true);
+		session.removeFromLayer(MAZE_EXIT_LAYER, change.getRemovedExits(), true);
 		session.addToLayer(MAZE_BORDER_LAYER, change.getAddedBorderBlocks());
 	}
 }

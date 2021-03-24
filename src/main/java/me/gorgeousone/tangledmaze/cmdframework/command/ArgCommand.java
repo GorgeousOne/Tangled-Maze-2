@@ -14,7 +14,7 @@ public abstract class ArgCommand extends BaseCommand {
 	
 	protected List<Argument> arguments;
 	
-	protected ArgCommand(String name) {
+	public ArgCommand(String name) {
 		super(name);
 	}
 	
@@ -45,7 +45,7 @@ public abstract class ArgCommand extends BaseCommand {
 					values[i] = getArgs().get(i).createValue(i < stringCount ? args[i] : null);
 				}
 			}
-		}catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			sender.sendMessage(ex.getMessage());
 			return;
 		}

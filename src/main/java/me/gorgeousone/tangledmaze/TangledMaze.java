@@ -4,8 +4,9 @@ import me.gorgeousone.tangledmaze.clip.ClickListener;
 import me.gorgeousone.tangledmaze.clip.ClipHandler;
 import me.gorgeousone.tangledmaze.cmdframework.command.ParentCommand;
 import me.gorgeousone.tangledmaze.cmdframework.handler.CommandHandler;
+import me.gorgeousone.tangledmaze.command.AddClip;
+import me.gorgeousone.tangledmaze.command.CutClip;
 import me.gorgeousone.tangledmaze.command.StartMaze;
-import me.gorgeousone.tangledmaze.maze.MazeHandler;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -14,13 +15,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class TangledMaze extends JavaPlugin {
 	
 	private ClipHandler clipHandler;
-	private MazeHandler mazeHandler;
 	private RenderHandler renderHandler;
 	
 	@Override
 	public void onEnable() {
 		clipHandler = new ClipHandler();
-		mazeHandler = new MazeHandler();
 		renderHandler = new RenderHandler(this, clipHandler);
 		registerListeners();
 		registerCommands();
@@ -29,6 +28,7 @@ public final class TangledMaze extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		renderHandler.disable();
+		clipHandler.disable();
 	}
 	
 	void registerListeners() {
@@ -42,7 +42,9 @@ public final class TangledMaze extends JavaPlugin {
 		rootCommand.addAlias("maze");
 		rootCommand.addAlias("tm");
 		
-		rootCommand.addChild(new StartMaze(clipHandler, mazeHandler));
+		rootCommand.addChild(new StartMaze(clipHandler));
+		rootCommand.addChild(new AddClip(clipHandler));
+		rootCommand.addChild(new CutClip(clipHandler));
 		
 		CommandHandler cmdHandler = new CommandHandler(this);
 		cmdHandler.registerCommand(rootCommand);
