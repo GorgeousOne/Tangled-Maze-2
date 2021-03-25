@@ -1,5 +1,7 @@
-package me.gorgeousone.tangledmaze.clip;
+package me.gorgeousone.tangledmaze.tool;
 
+import me.gorgeousone.tangledmaze.clip.ClipFactory;
+import me.gorgeousone.tangledmaze.clip.ClipShape;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
 import me.gorgeousone.tangledmaze.util.BlockUtils;
 import org.bukkit.Bukkit;

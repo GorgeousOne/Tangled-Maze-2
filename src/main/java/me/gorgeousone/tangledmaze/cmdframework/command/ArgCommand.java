@@ -4,6 +4,7 @@ import me.gorgeousone.tangledmaze.cmdframework.argument.ArgValue;
 import me.gorgeousone.tangledmaze.cmdframework.argument.Argument;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public abstract class ArgCommand extends BaseCommand {
 	
 	public ArgCommand(String name) {
 		super(name);
+		arguments = new ArrayList<>();
 	}
 	
 	public void addArg(Argument argument) {

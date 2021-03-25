@@ -5,6 +5,7 @@ import me.gorgeousone.tangledmaze.clip.ClipAction;
 import me.gorgeousone.tangledmaze.clip.ClipActionFactory;
 import me.gorgeousone.tangledmaze.clip.ClipHandler;
 import me.gorgeousone.tangledmaze.cmdframework.command.BaseCommand;
+import me.gorgeousone.tangledmaze.event.ClipActionProcessEvent;
 import me.gorgeousone.tangledmaze.event.ClipDeleteEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -27,10 +28,13 @@ public class CutClip extends BaseCommand {
 		Player player = (Player) sender;
 		UUID playerId = player.getUniqueId();
 		Clip clip = clipHandler.getClip(playerId);
-		clipHandler.removeClip(playerId);
-		Bukkit.getPluginManager().callEvent(new ClipDeleteEvent(clip, playerId));
-		
 		Clip maze = clipHandler.getMazeClip(playerId);
+		
+		if (maze == null || clip == null) {
+			sender.sendMessage("WRO-HONG!");
+			return;
+		}
+		clipHandler.removeClip(playerId, true);
 		ClipAction changes = ClipActionFactory.removeClip(maze, clip);
 		maze.processAction(changes, true);
 	}

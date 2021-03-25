@@ -52,6 +52,10 @@ public class RenderSession {
 		layerMats.clear();
 	}
 	
+	public boolean hasLayer(int layerIndex) {
+		return layers.containsKey(layerIndex);
+	}
+	
 	public void addLayer(int layerIndex, Collection<Block> blocks, BlockData material) {
 		Map<Vec2, Integer> blockLocs = new TreeMap<>();
 		blocks.forEach(block -> blockLocs.put(new Vec2(block), block.getY()));
@@ -104,7 +108,7 @@ public class RenderSession {
 			return;
 		}
 		Map<Vec2, Integer> layer = layers.get(layerIndex);
-		Map<Vec2, Integer> blocks = locs.stream().collect(Collectors.toMap(Function.identity(), layer::get));
+		Map<Vec2, Integer> blocks = locs.stream().filter(layer::containsKey).collect(Collectors.toMap(Function.identity(), layer::get));
 		layers.get(layerIndex).keySet().removeAll(blocks.keySet());
 		
 		if (updateFakeBlocks) {

@@ -3,7 +3,8 @@ package me.gorgeousone.tangledmaze.render;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.clip.ClipAction;
 import me.gorgeousone.tangledmaze.clip.ClipHandler;
-import me.gorgeousone.tangledmaze.clip.ClipTool;
+import me.gorgeousone.tangledmaze.event.MazeExitSetEvent;
+import me.gorgeousone.tangledmaze.tool.ClipTool;
 import me.gorgeousone.tangledmaze.event.ClipActionProcessEvent;
 import me.gorgeousone.tangledmaze.event.ClipDeleteEvent;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
@@ -21,14 +22,15 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Handles events that change what fake blocks need to be displayed to players.
+ * Handles events that change what fake blocks need to be displayed in render sessions
  */
 public class RenderHandler implements Listener {
 	
 	private final static int MAZE_BORDER_LAYER = 10;
 	private final static int MAZE_EXIT_LAYER = 20;
-	private final static int CLIP_BORDER_LAYER = 30;
-	private final static int CLIP_VERTEX_LAYER = 40;
+	private final static int MAZE_MAIN_EXIT_LAYER = 30;
+	private final static int CLIP_BORDER_LAYER = 40;
+	private final static int CLIP_VERTEX_LAYER = 50;
 	
 	private final static BlockData MAZE_BORDER_MAT = Material.REDSTONE_BLOCK.createBlockData();
 	private final static BlockData MAZE_MAIN_EXIT_MAT = Material.DIAMOND_BLOCK.createBlockData();
@@ -46,6 +48,9 @@ public class RenderHandler implements Listener {
 		this.renderings = new HashMap<>();
 	}
 	
+	/**
+	 * Hides and clears all render sessions on plugin disable
+	 */
 	public void disable() {
 		for (RenderSession session : renderings.values()) {
 			session.clear();
@@ -53,6 +58,9 @@ public class RenderHandler implements Listener {
 		renderings.clear();
 	}
 	
+	/**
+	 * Returns the render session of the player with this UUID or creates a new one
+	 */
 	RenderSession getRenderSession(UUID playerId) {
 		if (renderings.containsKey(playerId)) {
 			return renderings.get(playerId);
@@ -63,7 +71,7 @@ public class RenderHandler implements Listener {
 	}
 	
 	/**
-	 * Updates vertices and borders of clips when being created with clip tools
+	 * Updates vertices and borders of clips when being created with a clip tool
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onClipToolChange(ClipToolChangeEvent event) {
@@ -93,6 +101,9 @@ public class RenderHandler implements Listener {
 		}.runTaskLater(plugin, 2);
 	}
 	
+	/**
+	 * Renders new created maze clips in redstone
+	 */
 	@EventHandler
 	public void onMazeStart(MazeStartEvent event) {
 		RenderSession session = getRenderSession(event.getPlayerId());
@@ -103,25 +114,43 @@ public class RenderHandler implements Listener {
 		session.removeLayer(MAZE_BORDER_LAYER, true);
 		session.removeLayer(CLIP_VERTEX_LAYER, true);
 		session.addLayer(MAZE_BORDER_LAYER, clip.getBorderBlocks(), MAZE_BORDER_MAT);
+		
+		session.addLayer(MAZE_EXIT_LAYER, new HashMap<>(), MAZE_EXIT_MAT);
+		session.addLayer(MAZE_MAIN_EXIT_LAYER, new HashMap<>(), MAZE_MAIN_EXIT_MAT);
 	}
 	
+	/**
+	 * Hides a (not maze) clip when bring deleted
+	 */
 	@EventHandler
 	public void onClipDelete(ClipDeleteEvent event) {
 		RenderSession session = getRenderSession(event.getPlayerId());
 		session.removeLayer(CLIP_BORDER_LAYER, true);
 		session.removeLayer(CLIP_VERTEX_LAYER, true);
-		
 	}
 	
+	/**
+	 * Renders changes applied to a clip with a clip action
+	 */
 	@EventHandler
 	public void onClipActionProcess(ClipActionProcessEvent event) {
-		UUID playerId = clipHandler.getClipOwner(event.getClip());
-		
+		UUID playerId = event.getPlayerId();
 		RenderSession session = getRenderSession(playerId);
 		ClipAction change = event.getAction();
 		
 		session.removeFromLayer(MAZE_BORDER_LAYER, change.getRemovedBorder(), true);
 		session.removeFromLayer(MAZE_EXIT_LAYER, change.getRemovedExits(), true);
 		session.addToLayer(MAZE_BORDER_LAYER, change.getAddedBorderBlocks());
+	}
+	
+	@EventHandler
+	public void onExitSet(MazeExitSetEvent event) {
+		UUID playerId = event.getPlayerId();
+		RenderSession session = getRenderSession(playerId);
+		
+		session.removeFromLayer(MAZE_EXIT_LAYER, event.getRemovedExits(), true);
+		session.removeFromLayer(MAZE_MAIN_EXIT_LAYER, event.getRemovedMainExits(), true);
+		session.addToLayer(MAZE_MAIN_EXIT_LAYER, event.getAddedMainExits());
+		session.addToLayer(MAZE_EXIT_LAYER, event.getAddedMainExits());
 	}
 }

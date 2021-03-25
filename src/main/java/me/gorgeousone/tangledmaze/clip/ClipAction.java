@@ -7,6 +7,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * A class for storing data to edit a maze clip
+ */
 public class ClipAction {
 	
 	private final Clip clip;
@@ -71,10 +74,16 @@ public class ClipAction {
 		removedFill.put(loc, y);
 	}
 	
+	/**
+	 * Returns true if a clip contains the given location or will contain it after this action is applied
+	 */
 	public boolean clipWillContain(Vec2 loc) {
 		return clip.contains(loc) && !getRemovedFill().containsKey(loc) || getAddedFill().containsKey(loc);
 	}
 	
+	/**
+	 * Returns true if a clip border contains the given location or will contain it after this action is applied
+	 */
 	public boolean clipBorderWillContain(Vec2 loc) {
 		return getAddedBorder().contains(loc) || !getRemovedBorder().contains(loc) && clip.borderContains(loc);
 	}

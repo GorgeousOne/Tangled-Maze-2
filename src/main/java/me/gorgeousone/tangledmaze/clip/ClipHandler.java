@@ -1,14 +1,18 @@
 package me.gorgeousone.tangledmaze.clip;
 
+import me.gorgeousone.tangledmaze.event.ClipDeleteEvent;
+import me.gorgeousone.tangledmaze.tool.ClipTool;
+import org.bukkit.Bukkit;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class ClipHandler {
 	
-	private final HashMap<UUID, ClipTool> playerClipTools;
-	private final HashMap<UUID, Clip> playerClips;
-	private final HashMap<UUID, Clip> playerMazes;
+	private final Map<UUID, ClipTool> playerClipTools;
+	private final Map<UUID, Clip> playerClips;
+	private final Map<UUID, Clip> playerMazes;
 	
 	public ClipHandler() {
 		this.playerClipTools = new HashMap<>();
@@ -22,28 +26,20 @@ public class ClipHandler {
 		playerMazes.clear();
 	}
 	
-	public Clip getMazeClip(UUID playerId) {
-		return playerMazes.get(playerId);
-	}
-	
-	public void setMazeClip(UUID playerId, Clip clip) {
-		playerMazes.put(playerId, clip);
-	}
-	
 	/**
 	 * Returns existing player clip or creates a new one
 	 */
-	ClipTool getClipTool(UUID playerId) {
-		if (playerClipTools.containsKey(playerId)) {
-			return playerClipTools.get(playerId);
-		}
-		ClipTool clipTool = new ClipTool(playerId, ClipShape.RECTANGLE);
-		playerClipTools.put(playerId, clipTool);
-		return clipTool;
+	public ClipTool getClipTool(UUID playerId) {
+		playerClipTools.computeIfAbsent(playerId, function -> new ClipTool(playerId, ClipShape.RECTANGLE));
+		return playerClipTools.get(playerId);
 	}
 	
 	public Clip getClip(UUID playerId) {
 		return playerClips.get(playerId);
+	}
+	
+	public Clip getMazeClip(UUID playerId) {
+		return playerMazes.get(playerId);
 	}
 	
 	public void setClip(UUID playerId, Clip clip) {
@@ -53,21 +49,15 @@ public class ClipHandler {
 	public void removeClip(UUID playerId) {
 		playerClips.remove(playerId);
 	}
-	
-	public UUID getClipOwner(Clip clip) {
-		if (playerClips.containsValue(clip)) {
-			for (Map.Entry<UUID, Clip> entry : playerClips.entrySet()) {
-				if (entry.getValue() == clip) {
-					return entry.getKey();
-				}
-			}
-		} else if (playerMazes.containsValue(clip)) {
-			for (Map.Entry<UUID, Clip> entry : playerMazes.entrySet()) {
-				if (entry.getValue() == clip) {
-					return entry.getKey();
-				}
-			}
+
+	public void removeClip(UUID playerId, boolean callEvent) {
+		Clip clip = playerClips.remove(playerId);
+		if (clip != null && callEvent) {
+			Bukkit.getPluginManager().callEvent(new ClipDeleteEvent(clip, playerId));
 		}
-		return null;
+	}
+	
+	public void setMazeClip(UUID playerId, Clip clip) {
+		playerMazes.put(playerId, clip);
 	}
 }

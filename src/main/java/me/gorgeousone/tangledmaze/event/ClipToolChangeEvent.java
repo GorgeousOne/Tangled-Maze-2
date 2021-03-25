@@ -1,6 +1,6 @@
 package me.gorgeousone.tangledmaze.event;
 
-import me.gorgeousone.tangledmaze.clip.ClipTool;
+import me.gorgeousone.tangledmaze.tool.ClipTool;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 

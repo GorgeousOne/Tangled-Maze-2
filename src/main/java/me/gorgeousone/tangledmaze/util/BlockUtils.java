@@ -15,7 +15,6 @@ public class BlockUtils {
 	}
 	
 	public static Block getSurface(Block block) {
-		
 		if (block.getType().isSolid()) {
 			Block surfaceBlock = block;
 			Location nextBlockLoc = block.getLocation();
@@ -31,7 +30,6 @@ public class BlockUtils {
 				}
 			}
 			return surfaceBlock;
-			
 		} else {
 			Location nextBlockLoc = block.getLocation();
 			

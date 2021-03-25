@@ -1,11 +1,14 @@
 package me.gorgeousone.tangledmaze.clip;
 
 import me.gorgeousone.tangledmaze.event.ClipActionProcessEvent;
+import me.gorgeousone.tangledmaze.event.MazeExitSetEvent;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +16,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -22,6 +26,7 @@ import java.util.stream.Collectors;
  */
 public class Clip {
 	
+	private final UUID playerId;
 	private final World world;
 	private final TreeMap<Vec2, Integer> fill;
 	private final TreeSet<Vec2> border;
@@ -29,7 +34,8 @@ public class Clip {
 	
 	private final Stack<ClipAction> actionHistory;
 	
-	public Clip(World world) {
+	public Clip(UUID playerId, World world) {
+		this.playerId = playerId;
 		this.world = world;
 		fill = new TreeMap<>();
 		border = new TreeSet<>();
@@ -117,6 +123,47 @@ public class Clip {
 		if (saveToHistory) {
 			actionHistory.push(action);
 		}
-		Bukkit.getPluginManager().callEvent(new ClipActionProcessEvent(this, action));
+		Bukkit.getPluginManager().callEvent(new ClipActionProcessEvent(this, action, playerId));
+	}
+	
+	public void toggleExit(Block block) {
+		if (!isBorderBlock(block)) {
+			return;
+		}
+		Vec2 exitLoc = new Vec2(block);
+		int exitY = block.getY();
+		
+		if (exits.contains(exitLoc)) {
+			removeExit(exitLoc);
+		}else {
+			addExit(exitLoc, exitY);
+		}
+	}
+	
+	private void addExit(Vec2 loc, int y) {
+		MazeExitSetEvent exitSetEvent = new MazeExitSetEvent(playerId, this);
+		
+		if (!exits.isEmpty()) {
+			exitSetEvent.removeMainExit(exits.get(0));
+		}
+		exits.add(0, loc);
+		exitSetEvent.addExit(loc, y);
+		exitSetEvent.addMainExit(loc, y);
+		Bukkit.getPluginManager().callEvent(exitSetEvent);
+	}
+	
+	private void removeExit(Vec2 loc) {
+		MazeExitSetEvent exitSetEvent = new MazeExitSetEvent(playerId, this);
+		int index = exits.indexOf(loc);
+		exits.remove(index);
+		exitSetEvent.removeExit(loc);
+		
+		if (index == 0) {
+			exitSetEvent.removeMainExit(loc);
+			if (!exits.isEmpty()) {
+				exitSetEvent.addMainExit(exits.get(0), getY(exits.get(0)));
+			}
+		}
+		Bukkit.getPluginManager().callEvent(exitSetEvent);
 	}
 }

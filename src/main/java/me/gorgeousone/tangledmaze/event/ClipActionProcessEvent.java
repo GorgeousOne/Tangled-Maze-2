@@ -5,17 +5,19 @@ import me.gorgeousone.tangledmaze.clip.ClipAction;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import java.util.UUID;
+
 public class ClipActionProcessEvent extends Event {
 	
 	private static final HandlerList HANDLERS = new HandlerList();
 	private final Clip clip;
 	private final ClipAction action;
-	//	private final UUID playerId;
+	private final UUID playerId;
 	
-	public ClipActionProcessEvent(Clip clip, ClipAction action) {
+	public ClipActionProcessEvent(Clip clip, ClipAction action, UUID playerId) {
 		this.clip = clip;
 		this.action = action;
-		//		this.playerId = playerId;
+		this.playerId = playerId;
 	}
 	
 	public Clip getClip() {
@@ -26,10 +28,10 @@ public class ClipActionProcessEvent extends Event {
 		return action;
 	}
 	
-	//	public UUID getPlayerId() {
-	//		return playerId;
-	//	}
-	
+	public UUID getPlayerId() {
+		return playerId;
+	}
+
 	@Override
 	public HandlerList getHandlers() {
 		return HANDLERS;

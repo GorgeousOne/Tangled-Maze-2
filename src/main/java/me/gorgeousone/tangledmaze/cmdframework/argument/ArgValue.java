@@ -19,7 +19,7 @@ public class ArgValue {
 		setValue(value, type);
 	}
 	
-	public String getString() {
+	public String get() {
 		return stringVal;
 	}
 	
