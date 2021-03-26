@@ -59,14 +59,14 @@ public class Vec2 implements Comparable<Vec2> {
 	}
 	
 	@Override
-	public boolean equals(Object other) {
-		if (this == other) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		}
-		if (!(other instanceof Vec2)) {
+		if (!(o instanceof Vec2)) {
 			return false;
 		}
-		Vec2 vec = (Vec2) other;
+		Vec2 vec = (Vec2) o;
 		return x == vec.x &&
 		       z == vec.z;
 	}
