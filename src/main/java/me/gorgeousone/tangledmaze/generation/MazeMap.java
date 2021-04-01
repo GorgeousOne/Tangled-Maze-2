@@ -1,18 +1,17 @@
 package me.gorgeousone.tangledmaze.generation;
 
-import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
 public class MazeMap {
 	
-	private final Vec2 min;
-	private final Vec2 max;
+	private final Vec2 mapMin;
+	private final Vec2 mapMax;
 	private AreaType[][] areaMap;
 	private int[][] terrainMap;
 	
 	public MazeMap(Vec2 min, Vec2 max) {
-		this.min = min;
-		this.max = max;
+		this.mapMin = min;
+		this.mapMax = max;
 		
 		int sizeX = max.getX() - min.getX() + 1;
 		int sizeZ = max.getZ() - min.getZ() + 1;
@@ -21,11 +20,15 @@ public class MazeMap {
 	}
 	
 	public Vec2 getMin() {
-		return min;
+		return mapMin.clone();
 	}
 	
 	public Vec2 getMax() {
-		return max;
+		return mapMax.clone();
+	}
+	
+	AreaType getType(int x, int z) {
+		return areaMap[x - mapMin.getX()][z - mapMin.getZ()];
 	}
 	
 	void setType(Vec2 loc, AreaType type) {
@@ -33,7 +36,7 @@ public class MazeMap {
 	}
 	
 	void setType(int x, int z, AreaType type) {
-		areaMap[x - min.getX()][z - min.getZ()] = type;
+		areaMap[x - mapMin.getX()][z - mapMin.getZ()] = type;
 	}
 	
 	public void setY(Vec2 loc, int y) {
@@ -41,6 +44,6 @@ public class MazeMap {
 	}
 	
 	public void setY(int x, int z, int y) {
-		terrainMap[x - min.getX()][z - min.getZ()] = y;
+		terrainMap[x - mapMin.getX()][z - mapMin.getZ()] = y;
 	}
 }

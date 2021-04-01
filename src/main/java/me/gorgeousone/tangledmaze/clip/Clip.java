@@ -4,11 +4,9 @@ import me.gorgeousone.tangledmaze.event.ClipActionProcessEvent;
 import me.gorgeousone.tangledmaze.event.MazeExitSetEvent;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +111,11 @@ public class Clip {
 		return exits.contains(loc);
 	}
 	
+	/**
+	 * Processes the changes stored in a {@link ClipAction} and calls an event
+	 * @param action changes container
+	 * @param saveToHistory will save the action to history for undoing later if set to true
+	 */
 	public void processAction(ClipAction action, boolean saveToHistory) {
 		removeBorder(action.getRemovedBorder());
 		removeFill(action.getRemovedFill().keySet());

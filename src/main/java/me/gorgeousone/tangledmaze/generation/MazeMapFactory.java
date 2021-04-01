@@ -44,10 +44,10 @@ public class MazeMapFactory {
 	
 	private static void copyMazeOntoMap(Clip maze, MazeMap map) {
 		for (Vec2 loc : maze.getFill().keySet()) {
-			map.setType(loc, AreaType.UNDEFINED);
+			map.setType(loc, AreaType.FREE);
 			map.setY(loc, maze.getY(loc));
 		}
 		for (Vec2 loc : maze.getBorder())
-			map.setType(loc, AreaType.WALL);
+			map.setType(loc, AreaType.BLOCKED);
 	}
 }
