@@ -26,15 +26,20 @@ public enum Direction {
 	 * Returns if the diretion's vector is pointing towards positive or negative (with it's x or z coordinate)
 	 */
 	public boolean isPositive() {
-		return facing.getZ() == 0 ? facing.getX() == 1 : facing.getZ() == 1;
+		return facing.getZ() >= 0 && facing.getX() >= 0;
 	}
 	
 	/**
 	 * Returns if the x coordinate of the direction's vector is not 0
 	 */
-	public boolean isXAligned() {
-		return facing.getX() != 0;
+	public boolean isCollinearX() {
+		return facing.getZ() == 0;
 	}
+	
+	public boolean isCollinearZ() {
+		return facing.getX() == 0;
+	}
+	
 	
 	public Vec2 getVec2() {
 		return facing.clone();

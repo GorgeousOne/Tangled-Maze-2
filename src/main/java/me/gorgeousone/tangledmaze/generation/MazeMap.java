@@ -6,8 +6,8 @@ public class MazeMap {
 	
 	private final Vec2 mapMin;
 	private final Vec2 mapMax;
-	private AreaType[][] areaMap;
-	private int[][] terrainMap;
+	private final AreaType[][] areaMap;
+	private final int[][] terrainMap;
 	
 	public MazeMap(Vec2 min, Vec2 max) {
 		this.mapMin = min;
@@ -25,6 +25,10 @@ public class MazeMap {
 	
 	public Vec2 getMax() {
 		return mapMax.clone();
+	}
+	
+	AreaType getType(Vec2 loc) {
+		return getType(loc.getX(), loc.getZ());
 	}
 	
 	AreaType getType(int x, int z) {
@@ -45,5 +49,9 @@ public class MazeMap {
 	
 	public void setY(int x, int z, int y) {
 		terrainMap[x - mapMin.getX()][z - mapMin.getZ()] = y;
+	}
+	
+	public int getY(int x, int z) {
+		return terrainMap[x - mapMin.getX()][z - mapMin.getZ()];
 	}
 }

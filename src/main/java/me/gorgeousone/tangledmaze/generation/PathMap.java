@@ -5,25 +5,38 @@ import me.gorgeousone.tangledmaze.util.Vec2;
 
 public class PathMap {
 	
-	private final MazeMap terrain;
-	private int pathWidth = 2;
-	private int wallWidth = 4;
+	private final Vec2 mapMin;
+	private final Vec2 mapMax;
+	private final int pathWidth;
+	private final int wallWidth;
 	
 	private Vec2 gridMin;
 	private Vec2 gridOffset;
 	private MazeSegment[][] gridSegments;
 	private PathType[][] segmentTypes;
 	
-	public PathMap(MazeMap terrain, int pathWidth, int wallWidth) {
-		this.terrain = terrain;
+	public PathMap(Vec2 mapMin,
+	               Vec2 mapMax,
+	               int pathWidth,
+	               int wallWidth) {
+		this.mapMin = mapMin;
+		this.mapMax = mapMax;
 		this.pathWidth = pathWidth;
 		this.wallWidth = wallWidth;
 	}
 	
-	private void setEntrance() {
+	public int getWidth() {
+		return gridSegments.length;
+	}
+	
+	public int getHeight() {
+		return gridSegments[0].length;
+	}
+	
+	private void setEntrance(Vec2 entrance, Direction facing) {
+		ExitSegment entranceSegment = createEntranceSegment(entrance, facing);
+		calculateGridProperties(entranceSegment.getEnd());
 		
-		
-		calculateGridProperties(null);
 		for (int gridX = 0; gridX < gridSegments.length; gridX++) {
 			for (int gridZ = 0; gridZ < gridSegments[0].length; gridZ++) {
 				gridSegments[gridX][gridZ] = createGridSegment(gridX, gridZ);
@@ -31,53 +44,30 @@ public class PathMap {
 		}
 	}
 	
-	public static MazeSegment createEntranceSegment(
-	                                                Vec2 entrancePoint,
-	                                                int pathWidth,
-	                                                int wallWidth) {
-		
-		Direction facing = getExitFacing(entrancePoint);
-		Vec2 exitStart = calculateExitStart(entrancePoint, facing, pathWidth);
-		
-		MazeSegment entrance = new MazeSegment(exitStart, new Vec2(pathWidth, pathWidth));
-		entrance.expandLength(facing, wallWidth);
-		return entrance;
+	private ExitSegment createEntranceSegment(Vec2 entrance, Direction facing) {
+		Vec2 exitStart = calculateExitStart(entrance, facing, pathWidth);
+		ExitSegment segment = new ExitSegment(exitStart, facing, pathWidth);
+		segment.extend(wallWidth);
+		return segment;
 	}
 	
-	private static Direction getExitFacing(Vec2 exit) {
+	/**
+	 * Calculates the location of the exit segment start so that any exits bigger than 1 block are always
+	 * aligned towards the right of the selected exit block, independent of faced direction.
+	 */
+	private Vec2 calculateExitStart(Vec2 exitBlockLoc, Direction facing, int exitWidth) {
+		Vec2 exitStart = exitBlockLoc.clone();
 		
-		for (Direction dir : Direction.fourCardinals()) {
-			
-			Vec2 neighbor = exit.clone().add(dir.getVec2());
-			
-			if (terrainMap.getAreaType(neighbor) == MazeAreaType.UNDEFINED) {
-				return dir;
-			}
+		if (!facing.isPositive()) {
+			exitStart.sub(0, exitWidth - 1);
 		}
-		
-		throw new IllegalArgumentException("This exit does not seem to touch the maze.");
-	}
-	
-	private static Vec2 calculateExitStart(Vec2 exitPoint, Direction facing, int exitWidth) {
-		
-		Vec2 exitStart = exitPoint.clone();
-		
-		if (!facing.isXAligned()) {
-			
-			if (facing.isPositive()) {
-				exitStart.add(-exitWidth + 1, 0);
-			} else {
-				exitStart.add(0, -exitWidth + 1);
-			}
-			
-		} else if (!facing.isPositive()) {
-			exitStart.add(-exitWidth + 1, -exitWidth + 1);
+		if (facing.isPositive() ^ facing.isCollinearX()) {
+			exitStart.sub(exitWidth - 1, 0);
 		}
-		
 		return exitStart;
 	}
 	
-	private void setSegmentType(int gridX, int gridZ, PathType type) {
+	void setSegmentType(int gridX, int gridZ, PathType type) {
 		segmentTypes[gridX][gridZ] = type;
 	}
 	
@@ -98,26 +88,17 @@ public class PathMap {
 		//				(int) Math.floor(1f * (mapMin.getX() - gridOffset.getX()) / meshSize) * meshSize + gridOffset.getX(),
 		//				(int) Math.floor(1f * (mapMin.getZ() - gridOffset.getZ()) / meshSize) * meshSize + gridOffset.getZ());
 		
-		gridMin = terrain.getMin().sub(gridOffset);
+		gridMin = mapMin.clone().sub(gridOffset);
 		gridMin.setX((int) Math.floor(1f * gridMin.getX() / meshSize));
 		gridMin.setZ((int) Math.floor(1f * gridMin.getZ() / meshSize));
 		gridMin.mult(meshSize).add(gridOffset);
 		
-		Vec2 mapMax = terrain.getMax();
 		int gridWidth = 2 * (int) Math.ceil(1f * (mapMax.getX() - gridMin.getX()) / meshSize);
 		int gridHeight = 2 * (int) Math.ceil(1f * (mapMax.getZ() - gridMin.getZ()) / meshSize);
 		
 		gridSegments = new MazeSegment[gridWidth][gridHeight];
 		segmentTypes = new PathType[gridWidth][gridHeight];
 	}
-	
-//	private void createSegments() {
-//		for (int gridX = 0; gridX < gridSegments.length; gridX++) {
-//			for (int gridZ = 0; gridZ < gridSegments[0].length; gridZ++) {
-//				gridSegments[gridX][gridZ] = createGridSegment(gridX, gridZ);
-//			}
-//		}
-//	}
 	
 	private MazeSegment createGridSegment(int gridX, int gridZ) {
 		int meshSize = pathWidth + wallWidth;
@@ -137,33 +118,7 @@ public class PathMap {
 		return new MazeSegment(segmentStart, segmentSize);
 	}
 	
-	private void setSegmentTypes() {
-		for (int gridX = 0; gridX < gridSegments.length; gridX++) {
-			for (int gridZ = 0; gridZ < gridSegments[0].length; gridZ++) {
-				PathType type;
-				if (!isSegmentFree(gridSegments[gridX][gridZ]) || (gridX % 2 != 0 && gridZ % 2 != 0)) {
-					type = PathType.BLOCKED;
-				} else if (gridX % 2 == 0 && gridZ % 2 == 0) {
-					type = PathType.INTERSECTION;
-				} else {
-					type = PathType.PATH;
-				}
-				setSegmentType(gridX, gridZ, type);
-			}
-		}
-	}
-	
-	private boolean isSegmentFree(MazeSegment segment) {
-		Vec2 segMin = segment.getLoc();
-		Vec2 segMax = segment.getLoc().add(segment.getSize());
-		
-		for (int x = segMin.getX(); x < segMax.getX(); x++) {
-			for (int z = segMin.getZ(); z < segMax.getZ(); z++) {
-				if (terrain.getType(z, z) != AreaType.FREE) {
-					return false;
-				}
-			}
-		}
-		return true;
+	public MazeSegment getSegment(int gridX, int gridZ) {
+		return gridSegments[gridX][gridZ];
 	}
 }

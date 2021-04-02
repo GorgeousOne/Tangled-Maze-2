@@ -1,7 +1,6 @@
 package me.gorgeousone.tangledmaze.util;
 
 import org.bukkit.Location;
-import org.bukkit.PortalType;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
@@ -49,8 +48,12 @@ public class Vec2 implements Comparable<Vec2> {
 	}
 	
 	public Vec2 sub(Vec2 other) {
-		x -= other.x;
-		z -= other.z;
+		return sub(other.x, other.z);
+	}
+	
+	public Vec2 sub(int dx, int dz) {
+		x -= dx;
+		z -= dz;
 		return this;
 	}
 	
@@ -91,5 +94,10 @@ public class Vec2 implements Comparable<Vec2> {
 	@Override
 	public int hashCode() {
 		return Objects.hash(x, z);
+	}
+	
+	@Override
+	public String toString() {
+		return "[" + "x=" + x + ", z=" + z + ']';
 	}
 }

@@ -1,6 +1,7 @@
 package me.gorgeousone.tangledmaze.generation;
 
 import me.gorgeousone.tangledmaze.clip.Clip;
+import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
 import java.util.AbstractMap;
@@ -8,25 +9,28 @@ import java.util.Map;
 
 public class MazeMapFactory {
 	
-	public static MazeMap createTerrainMapOf(Clip maze) {
+	public static MazeMap createMazeMapOf(Clip maze) {
 		Map.Entry<Vec2, Vec2> clipBounds = calculateClipBounds(maze);
 		MazeMap map = new MazeMap(clipBounds.getKey(), clipBounds.getValue());
 		copyMazeOntoMap(maze, map);
 		return map;
 	}
 	
+	/**
+	 * Returns a pair of Vec2 marking the smallest and greatest x/z coordinates of clip
+	 */
 	public static Map.Entry<Vec2, Vec2> calculateClipBounds(Clip clip) {
 		Vec2 min = null;
 		Vec2 max = null;
 		
-		for (Vec2 point : clip.getFill().keySet()) {
+		for (Vec2 loc : clip.getFill().keySet()) {
 			if (min == null) {
-				min = point.clone();
-				max = point.clone();
+				min = loc.clone();
+				max = loc.clone();
 				continue;
 			}
-			int x = point.getX();
-			int z = point.getZ();
+			int x = loc.getX();
+			int z = loc.getZ();
 			
 			if (x < min.getX()) {
 				min.setX(x);
@@ -34,7 +38,7 @@ public class MazeMapFactory {
 				max.setX(x);
 			}
 			if (z < min.getZ()) {
-				min.setZ(point.getZ());
+				min.setZ(loc.getZ());
 			} else if (z > max.getZ()) {
 				max.setZ(z);
 			}
@@ -48,6 +52,55 @@ public class MazeMapFactory {
 			map.setY(loc, maze.getY(loc));
 		}
 		for (Vec2 loc : maze.getBorder())
-			map.setType(loc, AreaType.BLOCKED);
+			map.setType(loc, AreaType.WALL);
 	}
+	
+	public static void createPaths(MazeMap mazeMap, Map<String, Integer> settings) {
+		
+		PathMap pathMap = new PathMap(mazeMap.getMin(), mazeMap.getMax(), 2, 4);
+		
+		
+	}
+	
+	private static Direction getExitFacing(Vec2 exit, MazeMap mazeMap) {
+		for (Direction dir : Direction.fourCardinals()) {
+			Vec2 neighbor = exit.clone().add(dir.getVec2());
+			
+			if (mazeMap.getType(neighbor) == AreaType.FREE) {
+				return dir;
+			}
+		}
+		throw new IllegalArgumentException("Exit " + exit + " does not seem to touch the maze.");
+	}
+	
+	private void setSegmentTypes(PathMap pathMap, MazeMap mazeMap) {
+		for (int gridX = 0; gridX < pathMap.getWidth(); gridX++) {
+			for (int gridZ = 0; gridZ < pathMap.getHeight(); gridZ++) {
+				PathType type;
+				if (!isSegmentFree(pathMap.getSegment(gridX, gridZ), mazeMap) || (gridX % 2 != 0 && gridZ % 2 != 0)) {
+					type = PathType.BLOCKED;
+				} else if (gridX % 2 == 0 && gridZ % 2 == 0) {
+					type = PathType.INTERSECTION;
+				} else {
+					type = PathType.PATH;
+				}
+				pathMap.setSegmentType(gridX, gridZ, type);
+			}
+		}
+	}
+
+	private boolean isSegmentFree(MazeSegment segment, MazeMap mazeMap) {
+		Vec2 segMin = segment.getLoc();
+		Vec2 segMax = segment.getLoc().add(segment.getSize());
+
+		for (int x = segMin.getX(); x < segMax.getX(); x++) {
+			for (int z = segMin.getZ(); z < segMax.getZ(); z++) {
+				if (mazeMap.getType(z, z) != AreaType.FREE) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
 }
