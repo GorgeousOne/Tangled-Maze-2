@@ -1,5 +1,7 @@
 package me.gorgeousone.tangledmaze;
 
+import me.gorgeousone.tangledmaze.command.BuildMaze;
+import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
 import me.gorgeousone.tangledmaze.listener.ClickListener;
 import me.gorgeousone.tangledmaze.clip.ClipHandler;
 import me.gorgeousone.tangledmaze.cmdframework.command.ParentCommand;
@@ -19,12 +21,14 @@ public final class TangledMaze extends JavaPlugin {
 	private ClipHandler clipHandler;
 	private ToolHandler toolHandler;
 	private RenderHandler renderHandler;
+	private BuildHandler buildHandler;
 	
 	@Override
 	public void onEnable() {
 		clipHandler = new ClipHandler();
 		toolHandler = new ToolHandler(clipHandler);
 		renderHandler = new RenderHandler(this, clipHandler);
+		buildHandler = new BuildHandler();
 		registerListeners();
 		registerCommands();
 	}
@@ -42,16 +46,17 @@ public final class TangledMaze extends JavaPlugin {
 	}
 	
 	private void registerCommands() {
-		ParentCommand rootCommand = new ParentCommand("tangledmaze");
-		rootCommand.addAlias("maze");
-		rootCommand.addAlias("tm");
+		ParentCommand mazeCmd = new ParentCommand("tangledmaze");
+		mazeCmd.addAlias("maze");
+		mazeCmd.addAlias("tm");
 		
-		rootCommand.addChild(new StartMaze(clipHandler));
-		rootCommand.addChild(new AddClip(clipHandler));
-		rootCommand.addChild(new CutClip(clipHandler));
-		rootCommand.addChild(new SwitchTool(toolHandler));
+		mazeCmd.addChild(new StartMaze(clipHandler));
+		mazeCmd.addChild(new AddClip(clipHandler));
+		mazeCmd.addChild(new CutClip(clipHandler));
+		mazeCmd.addChild(new SwitchTool(toolHandler));
+		mazeCmd.addChild(new BuildMaze(clipHandler, buildHandler));
 		
 		CommandHandler cmdHandler = new CommandHandler(this);
-		cmdHandler.registerCommand(rootCommand);
+		cmdHandler.registerCommand(mazeCmd);
 	}
 }

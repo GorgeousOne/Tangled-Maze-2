@@ -3,6 +3,9 @@ package me.gorgeousone.tangledmaze.generation;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PathMap {
 	
 	private final Vec2 mapMin;
@@ -14,6 +17,7 @@ public class PathMap {
 	private Vec2 gridOffset;
 	private MazeSegment[][] gridSegments;
 	private PathType[][] segmentTypes;
+	private final List<ExitSegment> exits;
 	
 	public PathMap(Vec2 mapMin,
 	               Vec2 mapMax,
@@ -23,6 +27,7 @@ public class PathMap {
 		this.mapMax = mapMax;
 		this.pathWidth = pathWidth;
 		this.wallWidth = wallWidth;
+		exits = new ArrayList<>();
 	}
 	
 	public int getWidth() {
@@ -33,22 +38,30 @@ public class PathMap {
 		return gridSegments[0].length;
 	}
 	
-	private void setEntrance(Vec2 entrance, Direction facing) {
-		ExitSegment entranceSegment = createEntranceSegment(entrance, facing);
-		calculateGridProperties(entranceSegment.getEnd());
+	public List<ExitSegment> getExits() {
+		return exits;
+	}
+	
+	public void setEntrance(Vec2 entranceLoc, Direction facing) {
+		Vec2 entranceStart = calculateExitStart(entranceLoc, facing, pathWidth);
+		ExitSegment entrance = new ExitSegment(entranceStart, facing, pathWidth);
+		entrance.extend(wallWidth);
+		exits.add(entrance);
 		
-		for (int gridX = 0; gridX < gridSegments.length; gridX++) {
-			for (int gridZ = 0; gridZ < gridSegments[0].length; gridZ++) {
+		calculateGridProperties(entrance.getEnd());
+		
+		for (int gridX = 0; gridX < getWidth(); gridX++) {
+			for (int gridZ = 0; gridZ < getHeight(); gridZ++) {
 				gridSegments[gridX][gridZ] = createGridSegment(gridX, gridZ);
 			}
 		}
 	}
 	
-	private ExitSegment createEntranceSegment(Vec2 entrance, Direction facing) {
-		Vec2 exitStart = calculateExitStart(entrance, facing, pathWidth);
-		ExitSegment segment = new ExitSegment(exitStart, facing, pathWidth);
-		segment.extend(wallWidth);
-		return segment;
+	public void setExit(Vec2 exitBlockLoc, Direction facing) {
+		Vec2 exitStart = calculateExitStart(exitBlockLoc, facing, pathWidth);
+		ExitSegment exit = new ExitSegment(exitStart, facing, pathWidth);
+		exit.extend(getExitDistToGrid(exit.getEnd(), facing));
+		exits.add(exit);
 	}
 	
 	/**
@@ -67,7 +80,44 @@ public class PathMap {
 		return exitStart;
 	}
 	
-	void setSegmentType(int gridX, int gridZ, PathType type) {
+	/**
+	 * Calculates the distance in blocks that a secondary exit has to be extended by for it to reach the nearest grid path
+	 *
+	 * @param exitLoc current end location of the exit
+	 * @param facing  direction to extend towards
+	 */
+	private int getExitDistToGrid(Vec2 exitLoc, Direction facing) {
+		
+		int gridShift;
+		int exitCoord;
+		
+		if (facing.isCollinearX()) {
+			gridShift = gridOffset.getX();
+			exitCoord = exitLoc.getX();
+		} else {
+			gridShift = gridOffset.getZ();
+			exitCoord = exitLoc.getZ();
+		}
+		
+		int gridMeshSize = pathWidth + wallWidth;
+		//calculates the offset of the exit coordinate to the path grid
+		int gridDist = (exitCoord - gridShift) % gridMeshSize;
+		//limits the offset/distance to positive values
+		if (gridDist < 0) {
+			gridDist += gridMeshSize;
+		}
+		//inverts the distance for exits with positive facing to extend towards the next greater path coordinate
+		//not the previous lower one
+		if (facing.isPositive()) {
+			gridDist = gridMeshSize - gridDist;
+		}
+		if (gridDist < 1) {
+			gridDist += gridMeshSize;
+		}
+		return gridDist;
+	}
+	
+	public void setSegmentType(int gridX, int gridZ, PathType type) {
 		segmentTypes[gridX][gridZ] = type;
 	}
 	
@@ -75,18 +125,11 @@ public class PathMap {
 	 * Calculates position and count of rows and columns of the path grid
 	 */
 	private void calculateGridProperties(Vec2 pathStart) {
-		
 		int meshSize = pathWidth + wallWidth;
-		//		int offX = (min.getX() - pathStart.getX()) % meshSize;
-		//		int offZ = (min.getZ() - pathStart.getZ()) % meshSize;
 		
 		gridOffset = new Vec2(
 				pathStart.getX() % meshSize,
 				pathStart.getZ() % meshSize);
-		
-		//		gridMin = new Vec2(
-		//				(int) Math.floor(1f * (mapMin.getX() - gridOffset.getX()) / meshSize) * meshSize + gridOffset.getX(),
-		//				(int) Math.floor(1f * (mapMin.getZ() - gridOffset.getZ()) / meshSize) * meshSize + gridOffset.getZ());
 		
 		gridMin = mapMin.clone().sub(gridOffset);
 		gridMin.setX((int) Math.floor(1f * gridMin.getX() / meshSize));

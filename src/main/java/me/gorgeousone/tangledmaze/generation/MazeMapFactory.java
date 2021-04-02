@@ -5,6 +5,7 @@ import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
 import java.util.AbstractMap;
+import java.util.List;
 import java.util.Map;
 
 public class MazeMapFactory {
@@ -19,7 +20,7 @@ public class MazeMapFactory {
 	/**
 	 * Returns a pair of Vec2 marking the smallest and greatest x/z coordinates of clip
 	 */
-	public static Map.Entry<Vec2, Vec2> calculateClipBounds(Clip clip) {
+	private static Map.Entry<Vec2, Vec2> calculateClipBounds(Clip clip) {
 		Vec2 min = null;
 		Vec2 max = null;
 		
@@ -55,11 +56,19 @@ public class MazeMapFactory {
 			map.setType(loc, AreaType.WALL);
 	}
 	
-	public static void createPaths(MazeMap mazeMap, Map<String, Integer> settings) {
-		
+	public static void createPaths(MazeMap mazeMap, List<Vec2> exits, Map<String, Integer> settings) {
 		PathMap pathMap = new PathMap(mazeMap.getMin(), mazeMap.getMax(), 2, 4);
 		
-		
+		for(int i = 0; i < exits.size(); i++) {
+			Vec2 exitLoc = exits.get(i);
+			
+			if (i == 0) {
+				pathMap.setEntrance(exitLoc, getExitFacing(exitLoc, mazeMap));
+			}else {
+				pathMap.setExit(exitLoc, getExitFacing(exitLoc, mazeMap));
+			}
+		}
+		copyPathsOntoMap(pathMap, mazeMap);
 	}
 	
 	private static Direction getExitFacing(Vec2 exit, MazeMap mazeMap) {
@@ -73,7 +82,20 @@ public class MazeMapFactory {
 		throw new IllegalArgumentException("Exit " + exit + " does not seem to touch the maze.");
 	}
 	
-	private void setSegmentTypes(PathMap pathMap, MazeMap mazeMap) {
+	private static void copyPathsOntoMap(PathMap pathMap, MazeMap mazeMap) {
+		
+		for (ExitSegment exit : pathMap.getExits()) {
+			mazeMap.setType(exit.getMin(), exit.getMax(), AreaType.EXIT);
+		}
+		
+//		for (int gridX = 0; gridX < pathMap.getWidth(); gridX++) {
+//			for (int gridZ = 0; gridZ < pathMap.getHeight(); gridZ++) {
+//
+//			}
+//		}
+	}
+	
+	private static void setSegmentTypes(PathMap pathMap, MazeMap mazeMap) {
 		for (int gridX = 0; gridX < pathMap.getWidth(); gridX++) {
 			for (int gridZ = 0; gridZ < pathMap.getHeight(); gridZ++) {
 				PathType type;
@@ -89,7 +111,7 @@ public class MazeMapFactory {
 		}
 	}
 
-	private boolean isSegmentFree(MazeSegment segment, MazeMap mazeMap) {
+	private static boolean isSegmentFree(MazeSegment segment, MazeMap mazeMap) {
 		Vec2 segMin = segment.getLoc();
 		Vec2 segMax = segment.getLoc().add(segment.getSize());
 

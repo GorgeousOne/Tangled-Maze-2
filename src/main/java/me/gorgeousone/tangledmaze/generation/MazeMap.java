@@ -11,10 +11,10 @@ public class MazeMap {
 	
 	public MazeMap(Vec2 min, Vec2 max) {
 		this.mapMin = min;
-		this.mapMax = max;
+		this.mapMax = max.add(1, 1);
 		
-		int sizeX = max.getX() - min.getX() + 1;
-		int sizeZ = max.getZ() - min.getZ() + 1;
+		int sizeX = max.getX() - min.getX();
+		int sizeZ = max.getZ() - min.getZ();
 		areaMap = new AreaType[sizeX][sizeZ];
 		terrainMap = new int[sizeX][sizeZ];
 	}
@@ -27,20 +27,36 @@ public class MazeMap {
 		return mapMax.clone();
 	}
 	
-	AreaType getType(Vec2 loc) {
+	public boolean contains(int x, int z) {
+		return x >= mapMin.getX() && x < mapMax.getX() &&
+		       z >= mapMin.getZ() && z < mapMax.getZ();
+	}
+	
+	public AreaType getType(Vec2 loc) {
 		return getType(loc.getX(), loc.getZ());
 	}
 	
-	AreaType getType(int x, int z) {
+	public AreaType getType(int x, int z) {
+		if (!contains(x, z)) {
+			return null;
+		}
 		return areaMap[x - mapMin.getX()][z - mapMin.getZ()];
 	}
 	
-	void setType(Vec2 loc, AreaType type) {
+	public void setType(Vec2 loc, AreaType type) {
 		setType(loc.getX(), loc.getZ(), type);
 	}
 	
-	void setType(int x, int z, AreaType type) {
+	public void setType(int x, int z, AreaType type) {
 		areaMap[x - mapMin.getX()][z - mapMin.getZ()] = type;
+	}
+	
+	public void setType(Vec2 min, Vec2 max, AreaType type) {
+		for (int x = min.getX() - mapMin.getX(); x < max.getX() - mapMin.getX(); x++) {
+			for (int z = min.getZ() - mapMin.getZ(); z < max.getZ() - mapMin.getZ(); z++) {
+				areaMap[x][z] = type;
+			}
+		}
 	}
 	
 	public void setY(Vec2 loc, int y) {

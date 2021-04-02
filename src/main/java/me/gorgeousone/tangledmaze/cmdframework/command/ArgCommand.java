@@ -2,11 +2,14 @@ package me.gorgeousone.tangledmaze.cmdframework.command;
 
 import me.gorgeousone.tangledmaze.cmdframework.argument.ArgValue;
 import me.gorgeousone.tangledmaze.cmdframework.argument.Argument;
+import me.gorgeousone.tangledmaze.cmdframework.argument.Flag;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A command with specifiable arguments
@@ -14,14 +17,20 @@ import java.util.List;
 public abstract class ArgCommand extends BaseCommand {
 	
 	protected List<Argument> arguments;
+	protected Set<Flag> flags;
 	
 	public ArgCommand(String name) {
 		super(name);
 		arguments = new ArrayList<>();
+		flags = new HashSet<>();
 	}
 	
 	public void addArg(Argument argument) {
 		arguments.add(argument);
+	}
+	
+	public void addFlag(Flag flag) {
+		flags.add(flag);
 	}
 	
 	public List<Argument> getArgs() {
@@ -32,29 +41,45 @@ public abstract class ArgCommand extends BaseCommand {
 	 * Converts the passed sting arguments to the into ArgValues according to the beforehand defined Arguments
 	 */
 	@Override
-	public void execute(CommandSender sender, String[] args, String alias) {
+	public void execute(CommandSender sender, String[] args) {
 		int argCount = getArgs().size();
-		int stringCount = args.length;
-		ArgValue[] values = new ArgValue[Math.max(argCount, stringCount)];
-		
+		int inputCount = args.length;
+		ArgValue[] values = new ArgValue[Math.max(argCount, inputCount)];
+		Set<String> usedFlags = new HashSet<>();
+
 		try {
-			if (stringCount >= argCount) {
-				for (int i = 0; i < stringCount; i++) {
-					values[i] = getArgs().get(i).createValue(args[i]);
+			int argIndex = 0;
+			
+			for (int i = 0; i < Math.max(inputCount, argCount); i++) {
+				String input = i < inputCount ? args[i] : null;
+				
+				if (input != null && input.startsWith("-")) {
+					usedFlags.add(matchFlag(input).getName());
+					continue;
 				}
-			} else {
-				for (int i = 0; i < argCount; i++) {
-					values[i] = getArgs().get(i).createValue(i < stringCount ? args[i] : null);
-				}
+				
+				values[argIndex] = getArgs().get(i).createValue(input);
+				++argIndex;
 			}
 		} catch (IllegalArgumentException ex) {
 			sender.sendMessage(ex.getMessage());
 			return;
 		}
-		executeArgs(sender, values, alias);
+		executeArgs(sender, values, usedFlags);
 	}
 	
-	protected abstract void executeArgs(CommandSender sender, ArgValue[] argValues, String alias);
+	protected Flag matchFlag(String input) {
+		String flagName = input.substring(1);
+		
+		for (Flag flag : flags) {
+			if (flag.matches(flagName)) {
+				return flag;
+			}
+		}
+		throw new IllegalArgumentException("No flag '" + flagName + "' found.");
+	}
+	
+	protected abstract void executeArgs(CommandSender sender, ArgValue[] argValues, Set<String> usedFlags);
 	
 	@Override
 	public List<String> getTabList(String[] arguments) {

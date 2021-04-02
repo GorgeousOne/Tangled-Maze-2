@@ -9,6 +9,8 @@ import me.gorgeousone.tangledmaze.tool.ToolType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Set;
+
 public class SwitchTool extends ArgCommand {
 	
 	private final ToolHandler toolHandler;
@@ -20,7 +22,7 @@ public class SwitchTool extends ArgCommand {
 	}
 	
 	@Override
-	protected void executeArgs(CommandSender sender, ArgValue[] argValues, String alias) {
+	protected void executeArgs(CommandSender sender, ArgValue[] argValues, Set<String> usedFlags) {
 		String toolName = argValues[0].get().toUpperCase();
 		Player player = (Player) sender;
 		ToolType tool;

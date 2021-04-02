@@ -24,7 +24,7 @@ public class CutClip extends BaseCommand {
 	}
 	
 	@Override
-	public void execute(CommandSender sender, String[] args, String alias) {
+	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player) sender;
 		UUID playerId = player.getUniqueId();
 		Clip clip = clipHandler.getClip(playerId);
