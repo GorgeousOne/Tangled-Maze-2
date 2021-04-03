@@ -1,10 +1,10 @@
 package me.gorgeousone.tangledmaze.util;
 
+import me.gorgeousone.tangledmaze.generation.MazeSegment;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
-import java.security.SecureClassLoader;
 import java.util.Objects;
 
 public class Vec2 implements Comparable<Vec2> {
@@ -71,6 +71,12 @@ public class Vec2 implements Comparable<Vec2> {
 	public Vec2 floorDiv(int scalar) {
 		x = Math.floorDiv(x, scalar);
 		z = Math.floorDiv(z, scalar);
+		return this;
+	}
+
+	public Vec2 floorMod(int scalar) {
+		x = Math.floorMod(x, scalar);
+		z = Math.floorMod(z, scalar);
 		return this;
 	}
 	

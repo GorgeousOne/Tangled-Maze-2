@@ -59,15 +59,15 @@ public class MazeMap {
 		}
 	}
 	
+	public int getY(int x, int z) {
+		return terrainMap[x - mapMin.getX()][z - mapMin.getZ()];
+	}
+	
 	public void setY(Vec2 loc, int y) {
 		setY(loc.getX(), loc.getZ(), y);
 	}
 	
 	public void setY(int x, int z, int y) {
 		terrainMap[x - mapMin.getX()][z - mapMin.getZ()] = y;
-	}
-	
-	public int getY(int x, int z) {
-		return terrainMap[x - mapMin.getX()][z - mapMin.getZ()];
 	}
 }

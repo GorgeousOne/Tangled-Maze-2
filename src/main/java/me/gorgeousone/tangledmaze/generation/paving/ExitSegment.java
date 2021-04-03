@@ -1,4 +1,4 @@
-package me.gorgeousone.tangledmaze.generation;
+package me.gorgeousone.tangledmaze.generation.paving;
 
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;

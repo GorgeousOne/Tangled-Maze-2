@@ -1,5 +1,6 @@
-package me.gorgeousone.tangledmaze.generation;
+package me.gorgeousone.tangledmaze.generation.paving;
 
+import me.gorgeousone.tangledmaze.generation.MazeSegment;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
@@ -30,7 +31,6 @@ public class PathMap {
 		this.pathWidth = pathWidth;
 		this.wallWidth = wallWidth;
 		gridMeshSize = pathWidth + wallWidth;
-		
 		exits = new ArrayList<>();
 		pathStarts = new ArrayList<>();
 	}
@@ -49,6 +49,16 @@ public class PathMap {
 	
 	public List<Vec2> getPathStarts() {
 		return pathStarts;
+	}
+	
+	public Vec2 getGridPos(Vec2 loc) {
+		Vec2 gridPos = loc.clone().sub(gridMin).floorDiv(gridMeshSize).mult(2);
+		gridPos.add(loc.clone().sub(gridMin).floorMod(gridMeshSize).floorDiv(pathWidth));
+		return gridPos;
+	}
+	
+	public MazeSegment getSegment(Vec2 gridPos) {
+		return getSegment(gridPos.getX(), gridPos.getZ());
 	}
 	
 	public MazeSegment getSegment(int gridX, int gridZ) {
@@ -94,13 +104,40 @@ public class PathMap {
 				gridSegments[gridX][gridZ] = createGridSegment(gridX, gridZ);
 			}
 		}
+		setSegmentType(getGridPos(entranceEnd), PathType.PAVED);
 	}
 	
 	public void setExit(Vec2 exitBlockLoc, Direction facing) {
 		Vec2 exitStart = calculateExitStart(exitBlockLoc, facing, pathWidth);
 		ExitSegment exit = new ExitSegment(exitStart, facing, pathWidth);
-		exit.extend(getExitDistToGrid(exit.getEnd(), facing));
+		exit.extend(getExitDistToGrid(exit.getEnd(), facing, false));
+		
+		Vec2 exitEnd = exit.getEnd();
+		Direction left = facing.getLeft();
+		Direction right = facing.getRight();
+		
+		ExitSegment leftTurn = new ExitSegment(exitEnd, left, pathWidth);
+		ExitSegment rightTurn = new ExitSegment(exitEnd, right, pathWidth);
+		leftTurn.extend(getExitDistToGrid(leftTurn.getEnd(), left, true));
+		rightTurn.extend(getExitDistToGrid(rightTurn.getEnd(), right, true));
+		
+		boolean leftIsFree = getSegmentType(getGridPos(leftTurn.getEnd())) != PathType.BLOCKED;
+		boolean rightIsFree = getSegmentType(getGridPos(rightTurn.getEnd())) != PathType.BLOCKED;
+		
+		if (!leftIsFree && !rightIsFree) {
+			return;
+		}
+		ExitSegment chosenTurn;
+		
+		if (leftIsFree && rightIsFree) {
+			chosenTurn = leftTurn.length() > rightTurn.length() ? leftTurn : rightTurn;
+		}else {
+			chosenTurn = leftIsFree ? leftTurn : rightTurn;
+		}
 		exits.add(exit);
+		exits.add(chosenTurn);
+		pathStarts.add(chosenTurn.getEnd());
+		setSegmentType(getGridPos(chosenTurn.getEnd()), PathType.PAVED);
 	}
 	
 	/**
@@ -125,8 +162,7 @@ public class PathMap {
 	 * @param exitLoc current end location of the exit
 	 * @param facing  direction to extend towards
 	 */
-	private int getExitDistToGrid(Vec2 exitLoc, Direction facing) {
-		
+	private int getExitDistToGrid(Vec2 exitLoc, Direction facing, boolean allowZero) {
 		int gridShift;
 		int exitCoord;
 		
@@ -137,20 +173,13 @@ public class PathMap {
 			gridShift = gridOffset.getZ();
 			exitCoord = exitLoc.getZ();
 		}
-		
 		int gridMeshSize = pathWidth + wallWidth;
-		//calculates the offset of the exit coordinate to the path grid
-		int gridDist = (exitCoord - gridShift) % gridMeshSize;
-		//limits the offset/distance to positive values
-		if (gridDist < 0) {
-			gridDist += gridMeshSize;
-		}
-		//inverts the distance for exits with positive facing to extend towards the next greater path coordinate
-		//not the previous lower one
+		int gridDist = Math.floorMod(exitCoord - gridShift, gridMeshSize);
+		
 		if (facing.isPositive()) {
-			gridDist = gridMeshSize - gridDist;
+			gridDist = (gridMeshSize - gridDist) % gridMeshSize;
 		}
-		if (gridDist < 1) {
+		if (!allowZero && gridDist == 0) {
 			gridDist += gridMeshSize;
 		}
 		return gridDist;
@@ -160,7 +189,6 @@ public class PathMap {
 	 * Calculates position and count of rows and columns of the path grid
 	 */
 	private void calculateGridProperties(Vec2 pathStart) {
-		
 		gridOffset = new Vec2(
 				pathStart.getX() % gridMeshSize,
 				pathStart.getZ() % gridMeshSize);
@@ -185,12 +213,10 @@ public class PathMap {
 		segmentStart.add(
 				(gridX % 2) * pathWidth,
 				(gridZ % 2) * pathWidth);
-		
 		Vec2 segmentSize = new Vec2(
 				gridX % 2 == 0 ? pathWidth : wallWidth,
 				gridZ % 2 == 0 ? pathWidth : wallWidth);
 		
 		return new MazeSegment(segmentStart, segmentSize);
 	}
-	
 }

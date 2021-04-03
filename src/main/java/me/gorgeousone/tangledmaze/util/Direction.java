@@ -1,15 +1,17 @@
 package me.gorgeousone.tangledmaze.util;
 
+import java.util.Arrays;
+
 public enum Direction {
 	
 	//putting opposite values next to each other can help quicken methods like Maze.sealsMaze();
 	EAST(new Vec2(1, 0)),
-	WEST(new Vec2(-1, 0)),
-	SOUTH(new Vec2(0, 1)),
-	NORTH(new Vec2(0, -1)),
 	SOUTH_EAST(new Vec2(1, 1)),
-	NORTH_WEST(new Vec2(-1, -1)),
+	SOUTH(new Vec2(0, 1)),
 	SOUTH_WEST(new Vec2(-1, 1)),
+	WEST(new Vec2(-1, 0)),
+	NORTH_WEST(new Vec2(-1, -1)),
+	NORTH(new Vec2(0, -1)),
 	NORTH_EAST(new Vec2(1, -1));
 	
 	private final Vec2 facing;
@@ -23,7 +25,7 @@ public enum Direction {
 	}
 	
 	/**
-	 * Returns if the diretion's vector is pointing towards positive or negative (with it's x or z coordinate)
+	 * Returns true if the diretion's vector is pointing towards positive or negative (with it's x or z coordinate)
 	 */
 	public boolean isPositive() {
 		return facing.getZ() >= 0 && facing.getX() >= 0;
@@ -40,8 +42,23 @@ public enum Direction {
 		return facing.getX() == 0;
 	}
 	
-	
 	public Vec2 getVec2() {
 		return facing.clone();
 	}
+	
+	public Direction getOpposite() {
+		int index = java.util.Arrays.asList(values()).indexOf(this);
+		return values()[(index + 4) % values().length];
+	}
+	
+	public Direction getRight() {
+		int index = java.util.Arrays.asList(values()).indexOf(this);
+		return values()[(index + 2) % values().length];
+	}
+	
+	public Direction getLeft() {
+		int index = java.util.Arrays.asList(values()).indexOf(this);
+		return values()[(index + 6) % values().length];
+	}
+	
 }
