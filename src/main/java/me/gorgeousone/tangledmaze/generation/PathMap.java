@@ -12,12 +12,14 @@ public class PathMap {
 	private final Vec2 mapMax;
 	private final int pathWidth;
 	private final int wallWidth;
+	private final int gridMeshSize;
 	
 	private Vec2 gridMin;
 	private Vec2 gridOffset;
 	private MazeSegment[][] gridSegments;
 	private PathType[][] segmentTypes;
 	private final List<ExitSegment> exits;
+	private final List<Vec2> pathStarts;
 	
 	public PathMap(Vec2 mapMin,
 	               Vec2 mapMax,
@@ -27,7 +29,10 @@ public class PathMap {
 		this.mapMax = mapMax;
 		this.pathWidth = pathWidth;
 		this.wallWidth = wallWidth;
+		gridMeshSize = pathWidth + wallWidth;
+		
 		exits = new ArrayList<>();
+		pathStarts = new ArrayList<>();
 	}
 	
 	public int getWidth() {
@@ -42,13 +47,47 @@ public class PathMap {
 		return exits;
 	}
 	
+	public List<Vec2> getPathStarts() {
+		return pathStarts;
+	}
+	
+	public MazeSegment getSegment(int gridX, int gridZ) {
+		return gridSegments[gridX][gridZ];
+	}
+	
+	public PathType getSegmentType(Vec2 gridPos) {
+		return getSegmentType(gridPos.getX(), gridPos.getZ());
+	}
+	
+	public PathType getSegmentType(int gridX, int gridZ) {
+		if (!contains(gridX, gridZ)) {
+			return PathType.BLOCKED;
+		}
+		return segmentTypes[gridX][gridZ];
+	}
+	
+	public boolean contains(int gridX, int gridZ) {
+		return gridX >= 0 && gridX <= getWidth() &&
+		       gridZ >= 0 && gridZ <= getHeight();
+	}
+	
+	public void setSegmentType(Vec2 gridPos, PathType type) {
+		setSegmentType(gridPos.getX(), gridPos.getZ(), type);
+	}
+	
+	public void setSegmentType(int gridX, int gridZ, PathType type) {
+		segmentTypes[gridX][gridZ] = type;
+	}
+	
 	public void setEntrance(Vec2 entranceLoc, Direction facing) {
 		Vec2 entranceStart = calculateExitStart(entranceLoc, facing, pathWidth);
 		ExitSegment entrance = new ExitSegment(entranceStart, facing, pathWidth);
 		entrance.extend(wallWidth);
 		exits.add(entrance);
 		
-		calculateGridProperties(entrance.getEnd());
+		Vec2 entranceEnd = entrance.getEnd();
+		calculateGridProperties(entranceEnd);
+		pathStarts.add(entranceEnd.sub(gridOffset).floorDiv(gridMeshSize));
 		
 		for (int gridX = 0; gridX < getWidth(); gridX++) {
 			for (int gridZ = 0; gridZ < getHeight(); gridZ++) {
@@ -117,39 +156,32 @@ public class PathMap {
 		return gridDist;
 	}
 	
-	public void setSegmentType(int gridX, int gridZ, PathType type) {
-		segmentTypes[gridX][gridZ] = type;
-	}
-	
 	/**
 	 * Calculates position and count of rows and columns of the path grid
 	 */
 	private void calculateGridProperties(Vec2 pathStart) {
-		int meshSize = pathWidth + wallWidth;
 		
 		gridOffset = new Vec2(
-				pathStart.getX() % meshSize,
-				pathStart.getZ() % meshSize);
+				pathStart.getX() % gridMeshSize,
+				pathStart.getZ() % gridMeshSize);
 		
 		gridMin = mapMin.clone().sub(gridOffset);
-		gridMin.setX((int) Math.floor(1f * gridMin.getX() / meshSize));
-		gridMin.setZ((int) Math.floor(1f * gridMin.getZ() / meshSize));
-		gridMin.mult(meshSize).add(gridOffset);
+		gridMin.floorDiv(gridMeshSize).mult(gridMeshSize);
+		gridMin.add(gridOffset);
 		
-		int gridWidth = 2 * (int) Math.ceil(1f * (mapMax.getX() - gridMin.getX()) / meshSize);
-		int gridHeight = 2 * (int) Math.ceil(1f * (mapMax.getZ() - gridMin.getZ()) / meshSize);
+		int gridWidth = 2 * (int) Math.ceil(1f * (mapMax.getX() - gridMin.getX()) / gridMeshSize);
+		int gridHeight = 2 * (int) Math.ceil(1f * (mapMax.getZ() - gridMin.getZ()) / gridMeshSize);
 		
 		gridSegments = new MazeSegment[gridWidth][gridHeight];
 		segmentTypes = new PathType[gridWidth][gridHeight];
 	}
 	
 	private MazeSegment createGridSegment(int gridX, int gridZ) {
-		int meshSize = pathWidth + wallWidth;
 		Vec2 segmentStart = gridMin.clone();
 		
 		segmentStart.add(
-				(gridX / 2) * meshSize,
-				(gridZ / 2) * meshSize);
+				(gridX / 2) * gridMeshSize,
+				(gridZ / 2) * gridMeshSize);
 		segmentStart.add(
 				(gridX % 2) * pathWidth,
 				(gridZ % 2) * pathWidth);
@@ -161,7 +193,4 @@ public class PathMap {
 		return new MazeSegment(segmentStart, segmentSize);
 	}
 	
-	public MazeSegment getSegment(int gridX, int gridZ) {
-		return gridSegments[gridX][gridZ];
-	}
 }

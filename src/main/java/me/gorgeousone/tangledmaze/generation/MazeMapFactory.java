@@ -79,7 +79,7 @@ public class MazeMapFactory {
 				return dir;
 			}
 		}
-		throw new IllegalArgumentException("Exit " + exit + " does not seem to touch the maze.");
+		throw new IllegalArgumentException("Exit " + exit + " does not touch the maze.");
 	}
 	
 	private static void copyPathsOntoMap(PathMap pathMap, MazeMap mazeMap) {
@@ -101,10 +101,8 @@ public class MazeMapFactory {
 				PathType type;
 				if (!isSegmentFree(pathMap.getSegment(gridX, gridZ), mazeMap) || (gridX % 2 != 0 && gridZ % 2 != 0)) {
 					type = PathType.BLOCKED;
-				} else if (gridX % 2 == 0 && gridZ % 2 == 0) {
-					type = PathType.INTERSECTION;
 				} else {
-					type = PathType.PATH;
+					type = PathType.FREE;
 				}
 				pathMap.setSegmentType(gridX, gridZ, type);
 			}
