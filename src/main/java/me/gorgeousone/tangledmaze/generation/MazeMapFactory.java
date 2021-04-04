@@ -2,6 +2,7 @@ package me.gorgeousone.tangledmaze.generation;
 
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.generation.paving.ExitSegment;
+import me.gorgeousone.tangledmaze.generation.paving.PathGen;
 import me.gorgeousone.tangledmaze.generation.paving.PathMap;
 import me.gorgeousone.tangledmaze.generation.paving.PathType;
 import me.gorgeousone.tangledmaze.util.Direction;
@@ -61,7 +62,7 @@ public class MazeMapFactory {
 	}
 	
 	public static void createPaths(MazeMap mazeMap, List<Vec2> exits, Map<String, Integer> settings) {
-		PathMap pathMap = new PathMap(mazeMap.getMin(), mazeMap.getMax(), 2, 4);
+		PathMap pathMap = new PathMap(mazeMap.getMin(), mazeMap.getMax(), 2, 3);
 		
 		for (int i = 0; i < exits.size(); i++) {
 			Vec2 exitLoc = exits.get(i);
@@ -73,6 +74,8 @@ public class MazeMapFactory {
 				pathMap.setExit(exitLoc, getExitFacing(exitLoc, mazeMap));
 			}
 		}
+		
+		PathGen.generatePaths(pathMap, 3);
 		copyPathsOntoMazeMap(pathMap, mazeMap);
 	}
 	
@@ -92,11 +95,15 @@ public class MazeMapFactory {
 		for (ExitSegment exit : pathMap.getExits()) {
 			mazeMap.setType(exit.getMin(), exit.getMax(), AreaType.EXIT);
 		}
-		//		for (int gridX = 0; gridX < pathMap.getWidth(); gridX++) {
-		//			for (int gridZ = 0; gridZ < pathMap.getHeight(); gridZ++) {
-		//
-		//			}
-		//		}
+	
+		for (int gridX = 0; gridX < pathMap.getWidth(); gridX++) {
+			for (int gridZ = 0; gridZ < pathMap.getHeight(); gridZ++) {
+				if (pathMap.getSegmentType(gridX, gridZ) == PathType.PAVED) {
+					MazeSegment segment = pathMap.getSegment(gridX, gridZ);
+					mazeMap.setType(segment.getMin(), segment.getMax(), AreaType.PATH);
+				}
+			}
+		}
 	}
 	
 	private static void copyMazeOntoPathMap(MazeMap mazeMap, PathMap pathMap) {

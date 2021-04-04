@@ -10,23 +10,21 @@ import java.util.Random;
 public class PathGen {
 	
 	private static final Random random = new Random();
-	private static final int maxLinkedSegmentCount = 4;
+	private static final int maxLinkedSegmentCount = 3;
 	
 	public static void generatePaths(PathMap pathMap, int curliness) {
 		List<PathSegment> openPathEnds = createStartSegments(pathMap.getPathStarts());
-		int linkedPathSegmentCount = 0;
-//		boolean lastPathGotExtended = false;
-		//build maze paths until maze space is used up
+		int linkedPathSegmentCount = 1;
+		
 		while (!openPathEnds.isEmpty()) {
 			PathSegment currentPathEnd;
-			
 			//continue last end or choose random after n connected ones
-			if (linkedPathSegmentCount < maxLinkedSegmentCount) {
+			if (linkedPathSegmentCount <= maxLinkedSegmentCount) {
 				currentPathEnd = openPathEnds.get(0);
 				linkedPathSegmentCount++;
 			} else {
 				currentPathEnd = openPathEnds.get(random.nextInt(openPathEnds.size()));
-				linkedPathSegmentCount = 0;
+				linkedPathSegmentCount = 1;
 			}
 			
 			List<Direction> availableDirs = getAvailableDirs(currentPathEnd, pathMap);
@@ -41,10 +39,11 @@ public class PathGen {
 			}
 			//choose one random available direction and create new path towards that
 			Direction rndFacing = availableDirs.get(random.nextInt(availableDirs.size()));
-			openPathEnds.add(pavePath(currentPathEnd, pathMap, rndFacing));
+			openPathEnds.add(0, pavePath(currentPathEnd, pathMap, rndFacing));
+			
 			//to make longer straight segments which will look more fancy
 			List<PathSegment> newPathEnds = extendPath(currentPathEnd, pathMap, rndFacing, random.nextInt(curliness) + 1);
-			openPathEnds.addAll(newPathEnds);
+			openPathEnds.addAll(0, newPathEnds);
 		}
 	}
 	
@@ -67,9 +66,11 @@ public class PathGen {
 		for (Direction facing : Direction.fourCardinals()) {
 			Vec2 facingVec = facing.getVec2();
 			Vec2 gridPos = pathEnd.getGridPos();
+			Vec2 newSeg1 = gridPos.clone().add(facingVec);
+			Vec2 newSeg2 = newSeg1.clone().add(facingVec);
 			
-			if (pathMap.getSegmentType(gridPos.add(facingVec)) == PathType.FREE &&
-			    pathMap.getSegmentType(gridPos.add(facingVec)) == PathType.FREE) {
+			if (pathMap.getSegmentType(newSeg1) == PathType.FREE &&
+			    pathMap.getSegmentType(newSeg2) == PathType.FREE) {
 				branches.add(facing);
 			}
 		}
@@ -77,12 +78,13 @@ public class PathGen {
 	}
 	
 	private static PathSegment pavePath(PathSegment pathEnd, PathMap pathMap, Direction facing) {
-		Vec2 newPath1 = pathEnd.getGridPos().clone().add(facing.getVec2());
-		Vec2 newPath2 = newPath1.clone().add(facing.getVec2());
+		Vec2 facingVec = facing.getVec2();
+		Vec2 newPath1 = pathEnd.getGridPos().clone().add(facingVec);
+		Vec2 newPath2 = newPath1.clone().add(facingVec);
 		
 		pathMap.setSegmentType(newPath1, PathType.PAVED);
 		pathMap.setSegmentType(newPath2, PathType.PAVED);
-		return new PathSegment(newPath1, new PathSegment(newPath2, pathEnd));
+		return new PathSegment(newPath2, new PathSegment(newPath1, pathEnd));
 	}
 	
 	/**
@@ -103,7 +105,7 @@ public class PathGen {
 			
 			if (pathMap.getSegmentType(extension1) == PathType.FREE &&
 			    pathMap.getSegmentType(extension2) == PathType.FREE) {
-				newPathEnds.add(pavePath(pathEnd, pathMap, facing));
+				newPathEnds.add(0, pavePath(pathEnd, pathMap, facing));
 			}else {
 				break;
 			}
@@ -149,6 +151,12 @@ public class PathGen {
 		
 		public int getExitDist() {
 			return exitDist;
+		}
+		
+		@Override
+		public String toString() {
+			return "- " + gridPos +
+			       ", exitDist=" + exitDist;
 		}
 	}
 }

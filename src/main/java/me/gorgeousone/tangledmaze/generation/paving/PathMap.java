@@ -3,6 +3,7 @@ package me.gorgeousone.tangledmaze.generation.paving;
 import me.gorgeousone.tangledmaze.generation.MazeSegment;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,8 +78,8 @@ public class PathMap {
 	}
 	
 	public boolean contains(int gridX, int gridZ) {
-		return gridX >= 0 && gridX <= getWidth() &&
-		       gridZ >= 0 && gridZ <= getHeight();
+		return gridX >= 0 && gridX < getWidth() &&
+		       gridZ >= 0 && gridZ < getHeight();
 	}
 	
 	public void setSegmentType(Vec2 gridPos, PathType type) {
@@ -97,14 +98,16 @@ public class PathMap {
 		
 		Vec2 entranceEnd = entrance.getEnd();
 		calculateGridProperties(entranceEnd);
-		pathStarts.add(entranceEnd.sub(gridOffset).floorDiv(gridMeshSize));
 		
 		for (int gridX = 0; gridX < getWidth(); gridX++) {
 			for (int gridZ = 0; gridZ < getHeight(); gridZ++) {
 				gridSegments[gridX][gridZ] = createGridSegment(gridX, gridZ);
 			}
 		}
-		setSegmentType(getGridPos(entranceEnd), PathType.PAVED);
+		
+		Vec2 entranceGridPos = getGridPos(entranceEnd);
+		setSegmentType(entranceGridPos, PathType.PAVED);
+		pathStarts.add(entranceGridPos);
 	}
 	
 	public void setExit(Vec2 exitBlockLoc, Direction facing) {
@@ -131,12 +134,12 @@ public class PathMap {
 		
 		if (leftIsFree && rightIsFree) {
 			chosenTurn = leftTurn.length() > rightTurn.length() ? leftTurn : rightTurn;
-		}else {
+		} else {
 			chosenTurn = leftIsFree ? leftTurn : rightTurn;
 		}
 		exits.add(exit);
 		exits.add(chosenTurn);
-		pathStarts.add(chosenTurn.getEnd());
+		pathStarts.add(getGridPos(chosenTurn.getEnd()));
 		setSegmentType(getGridPos(chosenTurn.getEnd()), PathType.PAVED);
 	}
 	
@@ -218,5 +221,13 @@ public class PathMap {
 				gridZ % 2 == 0 ? pathWidth : wallWidth);
 		
 		return new MazeSegment(segmentStart, segmentSize);
+	}
+	
+	public Vec2 getBlockLoc(int gridX, int gridZ) {
+		return new Vec2(
+				(gridX / 2) * gridMeshSize,
+				(gridZ / 2) * gridMeshSize).add(
+				(gridX % 2) * pathWidth,
+				(gridZ % 2) * pathWidth);
 	}
 }

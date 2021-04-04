@@ -13,6 +13,7 @@ import me.gorgeousone.tangledmaze.command.SwitchTool;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -37,6 +38,7 @@ public final class TangledMaze extends JavaPlugin {
 	public void onDisable() {
 		renderHandler.disable();
 		clipHandler.disable();
+		Bukkit.broadcastMessage(ChatColor.GOLD + "TODO mazemap setType contains check");
 	}
 	
 	void registerListeners() {
