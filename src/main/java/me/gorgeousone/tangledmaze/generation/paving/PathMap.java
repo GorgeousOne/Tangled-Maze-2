@@ -3,7 +3,6 @@ package me.gorgeousone.tangledmaze.generation.paving;
 import me.gorgeousone.tangledmaze.generation.MazeSegment;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
-import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -220,7 +219,7 @@ public class PathMap {
 				gridX % 2 == 0 ? pathWidth : wallWidth,
 				gridZ % 2 == 0 ? pathWidth : wallWidth);
 		
-		return new MazeSegment(segmentStart, segmentSize);
+		return new MazeSegment(segmentStart, segmentSize, new Vec2(gridX, gridZ));
 	}
 	
 	public Vec2 getBlockLoc(int gridX, int gridZ) {

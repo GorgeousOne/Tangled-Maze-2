@@ -13,54 +13,64 @@ public class PathGen {
 	private static final int maxLinkedSegmentCount = 3;
 	
 	public static void generatePaths(PathMap pathMap, int curliness) {
-		List<PathSegment> openPathEnds = createStartSegments(pathMap.getPathStarts());
-		int linkedPathSegmentCount = 1;
+		List<PathTree> pathTrees = createPathTrees(pathMap.getPathStarts());
+		int linkedSegmentCount = 1;
 		
-		while (!openPathEnds.isEmpty()) {
-			PathSegment currentPathEnd;
+		int treeIndex = 0;
+		PathTree currentTree = pathTrees.get(treeIndex);
+		
+		while (!pathTrees.isEmpty()) {
+			PathTree.Leave currentPathEnd;
 			//continue last end or choose random after n connected ones
-			if (linkedPathSegmentCount <= maxLinkedSegmentCount) {
-				currentPathEnd = openPathEnds.get(0);
-				linkedPathSegmentCount++;
+			if (linkedSegmentCount <= maxLinkedSegmentCount) {
+				currentPathEnd = currentTree.getLastEnd();
+				linkedSegmentCount++;
 			} else {
-				currentPathEnd = openPathEnds.get(random.nextInt(openPathEnds.size()));
-				linkedPathSegmentCount = 1;
+				treeIndex = (treeIndex + 1) % pathTrees.size();
+				currentTree = pathTrees.get(treeIndex);
+				currentPathEnd = currentTree.getRndEnd();
+				linkedSegmentCount = 1;
 			}
-			
 			List<Direction> availableDirs = getAvailableDirs(currentPathEnd, pathMap);
 			
 			if (availableDirs.size() < 2) {
-				openPathEnds.remove(currentPathEnd);
-				linkedPathSegmentCount = 0;
+				currentTree.removeEnd(currentPathEnd);
+				linkedSegmentCount = 1;
 				
+				if (currentTree.isComplete()) {
+					pathTrees.remove(currentTree);
+					linkedSegmentCount = maxLinkedSegmentCount + 1;
+				}
 				if (availableDirs.isEmpty()) {
 					continue;
 				}
 			}
 			//choose one random available direction and create new path towards that
 			Direction rndFacing = availableDirs.get(random.nextInt(availableDirs.size()));
-			openPathEnds.add(0, pavePath(currentPathEnd, pathMap, rndFacing));
+			currentTree.addEnd(pavePath(currentPathEnd, pathMap, rndFacing));
 			
 			//to make longer straight segments which will look more fancy
-			List<PathSegment> newPathEnds = extendPath(currentPathEnd, pathMap, rndFacing, random.nextInt(curliness) + 1);
-			openPathEnds.addAll(0, newPathEnds);
+			List<PathTree.Leave> newPathEnds = extendPath(currentPathEnd, pathMap, rndFacing, random.nextInt(curliness) + 1);
+			currentTree.addAllEnds(newPathEnds);
 		}
 	}
 	
-	private static List<PathSegment> createStartSegments(List<Vec2> pathStarts) {
-		List<PathSegment> startSegments = new ArrayList<>();
+	private static List<PathTree> createPathTrees(List<Vec2> pathStarts) {
+		List<PathTree> pathTrees = new ArrayList<>();
 		
 		for (int i = 0; i < pathStarts.size(); i++) {
-			startSegments.add(new PathSegment(pathStarts.get(i).clone(), i));
+			PathTree tree = new PathTree(i);
+			tree.addEnd(new PathTree.Leave(pathStarts.get(i), tree.getId()));
+			pathTrees.add(tree);
 		}
-		return startSegments;
+		return pathTrees;
 	}
 	
 	/**
 	 * Checks the 4 surrounding paths for available directions to create paths towards
 	 * @return a list of available directions
 	 */
-	private static List<Direction> getAvailableDirs(PathSegment pathEnd, PathMap pathMap) {
+	private static List<Direction> getAvailableDirs(PathTree.Leave pathEnd, PathMap pathMap) {
 		List<Direction> branches = new ArrayList<>();
 		
 		for (Direction facing : Direction.fourCardinals()) {
@@ -77,14 +87,14 @@ public class PathGen {
 		return branches;
 	}
 	
-	private static PathSegment pavePath(PathSegment pathEnd, PathMap pathMap, Direction facing) {
+	private static PathTree.Leave pavePath(PathTree.Leave pathEnd, PathMap pathMap, Direction facing) {
 		Vec2 facingVec = facing.getVec2();
 		Vec2 newPath1 = pathEnd.getGridPos().clone().add(facingVec);
 		Vec2 newPath2 = newPath1.clone().add(facingVec);
 		
 		pathMap.setSegmentType(newPath1, PathType.PAVED);
 		pathMap.setSegmentType(newPath2, PathType.PAVED);
-		return new PathSegment(newPath2, new PathSegment(newPath1, pathEnd));
+		return new PathTree.Leave(newPath2, new PathTree.Leave(newPath1, pathEnd));
 	}
 	
 	/**
@@ -94,8 +104,8 @@ public class PathGen {
 	 * @param maxLength maximum times to extend the path
 	 * @return
 	 */
-	private static List<PathSegment> extendPath(PathSegment pathEnd, PathMap pathMap, Direction facing, int maxLength) {
-		List<PathSegment> newPathEnds = new ArrayList<>();
+	private static List<PathTree.Leave> extendPath(PathTree.Leave pathEnd, PathMap pathMap, Direction facing, int maxLength) {
+		List<PathTree.Leave> newPathEnds = new ArrayList<>();
 		Vec2 facingVec = facing.getVec2();
 		Vec2 gridPos = pathEnd.getGridPos();
 		
@@ -111,52 +121,5 @@ public class PathGen {
 			}
 		}
 		return newPathEnds;
-	}
-	
-	/**
-	 * Represents a segment on a path map. It has a branch id for determining the exit it descends from
-	 * and parent segment and an int existDist for tracing back it's way to the exit and the distance to it
-	 */
-	static class PathSegment {
-		private final Vec2 gridPos;
-		private final int branchId;
-		private final PathSegment parent;
-		private final int exitDist;
-		
-		public PathSegment(Vec2 gridPos, int branchId) {
-			this.gridPos = gridPos;
-			this.branchId = branchId;
-			parent = null;
-			exitDist = 0;
-		}
-		
-		public PathSegment(Vec2 gridPos, PathSegment parent) {
-			this.branchId = parent.getBranchId();
-			this.gridPos = gridPos;
-			this.parent = parent;
-			exitDist = parent.getExitDist() + 1;
-		}
-		
-		public int getBranchId() {
-			return branchId;
-		}
-		
-		public Vec2 getGridPos() {
-			return gridPos.clone();
-		}
-		
-		public PathSegment getParent() {
-			return parent;
-		}
-		
-		public int getExitDist() {
-			return exitDist;
-		}
-		
-		@Override
-		public String toString() {
-			return "- " + gridPos +
-			       ", exitDist=" + exitDist;
-		}
 	}
 }

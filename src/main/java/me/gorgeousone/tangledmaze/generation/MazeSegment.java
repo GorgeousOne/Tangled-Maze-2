@@ -7,11 +7,25 @@ public class MazeSegment {
 	
 	private final Vec2 min;
 	private final Vec2 size;
+	private final Vec2 gridPos;
 	
-	public MazeSegment(Vec2 min, Vec2 size) {
+	public MazeSegment(Vec2 min, Vec2 size, Vec2 gridPos) {
 		this.min = min;
 		this.size = size;
+		this.gridPos = gridPos;
 	}
+	
+	public Vec2 getGridPos() {
+		return gridPos.clone();
+	}
+	
+//	public int gridX() {
+//		return gridPos.getX();
+//	}
+//
+//	public int gridZ() {
+//		return gridPos.getZ();
+//	}
 	
 	public Vec2 getMin() {
 		return min.clone();
