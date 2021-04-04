@@ -70,7 +70,7 @@ public class ClickListener implements Listener {
 	
 	private Block traceBlock(Player player, PlayerInteractEvent event) {
 		Block clickedBlock = event.getClickedBlock();
-		return clickedBlock == null ? new Ray(player).traceBlock(50) : clickedBlock;
+		return clickedBlock == null ? new Ray(player).traceBlock(100) : clickedBlock;
 	}
 	
 	/**

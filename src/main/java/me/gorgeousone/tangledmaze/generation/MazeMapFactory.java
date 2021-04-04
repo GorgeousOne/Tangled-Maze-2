@@ -5,6 +5,7 @@ import me.gorgeousone.tangledmaze.generation.paving.ExitSegment;
 import me.gorgeousone.tangledmaze.generation.paving.PathGen;
 import me.gorgeousone.tangledmaze.generation.paving.PathMap;
 import me.gorgeousone.tangledmaze.generation.paving.PathType;
+import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
@@ -61,8 +62,8 @@ public class MazeMapFactory {
 		}
 	}
 	
-	public static void createPaths(MazeMap mazeMap, List<Vec2> exits, Map<String, Integer> settings) {
-		PathMap pathMap = new PathMap(mazeMap.getMin(), mazeMap.getMax(), 2, 3);
+	public static void createPaths(MazeMap mazeMap, List<Vec2> exits, MazeSettings settings) {
+		PathMap pathMap = new PathMap(mazeMap.getMin(), mazeMap.getMax(), 1, 2);
 		
 		for (int i = 0; i < exits.size(); i++) {
 			Vec2 exitLoc = exits.get(i);
@@ -74,7 +75,6 @@ public class MazeMapFactory {
 				pathMap.setExit(exitLoc, getExitFacing(exitLoc, mazeMap));
 			}
 		}
-		
 		PathGen.generatePaths(pathMap, 3);
 		copyPathsOntoMazeMap(pathMap, mazeMap);
 	}
@@ -90,28 +90,25 @@ public class MazeMapFactory {
 		throw new IllegalArgumentException("Exit " + exit + " does not touch the maze.");
 	}
 	
-	private static void copyPathsOntoMazeMap(PathMap pathMap, MazeMap mazeMap) {
-		
-		for (ExitSegment exit : pathMap.getExits()) {
-			mazeMap.setType(exit.getMin(), exit.getMax(), AreaType.EXIT);
-		}
-	
+	private static void copyMazeOntoPathMap(MazeMap mazeMap, PathMap pathMap) {
 		for (int gridX = 0; gridX < pathMap.getWidth(); gridX++) {
 			for (int gridZ = 0; gridZ < pathMap.getHeight(); gridZ++) {
-				if (pathMap.getSegmentType(gridX, gridZ) == PathType.PAVED) {
-					MazeSegment segment = pathMap.getSegment(gridX, gridZ);
-					mazeMap.setType(segment.getMin(), segment.getMax(), AreaType.PATH);
+				if (!isSegmentFree(pathMap.getSegment(gridX, gridZ), mazeMap)) {
+					pathMap.setSegmentType(gridX, gridZ, PathType.BLOCKED);
 				}
 			}
 		}
 	}
 	
-	private static void copyMazeOntoPathMap(MazeMap mazeMap, PathMap pathMap) {
+	private static void copyPathsOntoMazeMap(PathMap pathMap, MazeMap mazeMap) {
+		for (ExitSegment exit : pathMap.getExits()) {
+			mazeMap.setType(exit.getMin(), exit.getMax(), AreaType.EXIT);
+		}
 		for (int gridX = 0; gridX < pathMap.getWidth(); gridX++) {
 			for (int gridZ = 0; gridZ < pathMap.getHeight(); gridZ++) {
-				PathType type = isSegmentFree(pathMap.getSegment(gridX, gridZ), mazeMap) ? PathType.FREE : PathType.BLOCKED;
-				if (pathMap.getSegmentType(gridX, gridZ) == null) {
-					pathMap.setSegmentType(gridX, gridZ, type);
+				if (pathMap.getSegmentType(gridX, gridZ) == PathType.PAVED) {
+					MazeSegment segment = pathMap.getSegment(gridX, gridZ);
+					mazeMap.setType(segment.getMin(), segment.getMax(), AreaType.PATH);
 				}
 			}
 		}

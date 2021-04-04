@@ -20,7 +20,7 @@ public class PathMap {
 	private MazeSegment[][] gridSegments;
 	private PathType[][] segmentTypes;
 	private final List<ExitSegment> exits;
-	private final List<Vec2> pathStarts;
+	private final List<MazeSegment> pathStarts;
 	
 	public PathMap(Vec2 mapMin,
 	               Vec2 mapMax,
@@ -47,7 +47,7 @@ public class PathMap {
 		return exits;
 	}
 	
-	public List<Vec2> getPathStarts() {
+	public List<MazeSegment> getPathStarts() {
 		return pathStarts;
 	}
 	
@@ -101,12 +101,12 @@ public class PathMap {
 		for (int gridX = 0; gridX < getWidth(); gridX++) {
 			for (int gridZ = 0; gridZ < getHeight(); gridZ++) {
 				gridSegments[gridX][gridZ] = createGridSegment(gridX, gridZ);
+				segmentTypes[gridX][gridZ] = PathType.FREE;
 			}
 		}
-		
 		Vec2 entranceGridPos = getGridPos(entranceEnd);
 		setSegmentType(entranceGridPos, PathType.PAVED);
-		pathStarts.add(entranceGridPos);
+		pathStarts.add(getSegment(entranceGridPos));
 	}
 	
 	public void setExit(Vec2 exitBlockLoc, Direction facing) {
@@ -138,8 +138,9 @@ public class PathMap {
 		}
 		exits.add(exit);
 		exits.add(chosenTurn);
-		pathStarts.add(getGridPos(chosenTurn.getEnd()));
-		setSegmentType(getGridPos(chosenTurn.getEnd()), PathType.PAVED);
+		Vec2 endGridPos = getGridPos(chosenTurn.getEnd());
+		setSegmentType(endGridPos, PathType.PAVED);
+		pathStarts.add(getSegment(endGridPos));
 	}
 	
 	/**
