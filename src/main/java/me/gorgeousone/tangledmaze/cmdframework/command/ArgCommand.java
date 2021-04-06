@@ -46,7 +46,7 @@ public abstract class ArgCommand extends BaseCommand {
 		int inputCount = args.length;
 		ArgValue[] values = new ArgValue[Math.max(argCount, inputCount)];
 		Set<String> usedFlags = new HashSet<>();
-
+		
 		try {
 			int argIndex = 0;
 			

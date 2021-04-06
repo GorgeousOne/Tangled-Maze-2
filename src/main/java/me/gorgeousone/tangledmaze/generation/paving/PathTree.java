@@ -14,21 +14,20 @@ public class PathTree {
 	
 	private final static Random RANDOM = new Random();
 	private final List<MazeSegment> openEnds;
-	
-	private final Map<MazeSegment, MazeSegment> parents;
+	private final Set<MazeSegment> segments;
+	private final Set<MazeSegment> intersections;
 	private final Map<MazeSegment, Set<MazeSegment>> children;
-	
-	int segmentCount;
+	int maxExitDist;
 	
 	public PathTree() {
 		this.openEnds = new ArrayList<>();
-		
-		parents = new HashMap<>();
+		segments = new HashSet<>();
+		intersections = new HashSet<>();
 		children = new HashMap<>();
 	}
 	
 	public int size() {
-		return segmentCount;
+		return segments.size();
 	}
 	
 	public boolean isComplete() {
@@ -37,20 +36,36 @@ public class PathTree {
 	
 	public void addSegment(MazeSegment segment, MazeSegment parent) {
 		segment.setTree(this);
-		++segmentCount;
+		segment.setParent(parent);
+		segments.add(segment);
+		
+		int exitDist = getExitDist(segment);
+		maxExitDist = Math.max(exitDist, maxExitDist);
 		
 		if (parent != null) {
-			parents.put(segment, parent);
 			children.computeIfAbsent(parent, set -> new HashSet<>());
 			children.get(parent).add(segment);
 		}
 		if (segment.gridX() % 2 == 0 && segment.gridZ() % 2 == 0) {
+			intersections.add(segment);
 			openEnds.add(0, segment);
 		}
 	}
 	
-	public void addAllEnds(List<MazeSegment> newPathEnds) {
-		openEnds.addAll(0, newPathEnds);
+	public Set<MazeSegment> getSegments() {
+		return segments;
+	}
+	
+	public Set<MazeSegment> getIntersections() {
+		return intersections;
+	}
+	
+	public int getMaxExitDist() {
+		return maxExitDist;
+	}
+	
+	public int getExitDist(MazeSegment segment) {
+		return segment.hasParent() ? getExitDist(segment.getParent()) + 1 : 0;
 	}
 	
 	public MazeSegment getLastEnd() {
@@ -63,5 +78,34 @@ public class PathTree {
 	
 	public void removeEnd(MazeSegment pathEnd) {
 		openEnds.remove(pathEnd);
+	}
+	
+	public void mergeTree(PathTree other, MazeSegment ownSeg, MazeSegment otherSeg, MazeSegment connectingSeg) {
+		for (MazeSegment segment : other.segments) {
+			segment.setTree(this);
+		}
+		segments.addAll(other.segments);
+		intersections.addAll(other.intersections);
+		children.putAll(other.children);
+		
+		
+		addSegment(connectingSeg, ownSeg);
+		balanceTree(connectingSeg, otherSeg);
+	}
+	
+	private void balanceTree(MazeSegment seg1, MazeSegment seg2) {
+		int exitDist1 = getExitDist(seg1);
+		int exitDist2 = getExitDist(seg2);
+		int distDiff = Math.abs(exitDist2 - exitDist1);
+		
+		MazeSegment furtherSeg = exitDist1 > exitDist2 ? seg1 : seg2;
+		MazeSegment closerSeg = exitDist1 < exitDist2 ? seg1 : seg2;
+		
+		for (int i = 0; i < distDiff / 2; i++) {
+			MazeSegment oldParent = furtherSeg.getParent();
+			furtherSeg.setParent(closerSeg);
+			furtherSeg = oldParent;
+			closerSeg = furtherSeg;
+		}
 	}
 }

@@ -11,6 +11,7 @@ public class MazeSegment {
 	private final Vec2 gridPos;
 	
 	private PathTree tree;
+	private MazeSegment parent;
 	
 	public MazeSegment(Vec2 min, Vec2 size, Vec2 gridPos) {
 		this.min = min;
@@ -25,7 +26,7 @@ public class MazeSegment {
 	public int gridX() {
 		return gridPos.getX();
 	}
-
+	
 	public int gridZ() {
 		return gridPos.getZ();
 	}
@@ -57,5 +58,17 @@ public class MazeSegment {
 	
 	public void setTree(PathTree tree) {
 		this.tree = tree;
+	}
+	
+	public boolean hasParent() {
+		return parent != null;
+	}
+	
+	public MazeSegment getParent() {
+		return parent;
+	}
+	
+	public void setParent(MazeSegment parent) {
+		this.parent = parent;
 	}
 }

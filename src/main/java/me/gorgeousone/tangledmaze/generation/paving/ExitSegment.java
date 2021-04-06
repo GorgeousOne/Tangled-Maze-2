@@ -56,6 +56,10 @@ public class ExitSegment {
 		endLoc.add(facing.getVec2().mult(dLength));
 	}
 	
+	public int width() {
+		return width;
+	}
+	
 	public int length() {
 		return Math.abs(endLoc.getX() - startLoc.getX()) +
 		       Math.abs(endLoc.getZ() - startLoc.getZ()) + width;

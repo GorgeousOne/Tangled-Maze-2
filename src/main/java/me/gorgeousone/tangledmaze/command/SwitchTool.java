@@ -29,7 +29,7 @@ public class SwitchTool extends ArgCommand {
 		
 		try {
 			tool = ToolType.valueOf(toolName);
-		}catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			sender.sendMessage("nah pal");
 			return;
 		}

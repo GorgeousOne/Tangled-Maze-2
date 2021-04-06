@@ -62,7 +62,10 @@ public class PathMap {
 	}
 	
 	public MazeSegment getSegment(int gridX, int gridZ) {
-		return gridSegments[gridX][gridZ];
+		if (contains(gridX, gridZ)) {
+			return gridSegments[gridX][gridZ];
+		}
+		return null;
 	}
 	
 	public PathType getSegmentType(Vec2 gridPos) {
@@ -132,7 +135,14 @@ public class PathMap {
 		ExitSegment chosenTurn;
 		
 		if (leftIsFree && rightIsFree) {
-			chosenTurn = leftTurn.length() > rightTurn.length() ? leftTurn : rightTurn;
+			boolean chooseLeft = leftTurn.length() > rightTurn.length();
+			chosenTurn = chooseLeft ? leftTurn : rightTurn;
+			ExitSegment otherTurn = chooseLeft ? rightTurn : leftTurn;
+			
+			//stops paths from reaching an exit from the opposite side
+			if (otherTurn.length() > otherTurn.width() && otherTurn.length() < 2 * otherTurn.width() + 1) {
+				setSegmentType(getGridPos(otherTurn.getEnd()), PathType.BLOCKED);
+			}
 		} else {
 			chosenTurn = leftIsFree ? leftTurn : rightTurn;
 		}

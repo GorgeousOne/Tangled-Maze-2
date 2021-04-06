@@ -1,7 +1,5 @@
 package me.gorgeousone.tangledmaze.util;
 
-import jdk.nashorn.internal.ir.Block;
-
 import java.util.Objects;
 
 public class BlockVec {

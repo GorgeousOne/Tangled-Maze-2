@@ -1,10 +1,7 @@
 package me.gorgeousone.tangledmaze.util;
 
-import java.util.Arrays;
-
 public enum Direction {
 	
-	//putting opposite values next to each other can help quicken methods like Maze.sealsMaze();
 	EAST(new Vec2(1, 0)),
 	SOUTH_EAST(new Vec2(1, 1)),
 	SOUTH(new Vec2(0, 1)),

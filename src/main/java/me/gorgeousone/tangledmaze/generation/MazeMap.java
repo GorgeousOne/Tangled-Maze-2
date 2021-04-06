@@ -1,6 +1,10 @@
 package me.gorgeousone.tangledmaze.generation;
 
+import me.gorgeousone.tangledmaze.generation.paving.PathMap;
+import me.gorgeousone.tangledmaze.generation.paving.PathTree;
 import me.gorgeousone.tangledmaze.util.Vec2;
+
+import java.util.List;
 
 public class MazeMap {
 	
@@ -69,5 +73,24 @@ public class MazeMap {
 	
 	public void setY(int x, int z, int y) {
 		terrainMap[x - mapMin.getX()][z - mapMin.getZ()] = y;
+	}
+	
+	private PathMap pathMap;
+	private List<PathTree> pathTrees;
+	
+	public PathMap getPathMap() {
+		return pathMap;
+	}
+	
+	public void setPathMap(PathMap pathMap) {
+		this.pathMap = pathMap;
+	}
+	
+	public List<PathTree> getPathTrees() {
+		return pathTrees;
+	}
+	
+	public void setPathTrees(List<PathTree> pathTrees) {
+		this.pathTrees = pathTrees;
 	}
 }

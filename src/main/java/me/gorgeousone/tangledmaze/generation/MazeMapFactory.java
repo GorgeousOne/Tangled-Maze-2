@@ -63,7 +63,7 @@ public class MazeMapFactory {
 	}
 	
 	public static void createPaths(MazeMap mazeMap, List<Vec2> exits, MazeSettings settings) {
-		PathMap pathMap = new PathMap(mazeMap.getMin(), mazeMap.getMax(), 1, 2);
+		PathMap pathMap = new PathMap(mazeMap.getMin(), mazeMap.getMax(), settings.getPathWidth(), settings.getWallWidth());
 		
 		for (int i = 0; i < exits.size(); i++) {
 			Vec2 exitLoc = exits.get(i);
@@ -75,7 +75,8 @@ public class MazeMapFactory {
 				pathMap.setExit(exitLoc, getExitFacing(exitLoc, mazeMap));
 			}
 		}
-		PathGen.generatePaths(pathMap, 3);
+		mazeMap.setPathMap(pathMap);
+		mazeMap.setPathTrees(PathGen.generatePaths(pathMap, settings.getCurliness()));
 		copyPathsOntoMazeMap(pathMap, mazeMap);
 	}
 	

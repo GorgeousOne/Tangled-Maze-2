@@ -113,7 +113,8 @@ public class Clip {
 	
 	/**
 	 * Processes the changes stored in a {@link ClipAction} and calls an event
-	 * @param action changes container
+	 *
+	 * @param action        changes container
 	 * @param saveToHistory will save the action to history for undoing later if set to true
 	 */
 	public void processAction(ClipAction action, boolean saveToHistory) {
@@ -138,7 +139,7 @@ public class Clip {
 		
 		if (exits.contains(exitLoc)) {
 			removeExit(exitLoc);
-		}else {
+		} else {
 			addExit(exitLoc, exitY);
 		}
 	}

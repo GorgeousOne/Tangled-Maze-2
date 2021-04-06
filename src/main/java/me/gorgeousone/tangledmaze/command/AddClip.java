@@ -5,9 +5,6 @@ import me.gorgeousone.tangledmaze.clip.ClipAction;
 import me.gorgeousone.tangledmaze.clip.ClipActionFactory;
 import me.gorgeousone.tangledmaze.clip.ClipHandler;
 import me.gorgeousone.tangledmaze.cmdframework.command.BaseCommand;
-import me.gorgeousone.tangledmaze.event.ClipActionProcessEvent;
-import me.gorgeousone.tangledmaze.event.ClipDeleteEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
