@@ -1,14 +1,10 @@
 package me.gorgeousone.tangledmaze.generation.paving;
 
 import me.gorgeousone.tangledmaze.generation.MazeSegment;
-import me.gorgeousone.tangledmaze.util.Vec2;
-import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -20,12 +16,19 @@ public class PathTree {
 	private final Set<MazeSegment> intersections;
 //	private final Map<MazeSegment, Set<MazeSegment>> children;
 	int maxExitDist;
+	private final int index;
 	
-	public PathTree() {
+	public PathTree(int index) {
+		this.index = index;
 		this.openEnds = new ArrayList<>();
 		segments = new HashSet<>();
 		intersections = new HashSet<>();
 //		children = new HashMap<>();
+	}
+	
+	@Override
+	public String toString() {
+		return "Tree " + index;
 	}
 	
 	public int size() {
@@ -87,7 +90,7 @@ public class PathTree {
 		openEnds.remove(pathEnd);
 	}
 	
-	public void mergeTree(PathTree other, MazeSegment ownSeg, MazeSegment otherSeg, MazeSegment connectingSeg) {
+	public void mergeTree(PathTree other, MazeSegment ownSegment, MazeSegment otherSegment, MazeSegment linkingSegment) {
 		for (MazeSegment segment : other.segments) {
 			segment.setTree(this);
 		}
@@ -95,8 +98,8 @@ public class PathTree {
 		intersections.addAll(other.intersections);
 //		children.putAll(other.children);
 		
-		addSegment(connectingSeg, ownSeg);
-		balanceTree(connectingSeg, otherSeg);
+		addSegment(linkingSegment, ownSegment);
+		balanceTree(linkingSegment, otherSegment);
 	}
 	
 	private void balanceTree(MazeSegment seg1, MazeSegment seg2) {

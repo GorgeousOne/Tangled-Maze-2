@@ -62,7 +62,7 @@ public class PathGen {
 				lastSegmentWasExtended = false;
 			}
 		}
-		joinTrees(pathMap, pathTrees);
+		linkPathTrees(pathMap, pathTrees);
 		return pathTrees;
 	}
 	
@@ -70,7 +70,7 @@ public class PathGen {
 		List<PathTree> pathTrees = new ArrayList<>();
 		
 		for (MazeSegment pathStart : pathStarts) {
-			PathTree tree = new PathTree();
+			PathTree tree = new PathTree(pathStarts.indexOf(pathStart));
 			tree.addSegment(pathStart, null);
 			pathTrees.add(tree);
 		}
@@ -151,54 +151,79 @@ public class PathGen {
 		return true;
 	}
 	
-	private static void joinTrees(PathMap pathMap, List<PathTree> pathTrees) {
-		PathTree mainTree = pathTrees.get(0);
-		Set<Map.Entry<MazeSegment, MazeSegment>> connections = new HashSet<>();
-		
-		int i = 1;
-		while(i < pathTrees.size()) { //pathTrees.size() > 1
-			++i;
-			getConnections(pathMap, mainTree.getIntersections(), connections);
-			Map.Entry<MazeSegment, MazeSegment> maxEntry = getGreatest(connections);
+	/**
+	 * Connects the paths of the given path trees to each other trying to always find the longest path
+	 * between the exit of one tree to the exit of the other one.
+	 * @param pathMap to look up maze segments on
+	 * @param pathTrees to connect to each other
+	 */
+	private static void linkPathTrees(PathMap pathMap, List<PathTree> pathTrees) {
+		for (int i = 0; i < pathTrees.size(); ++i) {
+			PathTree currentTree = pathTrees.get(i);
+			Set<Map.Entry<MazeSegment, MazeSegment>> treeLinks = addTreeLinks(pathMap, currentTree.getIntersections(), new HashSet<>());
 			
-			MazeSegment mainSeg = maxEntry.getKey();
-			MazeSegment otherSeg = maxEntry.getValue();
-			Vec2 facing = otherSeg.getGridPos().sub(mainSeg.getGridPos()).floorDiv(2);
-			MazeSegment connectingSeg = pathMap.getSegment(mainSeg.getGridPos().add(facing));
-//			pathMap.setSegmentType(connectingSeg.getGridPos(), PathType.PAVED);
-			
-			PathTree otherTree = otherSeg.getTree();
-			mainTree.mergeTree(otherTree, mainSeg, otherSeg, connectingSeg);
-			
-			pathTrees.remove(otherTree);
-			connections.removeIf(entry -> entry.getValue().getTree() == mainTree);
+			//tries to link each tree to as many other trees as reachable
+			while (i < pathTrees.size()-1) {
+				Map.Entry<MazeSegment, MazeSegment> maxLengthLink = getMaxLengthLink(treeLinks);
+				
+				//continues with next tree if no other trees can be reached anymore
+				if (maxLengthLink == null) {
+					break;
+				}
+				MazeSegment treeSeg = maxLengthLink.getKey();
+				MazeSegment otherTreeSeg = maxLengthLink.getValue();
+				
+				Vec2 linkingGridPos = treeSeg.getGridPos().add(otherTreeSeg.getGridPos()).floorDiv(2);
+				MazeSegment linkingSegment = pathMap.getSegment(linkingGridPos);
+				pathMap.setSegmentType(linkingSegment.getGridPos(), PathType.PAVED);
+				
+				//merges the two trees so they are handled as one by now
+				PathTree otherTree = otherTreeSeg.getTree();
+				currentTree.mergeTree(otherTree, treeSeg, otherTreeSeg, linkingSegment);
+				pathTrees.remove(otherTree);
+				
+				treeLinks.removeIf(entry -> entry.getValue().getTree() == currentTree);
+				if (i < pathTrees.size() - 1) {
+					addTreeLinks(pathMap, otherTree.getIntersections(), treeLinks);
+				}
+			}
 		}
 	}
 	
-	private static Set<Map.Entry<MazeSegment, MazeSegment>> getConnections(
+	/**
+	 * Finds pairs of maze segments next to each other where one segment is from one path tree and the other segment from a different one.
+	 * @param pathMap to look up maze segments on
+	 * @param segments all possible keys for pairs
+	 * @param treeLinks collection to add the pairs to
+	 */
+	private static Set<Map.Entry<MazeSegment, MazeSegment>> addTreeLinks(
 			PathMap pathMap,
-			Set<MazeSegment> intersections,
-			Set<Map.Entry<MazeSegment, MazeSegment>> connections) {
+			Set<MazeSegment> segments,
+			Set<Map.Entry<MazeSegment, MazeSegment>> treeLinks) {
 		
 		Set<Vec2> facings = Arrays.stream(Direction.fourCardinals()).map(facing -> facing.getVec2().mult(2)).collect(Collectors.toSet());
 		
-		for (MazeSegment segment : intersections) {
+		for (MazeSegment segment : segments) {
 			for (Vec2 facing : facings) {
 				MazeSegment neighbor = pathMap.getSegment(segment.getGridPos().add(facing));
 				
 				if (neighbor != null && neighbor.getTree() != null && neighbor.getTree() != segment.getTree()) {
-					connections.add(new AbstractMap.SimpleEntry<>(segment, neighbor));
+					treeLinks.add(new AbstractMap.SimpleEntry<>(segment, neighbor));
 				}
 			}
 		}
-		return connections;
+		return treeLinks;
 	}
 	
-	private static Map.Entry<MazeSegment, MazeSegment> getGreatest(Set<Map.Entry<MazeSegment, MazeSegment>> connections) {
+	/**
+	 * Returns the pair of maze segments that cover the greatest distance between two exits if they were connected.
+	 * @param treeLinks pairs of segments to look up in
+	 */
+	private static Map.Entry<MazeSegment, MazeSegment> getMaxLengthLink(Set<Map.Entry<MazeSegment, MazeSegment>> treeLinks) {
 		int maxDist = -1;
 		Map.Entry<MazeSegment, MazeSegment> maxEntry = null;
 		
-		for (Map.Entry<MazeSegment, MazeSegment> entry : connections) {
+		for (Map.Entry<MazeSegment, MazeSegment> entry : treeLinks) {
 			MazeSegment seg1 = entry.getKey();
 			MazeSegment seg2 = entry.getValue();
 			int dist = seg1.getTree().getExitDist(seg1) + seg2.getTree().getExitDist(seg2);
