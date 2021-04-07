@@ -1,11 +1,11 @@
 package me.gorgeousone.tangledmaze;
 
-import me.gorgeousone.tangledmaze.clip.ClipHandler;
 import me.gorgeousone.tangledmaze.cmdframework.command.ParentCommand;
 import me.gorgeousone.tangledmaze.cmdframework.handler.CommandHandler;
 import me.gorgeousone.tangledmaze.command.AddClip;
 import me.gorgeousone.tangledmaze.command.BuildMaze;
 import me.gorgeousone.tangledmaze.command.CutClip;
+import me.gorgeousone.tangledmaze.command.SettingsCommand;
 import me.gorgeousone.tangledmaze.command.StartMaze;
 import me.gorgeousone.tangledmaze.command.SwitchTool;
 import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
@@ -19,16 +19,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TangledMaze extends JavaPlugin {
 	
-	private ClipHandler clipHandler;
+	private SessionHandler sessionHandler;
 	private ToolHandler toolHandler;
 	private RenderHandler renderHandler;
 	private BuildHandler buildHandler;
 	
 	@Override
 	public void onEnable() {
-		clipHandler = new ClipHandler();
-		toolHandler = new ToolHandler(clipHandler);
-		renderHandler = new RenderHandler(this, clipHandler);
+		sessionHandler = new SessionHandler();
+		toolHandler = new ToolHandler(sessionHandler);
+		renderHandler = new RenderHandler(this, sessionHandler);
 		buildHandler = new BuildHandler();
 		registerListeners();
 		registerCommands();
@@ -37,14 +37,14 @@ public final class TangledMaze extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		renderHandler.disable();
-		clipHandler.disable();
+		sessionHandler.disable();
 		Bukkit.broadcastMessage(ChatColor.GOLD + "TODO mazemap setType contains check");
 	}
 	
 	void registerListeners() {
 		PluginManager manager = Bukkit.getPluginManager();
 		manager.registerEvents(renderHandler, this);
-		manager.registerEvents(new ClickListener(clipHandler, toolHandler), this);
+		manager.registerEvents(new ClickListener(sessionHandler, toolHandler), this);
 	}
 	
 	private void registerCommands() {
@@ -52,12 +52,12 @@ public final class TangledMaze extends JavaPlugin {
 		mazeCmd.addAlias("maze");
 		mazeCmd.addAlias("tm");
 		
-		mazeCmd.addChild(new StartMaze(clipHandler));
-		mazeCmd.addChild(new AddClip(clipHandler));
-		mazeCmd.addChild(new CutClip(clipHandler));
+		mazeCmd.addChild(new StartMaze(sessionHandler));
+		mazeCmd.addChild(new AddClip(sessionHandler));
+		mazeCmd.addChild(new CutClip(sessionHandler));
 		mazeCmd.addChild(new SwitchTool(toolHandler));
-		mazeCmd.addChild(new BuildMaze(clipHandler, buildHandler));
-		
+		mazeCmd.addChild(new BuildMaze(sessionHandler, buildHandler));
+		mazeCmd.addChild(new SettingsCommand(sessionHandler));
 		CommandHandler cmdHandler = new CommandHandler(this);
 		cmdHandler.registerCommand(mazeCmd);
 	}

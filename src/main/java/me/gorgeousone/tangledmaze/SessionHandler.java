@@ -1,6 +1,9 @@
-package me.gorgeousone.tangledmaze.clip;
+package me.gorgeousone.tangledmaze;
 
+import me.gorgeousone.tangledmaze.clip.Clip;
+import me.gorgeousone.tangledmaze.clip.ClipShape;
 import me.gorgeousone.tangledmaze.event.ClipDeleteEvent;
+import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.tool.ClipTool;
 import org.bukkit.Bukkit;
 
@@ -8,22 +11,32 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class ClipHandler {
+public class SessionHandler {
 	
 	private final Map<UUID, ClipTool> playerClipTools;
 	private final Map<UUID, Clip> playerClips;
 	private final Map<UUID, Clip> playerMazes;
+	private final HashMap<UUID, MazeSettings> mazeSettings;
 	
-	public ClipHandler() {
-		this.playerClipTools = new HashMap<>();
-		this.playerClips = new HashMap<>();
-		this.playerMazes = new HashMap<>();
+	public SessionHandler() {
+		playerClipTools = new HashMap<>();
+		playerClips = new HashMap<>();
+		playerMazes = new HashMap<>();
+		mazeSettings = new HashMap<>();
 	}
 	
 	public void disable() {
 		playerClipTools.clear();
 		playerClips.clear();
 		playerMazes.clear();
+		mazeSettings.clear();
+	}
+	
+	public void removePlayer(UUID playerId) {
+		playerClipTools.remove(playerId);
+		playerClips.remove(playerId);
+		playerMazes.remove(playerId);
+		mazeSettings.remove(playerId);
 	}
 	
 	/**
@@ -59,5 +72,14 @@ public class ClipHandler {
 	
 	public void setMazeClip(UUID playerId, Clip clip) {
 		playerMazes.put(playerId, clip);
+	}
+	
+	public MazeSettings getSettings(UUID playerId) {
+		mazeSettings.computeIfAbsent(playerId, setting -> new MazeSettings());
+		return mazeSettings.get(playerId);
+	}
+	
+	public void removeSettings(UUID playerId) {
+		mazeSettings.remove(playerId);
 	}
 }
