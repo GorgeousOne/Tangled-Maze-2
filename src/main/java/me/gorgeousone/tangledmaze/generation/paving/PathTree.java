@@ -90,7 +90,7 @@ public class PathTree {
 		openEnds.remove(pathEnd);
 	}
 	
-	public void mergeTree(PathTree other, MazeSegment ownSegment, MazeSegment otherSegment, MazeSegment linkingSegment) {
+	public void mergeTree(PathTree other, MazeSegment ownSegment, MazeSegment otherSegment, MazeSegment linkSegment) {
 		for (MazeSegment segment : other.segments) {
 			segment.setTree(this);
 		}
@@ -98,8 +98,8 @@ public class PathTree {
 		intersections.addAll(other.intersections);
 //		children.putAll(other.children);
 		
-		addSegment(linkingSegment, ownSegment);
-		balanceTree(linkingSegment, otherSegment);
+		addSegment(linkSegment, ownSegment);
+		balanceTree(linkSegment, otherSegment);
 	}
 	
 	private void balanceTree(MazeSegment seg1, MazeSegment seg2) {

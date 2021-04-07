@@ -36,19 +36,15 @@ public class BuildHandler {
 				}
 			}
 		}
-		displayPaths(maze, mazeMap);
+//		displayPaths(maze, mazeMap);
 	}
 	
 	private void displayPaths(Clip maze, MazeMap mazeMap) {
-		int i = 0;
-		
 		for (PathTree tree : mazeMap.getPathTrees()) {
 			float maxDist = tree.getMaxExitDist();
-			Color color = rainbowColor(1f * i / mazeMap.getPathTrees().size());
-			i++;
 			
 			for (MazeSegment segment : tree.getSegments()) {
-				//Color color = rainbowColor(tree.getExitDist(segment) / maxDist);
+				Color color = rainbowColor(tree.getExitDist(segment) / maxDist);
 				Vec2 segMin = segment.getMin();
 				Vec2 segMax = segment.getMax();
 				
@@ -56,7 +52,6 @@ public class BuildHandler {
 					for (int z = segMin.getZ(); z < segMax.getZ(); z++) {
 						Block block = maze.getWorld().getBlockAt(x, mazeMap.getY(x, z) + 1, z);
 						spawnColor(block, color);
-						//						maze.getWorld().getBlockAt(x, mazeMap.getY(x, z) + 1, z).setType(color);
 					}
 				}
 			}
@@ -91,7 +86,6 @@ public class BuildHandler {
 			g = 0;
 			b = 255 - 6 * (percent - 5 / 6f) * 255;
 		}
-		
 		return Color.fromRGB(colorize(r), colorize(g), colorize(b));
 	}
 	

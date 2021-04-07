@@ -3,6 +3,7 @@ package me.gorgeousone.tangledmaze.generation.paving;
 import me.gorgeousone.tangledmaze.generation.MazeSegment;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
+import org.bukkit.Bukkit;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class PathGen {
 				lastSegmentWasExtended = false;
 			}
 		}
-		linkPathTrees(pathMap, pathTrees);
+		linkPathTrees2(pathMap, pathTrees);
 		return pathTrees;
 	}
 	
@@ -157,36 +158,33 @@ public class PathGen {
 	 * @param pathMap to look up maze segments on
 	 * @param pathTrees to connect to each other
 	 */
-	private static void linkPathTrees(PathMap pathMap, List<PathTree> pathTrees) {
-		for (int i = 0; i < pathTrees.size(); ++i) {
-			PathTree currentTree = pathTrees.get(i);
-			Set<Map.Entry<MazeSegment, MazeSegment>> treeLinks = addTreeLinks(pathMap, currentTree.getIntersections(), new HashSet<>());
+	private static void linkPathTrees2(PathMap pathMap, List<PathTree> pathTrees) {
+		while (true) {
+			Set<Map.Entry<MazeSegment, MazeSegment>> treeLinks = new HashSet<>();
 			
-			//tries to link each tree to as many other trees as reachable
-			while (i < pathTrees.size()-1) {
-				Map.Entry<MazeSegment, MazeSegment> maxLengthLink = getMaxLengthLink(treeLinks);
-				
-				//continues with next tree if no other trees can be reached anymore
-				if (maxLengthLink == null) {
-					break;
-				}
-				MazeSegment treeSeg = maxLengthLink.getKey();
-				MazeSegment otherTreeSeg = maxLengthLink.getValue();
-				
-				Vec2 linkingGridPos = treeSeg.getGridPos().add(otherTreeSeg.getGridPos()).floorDiv(2);
-				MazeSegment linkingSegment = pathMap.getSegment(linkingGridPos);
-				pathMap.setSegmentType(linkingSegment.getGridPos(), PathType.PAVED);
-				
-				//merges the two trees so they are handled as one by now
-				PathTree otherTree = otherTreeSeg.getTree();
-				currentTree.mergeTree(otherTree, treeSeg, otherTreeSeg, linkingSegment);
-				pathTrees.remove(otherTree);
-				
-				treeLinks.removeIf(entry -> entry.getValue().getTree() == currentTree);
-				if (i < pathTrees.size() - 1) {
-					addTreeLinks(pathMap, otherTree.getIntersections(), treeLinks);
-				}
+			for (PathTree tree : pathTrees) {
+				addTreeLinks(pathMap, tree.getIntersections(), treeLinks);
 			}
+			Map.Entry<MazeSegment, MazeSegment> maxLengthLink = getMaxLengthLink(treeLinks);
+			
+			if (maxLengthLink == null) {
+				Bukkit.broadcastMessage("oh no no");
+				break;
+			}
+			MazeSegment keySegment = maxLengthLink.getKey();
+			MazeSegment valueSegment = maxLengthLink.getValue();
+			
+			Vec2 linkingGridPos = keySegment.getGridPos().add(valueSegment.getGridPos()).floorDiv(2);
+			MazeSegment linkSegment = pathMap.getSegment(linkingGridPos);
+			pathMap.setSegmentType(linkSegment.getGridPos(), PathType.PAVED);
+			
+			PathTree keyTree = keySegment.getTree();
+			PathTree valueTree = valueSegment.getTree();
+			
+			Bukkit.broadcastMessage("Join " + valueTree + ", " + linkSegment.getMin());
+			
+			keyTree.mergeTree(valueTree, keySegment, valueSegment, linkSegment);
+			pathTrees.remove(valueTree);
 		}
 	}
 	
