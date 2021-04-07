@@ -41,11 +41,11 @@ public class BuildHandler {
 		
 		for (PathTree tree : mazeMap.getPathTrees()) {
 			float maxDist = tree.getMaxExitDist();
-			Color color = rainbowColor(1f * i / mazeMap.getPathTrees().size());
+//			Color color = rainbowColor(1f * i / mazeMap.getPathTrees().size());
 			i++;
 			
 			for (MazeSegment segment : tree.getSegments()) {
-//				Color color = rainbowColor(5/6f * tree.getExitDist(segment) / maxDist);
+				Color color = rainbowColor(tree.getExitDist(segment) / maxDist);
 				Vec2 segMin = segment.getMin();
 				Vec2 segMax = segment.getMax();
 				
@@ -89,7 +89,11 @@ public class BuildHandler {
 			b = 255 - 6 * (percent - 5 / 6f) * 255;
 		}
 		
-		return Color.fromRGB((int) r, (int) g, (int) (b));
+		return Color.fromRGB(colorize(r), colorize(g), colorize(b));
+	}
+	
+	private int colorize(float f) {
+		return (int) Math.max(0, Math.min(255, f));
 	}
 	
 	EulerAngle ninety = new EulerAngle(70, 0, 0);

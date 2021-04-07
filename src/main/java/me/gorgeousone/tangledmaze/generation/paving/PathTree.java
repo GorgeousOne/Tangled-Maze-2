@@ -1,6 +1,8 @@
 package me.gorgeousone.tangledmaze.generation.paving;
 
 import me.gorgeousone.tangledmaze.generation.MazeSegment;
+import me.gorgeousone.tangledmaze.util.Vec2;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,14 +18,14 @@ public class PathTree {
 	private final List<MazeSegment> openEnds;
 	private final Set<MazeSegment> segments;
 	private final Set<MazeSegment> intersections;
-	private final Map<MazeSegment, Set<MazeSegment>> children;
+//	private final Map<MazeSegment, Set<MazeSegment>> children;
 	int maxExitDist;
 	
 	public PathTree() {
 		this.openEnds = new ArrayList<>();
 		segments = new HashSet<>();
 		intersections = new HashSet<>();
-		children = new HashMap<>();
+//		children = new HashMap<>();
 	}
 	
 	public int size() {
@@ -42,10 +44,10 @@ public class PathTree {
 		int exitDist = getExitDist(segment);
 		maxExitDist = Math.max(exitDist, maxExitDist);
 		
-		if (parent != null) {
-			children.computeIfAbsent(parent, set -> new HashSet<>());
-			children.get(parent).add(segment);
-		}
+//		if (parent != null) {
+//			children.computeIfAbsent(parent, set -> new HashSet<>());
+//			children.get(parent).add(segment);
+//		}
 		if (segment.gridX() % 2 == 0 && segment.gridZ() % 2 == 0) {
 			intersections.add(segment);
 			openEnds.add(0, segment);
@@ -65,7 +67,12 @@ public class PathTree {
 	}
 	
 	public int getExitDist(MazeSegment segment) {
-		return segment.hasParent() ? getExitDist(segment.getParent()) + 1 : 0;
+		int dist = 0;
+		while (segment.hasParent()) {
+			++dist;
+			segment = segment.getParent();
+		}
+		return dist;
 	}
 	
 	public MazeSegment getLastEnd() {
@@ -86,8 +93,7 @@ public class PathTree {
 		}
 		segments.addAll(other.segments);
 		intersections.addAll(other.intersections);
-		children.putAll(other.children);
-		
+//		children.putAll(other.children);
 		
 		addSegment(connectingSeg, ownSeg);
 		balanceTree(connectingSeg, otherSeg);
@@ -97,15 +103,18 @@ public class PathTree {
 		int exitDist1 = getExitDist(seg1);
 		int exitDist2 = getExitDist(seg2);
 		int distDiff = Math.abs(exitDist2 - exitDist1);
+		maxExitDist = Math.max(maxExitDist, (exitDist2 + exitDist1) / 2);
 		
 		MazeSegment furtherSeg = exitDist1 > exitDist2 ? seg1 : seg2;
-		MazeSegment closerSeg = exitDist1 < exitDist2 ? seg1 : seg2;
+		MazeSegment closerSeg = exitDist1 <= exitDist2 ? seg1 : seg2;
+		
 		
 		for (int i = 0; i < distDiff / 2; i++) {
 			MazeSegment oldParent = furtherSeg.getParent();
 			furtherSeg.setParent(closerSeg);
-			furtherSeg = oldParent;
+			
 			closerSeg = furtherSeg;
+			furtherSeg = oldParent;
 		}
 	}
 }

@@ -137,7 +137,7 @@ public class PathGen {
 	private static boolean extendPath(MazeSegment pathEnd, Direction facing, int maxExtensions, PathMap pathMap) {
 		Vec2 facingVec = facing.getVec2();
 		
-		for (int i = 0; i < maxExtensions; i++) {
+		for (int i = 0; i < maxExtensions; ++i) {
 			Vec2 extension1 = pathEnd.getGridPos().add(facingVec);
 			Vec2 extension2 = extension1.clone().add(facingVec);
 			
@@ -153,21 +153,26 @@ public class PathGen {
 	
 	private static void joinTrees(PathMap pathMap, List<PathTree> pathTrees) {
 		PathTree mainTree = pathTrees.get(0);
+		Set<Map.Entry<MazeSegment, MazeSegment>> connections = new HashSet<>();
 		
-		Set<Map.Entry<MazeSegment, MazeSegment>> connections = getConnections(pathMap, mainTree.getIntersections(), new HashSet<>());
-		Map.Entry<MazeSegment, MazeSegment> maxEntry = getGreatest(connections);
-		connections.remove(maxEntry);
-		
-		MazeSegment mainSeg = maxEntry.getKey();
-		MazeSegment otherSeg = maxEntry.getValue();
-		Vec2 facing = otherSeg.getGridPos().sub(mainSeg.getGridPos()).floorDiv(2);
-		MazeSegment connectingSeg = pathMap.getSegment(mainSeg.getGridPos().add(facing));
-		pathMap.setSegmentType(connectingSeg.getGridPos(), PathType.PAVED);
-		
-		PathTree otherTree = otherSeg.getTree();
-		pathTrees.remove(otherTree);
-		mainTree.mergeTree(otherTree, mainSeg, otherSeg, connectingSeg);
-		connections.removeIf(entry -> entry.getValue().getTree() == mainTree);
+		int i = 1;
+		while(i < pathTrees.size()) { //pathTrees.size() > 1
+			++i;
+			getConnections(pathMap, mainTree.getIntersections(), connections);
+			Map.Entry<MazeSegment, MazeSegment> maxEntry = getGreatest(connections);
+			
+			MazeSegment mainSeg = maxEntry.getKey();
+			MazeSegment otherSeg = maxEntry.getValue();
+			Vec2 facing = otherSeg.getGridPos().sub(mainSeg.getGridPos()).floorDiv(2);
+			MazeSegment connectingSeg = pathMap.getSegment(mainSeg.getGridPos().add(facing));
+//			pathMap.setSegmentType(connectingSeg.getGridPos(), PathType.PAVED);
+			
+			PathTree otherTree = otherSeg.getTree();
+			mainTree.mergeTree(otherTree, mainSeg, otherSeg, connectingSeg);
+			
+			pathTrees.remove(otherTree);
+			connections.removeIf(entry -> entry.getValue().getTree() == mainTree);
+		}
 	}
 	
 	private static Set<Map.Entry<MazeSegment, MazeSegment>> getConnections(
@@ -196,14 +201,6 @@ public class PathGen {
 		for (Map.Entry<MazeSegment, MazeSegment> entry : connections) {
 			MazeSegment seg1 = entry.getKey();
 			MazeSegment seg2 = entry.getValue();
-			assert seg1 != null;
-			assert seg2 != null;
-			assert seg1.getTree() != null;
-			assert seg2.getTree() != null;
-			assert seg1.getTree().getSegments().contains(seg1);
-			assert seg2.getTree().getSegments().contains(seg2);
-			assert seg1.getTree().getExitDist(seg1) != -1;
-			
 			int dist = seg1.getTree().getExitDist(seg1) + seg2.getTree().getExitDist(seg2);
 			
 			if (dist > maxDist) {
