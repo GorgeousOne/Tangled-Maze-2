@@ -1,6 +1,6 @@
 package me.gorgeousone.tangledmaze.tool;
 
-import me.gorgeousone.tangledmaze.clip.ClipHandler;
+import me.gorgeousone.tangledmaze.SessionHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,11 +8,11 @@ import java.util.UUID;
 
 public class ToolHandler {
 	
-	private final ClipHandler clipHandler;
+	private final SessionHandler sessionHandler;
 	private final Map<UUID, ToolType> playerTools;
 	
-	public ToolHandler(ClipHandler clipHandler) {
-		this.clipHandler = clipHandler;
+	public ToolHandler(SessionHandler sessionHandler) {
+		this.sessionHandler = sessionHandler;
 		this.playerTools = new HashMap<>();
 	}
 	
@@ -25,7 +25,7 @@ public class ToolHandler {
 		ToolType oldTool = playerTools.put(playerId, tool);
 		boolean switchedTool = oldTool != tool;
 		if (switchedTool && oldTool == ToolType.CLIP) {
-			clipHandler.removeClip(playerId, true);
+			sessionHandler.removeClip(playerId, true);
 		}
 		return switchedTool;
 	}

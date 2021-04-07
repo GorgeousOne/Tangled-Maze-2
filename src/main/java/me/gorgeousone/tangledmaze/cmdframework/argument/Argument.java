@@ -28,11 +28,11 @@ public class Argument {
 	
 	public ArgValue createValue(String input) {
 		if (input != null) {
-			return new ArgValue(input);
+			return new ArgValue(input, type);
 		} else if (defaultValue != null) {
 			return defaultValue;
 		} else {
-			throw new IllegalArgumentException("");
+			throw new IllegalArgumentException("Insert Usage");
 		}
 	}
 	
@@ -53,7 +53,7 @@ public class Argument {
 	}
 	
 	public Argument setDefault(String value) {
-		defaultValue = new ArgValue(getType(), value);
+		defaultValue = new ArgValue(value, type);
 		return this;
 	}
 }

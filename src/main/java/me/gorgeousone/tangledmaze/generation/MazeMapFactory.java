@@ -5,6 +5,7 @@ import me.gorgeousone.tangledmaze.generation.paving.ExitSegment;
 import me.gorgeousone.tangledmaze.generation.paving.PathGen;
 import me.gorgeousone.tangledmaze.generation.paving.PathMap;
 import me.gorgeousone.tangledmaze.generation.paving.PathType;
+import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
@@ -63,7 +64,11 @@ public class MazeMapFactory {
 	}
 	
 	public static void createPaths(MazeMap mazeMap, List<Vec2> exits, MazeSettings settings) {
-		PathMap pathMap = new PathMap(mazeMap.getMin(), mazeMap.getMax(), settings.getPathWidth(), settings.getWallWidth());
+		PathMap pathMap = new PathMap(
+				mazeMap.getMin(),
+				mazeMap.getMax(),
+				settings.getValue(MazeProperty.PATH_WIDTH),
+				settings.getValue(MazeProperty.WALL_WIDTH));
 		
 		for (int i = 0; i < exits.size(); i++) {
 			Vec2 exitLoc = exits.get(i);
@@ -76,7 +81,7 @@ public class MazeMapFactory {
 			}
 		}
 		mazeMap.setPathMap(pathMap);
-		mazeMap.setPathTrees(PathGen.generatePaths(pathMap, settings.getCurliness()));
+		mazeMap.setPathTrees(PathGen.generatePaths(pathMap, settings.getValue(MazeProperty.CURLINESS)));
 		copyPathsOntoMazeMap(pathMap, mazeMap);
 	}
 	

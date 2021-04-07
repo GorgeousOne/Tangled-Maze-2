@@ -168,7 +168,6 @@ public class PathGen {
 			Map.Entry<MazeSegment, MazeSegment> maxLengthLink = getMaxLengthLink(treeLinks);
 			
 			if (maxLengthLink == null) {
-				Bukkit.broadcastMessage("oh no no");
 				break;
 			}
 			MazeSegment keySegment = maxLengthLink.getKey();
@@ -194,7 +193,7 @@ public class PathGen {
 	 * @param segments all possible keys for pairs
 	 * @param treeLinks collection to add the pairs to
 	 */
-	private static Set<Map.Entry<MazeSegment, MazeSegment>> addTreeLinks(
+	private static void addTreeLinks(
 			PathMap pathMap,
 			Set<MazeSegment> segments,
 			Set<Map.Entry<MazeSegment, MazeSegment>> treeLinks) {
@@ -210,7 +209,6 @@ public class PathGen {
 				}
 			}
 		}
-		return treeLinks;
 	}
 	
 	/**

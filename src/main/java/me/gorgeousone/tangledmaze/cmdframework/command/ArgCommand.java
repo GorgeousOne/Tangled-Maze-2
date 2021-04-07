@@ -41,9 +41,9 @@ public abstract class ArgCommand extends BaseCommand {
 	 * Converts the passed sting arguments to the into ArgValues according to the beforehand defined Arguments
 	 */
 	@Override
-	public void execute(CommandSender sender, String[] args) {
+	public void execute(CommandSender sender, String[] stringArgs) {
 		int argCount = getArgs().size();
-		int inputCount = args.length;
+		int inputCount = stringArgs.length;
 		ArgValue[] values = new ArgValue[Math.max(argCount, inputCount)];
 		Set<String> usedFlags = new HashSet<>();
 		
@@ -51,21 +51,32 @@ public abstract class ArgCommand extends BaseCommand {
 			int argIndex = 0;
 			
 			for (int i = 0; i < Math.max(inputCount, argCount); i++) {
-				String input = i < inputCount ? args[i] : null;
+				String input = i < inputCount ? stringArgs[i] : null;
 				
-				if (input != null && input.startsWith("-")) {
+				if (isFlag(input)) {
 					usedFlags.add(matchFlag(input).getName());
 					continue;
 				}
-				
 				values[argIndex] = getArgs().get(i).createValue(input);
 				++argIndex;
 			}
-		} catch (IllegalArgumentException ex) {
-			sender.sendMessage(ex.getMessage());
+		} catch (IllegalArgumentException e) {
+			sender.sendMessage(e.getMessage());
 			return;
 		}
 		executeArgs(sender, values, usedFlags);
+	}
+	
+	protected boolean isFlag(String input) {
+		if (input == null || !input.startsWith("-")) {
+			return false;
+		}
+		try {
+			Double.valueOf(input);
+		}catch (NumberFormatException e) {
+			return true;
+		}
+		return false;
 	}
 	
 	protected Flag matchFlag(String input) {
@@ -82,10 +93,10 @@ public abstract class ArgCommand extends BaseCommand {
 	protected abstract void executeArgs(CommandSender sender, ArgValue[] argValues, Set<String> usedFlags);
 	
 	@Override
-	public List<String> getTabList(String[] arguments) {
-		if (this.arguments.size() < arguments.length) {
+	public List<String> getTabList(String[] stringArgs) {
+		if (this.arguments.size() < stringArgs.length) {
 			return new LinkedList<>();
 		}
-		return this.arguments.get(arguments.length - 1).getTabList();
+		return this.arguments.get(stringArgs.length - 1).getTabList();
 	}
 }

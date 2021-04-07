@@ -2,7 +2,7 @@ package me.gorgeousone.tangledmaze.render;
 
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.clip.ClipAction;
-import me.gorgeousone.tangledmaze.clip.ClipHandler;
+import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.event.ClipActionProcessEvent;
 import me.gorgeousone.tangledmaze.event.ClipDeleteEvent;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
@@ -39,12 +39,12 @@ public class RenderHandler implements Listener {
 	private final static BlockData CLIP_VERTEX_MAT = Material.LAPIS_BLOCK.createBlockData();
 	
 	private final JavaPlugin plugin;
-	private final ClipHandler clipHandler;
+	private final SessionHandler sessionHandler;
 	private final Map<UUID, RenderSession> renderings;
 	
-	public RenderHandler(JavaPlugin plugin, ClipHandler clipHandler) {
+	public RenderHandler(JavaPlugin plugin, SessionHandler sessionHandler) {
 		this.plugin = plugin;
-		this.clipHandler = clipHandler;
+		this.sessionHandler = sessionHandler;
 		this.renderings = new HashMap<>();
 	}
 	
@@ -84,7 +84,7 @@ public class RenderHandler implements Listener {
 			public void run() {
 				switch (cause) {
 					case COMPLETE:
-						Clip clip = clipHandler.getClip(tool.getPlayerId());
+						Clip clip = sessionHandler.getClip(tool.getPlayerId());
 						session.addLayer(CLIP_VERTEX_LAYER, tool.getVertices(), CLIP_VERTEX_MAT);
 						session.addLayer(CLIP_BORDER_LAYER, clip.getBorderBlocks(), CLIP_BORDER_MAT);
 						break;
