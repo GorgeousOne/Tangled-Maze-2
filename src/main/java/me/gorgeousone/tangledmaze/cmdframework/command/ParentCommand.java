@@ -29,7 +29,7 @@ public class ParentCommand extends BaseCommand {
 	}
 	
 	@Override
-	public void execute(CommandSender sender, String[] args, String alias) {
+	public void execute(CommandSender sender, String[] args) {
 		
 		if (args.length == 0) {
 			sendUsage(sender);
@@ -37,7 +37,7 @@ public class ParentCommand extends BaseCommand {
 		
 		for (BaseCommand child : children) {
 			if (child.matchesAlias(args[0])) {
-				child.execute(sender, Arrays.copyOfRange(args, 1, args.length), args[0]);
+				child.execute(sender, Arrays.copyOfRange(args, 1, args.length));
 				return;
 			}
 		}

@@ -31,7 +31,7 @@ public class ClipActionProcessEvent extends Event {
 	public UUID getPlayerId() {
 		return playerId;
 	}
-
+	
 	@Override
 	public HandlerList getHandlers() {
 		return HANDLERS;

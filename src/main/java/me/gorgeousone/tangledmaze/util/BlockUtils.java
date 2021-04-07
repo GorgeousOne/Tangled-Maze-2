@@ -3,6 +3,7 @@ package me.gorgeousone.tangledmaze.util;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 
 public class BlockUtils {
 	
@@ -15,6 +16,7 @@ public class BlockUtils {
 	}
 	
 	public static Block getSurface(Block block) {
+		block.getRelative(BlockFace.DOWN);
 		if (block.getType().isSolid()) {
 			Block surfaceBlock = block;
 			Location nextBlockLoc = block.getLocation();
