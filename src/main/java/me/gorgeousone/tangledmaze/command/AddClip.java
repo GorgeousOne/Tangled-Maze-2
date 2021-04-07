@@ -5,9 +5,6 @@ import me.gorgeousone.tangledmaze.clip.ClipAction;
 import me.gorgeousone.tangledmaze.clip.ClipActionFactory;
 import me.gorgeousone.tangledmaze.clip.ClipHandler;
 import me.gorgeousone.tangledmaze.cmdframework.command.BaseCommand;
-import me.gorgeousone.tangledmaze.event.ClipActionProcessEvent;
-import me.gorgeousone.tangledmaze.event.ClipDeleteEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -24,7 +21,7 @@ public class AddClip extends BaseCommand {
 	}
 	
 	@Override
-	public void execute(CommandSender sender, String[] args, String alias) {
+	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player) sender;
 		UUID playerId = player.getUniqueId();
 		Clip maze = clipHandler.getMazeClip(playerId);

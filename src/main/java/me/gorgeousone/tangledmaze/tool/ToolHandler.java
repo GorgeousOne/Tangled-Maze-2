@@ -1,6 +1,5 @@
 package me.gorgeousone.tangledmaze.tool;
 
-import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.clip.ClipHandler;
 
 import java.util.HashMap;
@@ -23,7 +22,7 @@ public class ToolHandler {
 	}
 	
 	public boolean setTool(UUID playerId, ToolType tool) {
-		ToolType oldTool =  playerTools.put(playerId, tool);
+		ToolType oldTool = playerTools.put(playerId, tool);
 		boolean switchedTool = oldTool != tool;
 		if (switchedTool && oldTool == ToolType.CLIP) {
 			clipHandler.removeClip(playerId, true);

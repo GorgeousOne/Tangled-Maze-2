@@ -5,7 +5,6 @@ import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.block.Block;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 

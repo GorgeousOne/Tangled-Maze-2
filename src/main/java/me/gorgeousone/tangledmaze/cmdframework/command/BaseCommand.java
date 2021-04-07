@@ -21,11 +21,7 @@ public abstract class BaseCommand {
 		aliases.add(this.name);
 	}
 	
-	public void execute(CommandSender sender, String[] args) {
-		execute(sender, args, getName());
-	}
-	
-	public abstract void execute(CommandSender sender, String[] args, String alias);
+	public abstract void execute(CommandSender sender, String[] args);
 	
 	public String getName() {
 		return name;

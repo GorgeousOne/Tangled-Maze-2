@@ -49,7 +49,7 @@ public class ClipHandler {
 	public void removeClip(UUID playerId) {
 		playerClips.remove(playerId);
 	}
-
+	
 	public void removeClip(UUID playerId, boolean callEvent) {
 		Clip clip = playerClips.remove(playerId);
 		if (clip != null && callEvent) {

@@ -38,13 +38,45 @@ public class Vec2 implements Comparable<Vec2> {
 	}
 	
 	public Vec2 add(Vec2 other) {
-		x += other.x;
-		z += other.z;
+		return add(other.x, other.z);
+	}
+	
+	public Vec2 add(int dx, int dz) {
+		x += dx;
+		z += dz;
+		return this;
+	}
+	
+	public Vec2 sub(Vec2 other) {
+		return sub(other.x, other.z);
+	}
+	
+	public Vec2 sub(int dx, int dz) {
+		x -= dx;
+		z -= dz;
 		return this;
 	}
 	
 	public Location toLocation(World world, int y) {
 		return new Location(world, x, y, z);
+	}
+	
+	public Vec2 mult(int scalar) {
+		x *= scalar;
+		z *= scalar;
+		return this;
+	}
+	
+	public Vec2 floorDiv(int scalar) {
+		x = Math.floorDiv(x, scalar);
+		z = Math.floorDiv(z, scalar);
+		return this;
+	}
+	
+	public Vec2 floorMod(int scalar) {
+		x = Math.floorMod(x, scalar);
+		z = Math.floorMod(z, scalar);
+		return this;
 	}
 	
 	@Override
@@ -59,14 +91,14 @@ public class Vec2 implements Comparable<Vec2> {
 	}
 	
 	@Override
-	public boolean equals(Object other) {
-		if (this == other) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		}
-		if (!(other instanceof Vec2)) {
+		if (!(o instanceof Vec2)) {
 			return false;
 		}
-		Vec2 vec = (Vec2) other;
+		Vec2 vec = (Vec2) o;
 		return x == vec.x &&
 		       z == vec.z;
 	}
@@ -74,5 +106,10 @@ public class Vec2 implements Comparable<Vec2> {
 	@Override
 	public int hashCode() {
 		return Objects.hash(x, z);
+	}
+	
+	@Override
+	public String toString() {
+		return "[" + "x=" + x + ", z=" + z + ']';
 	}
 }

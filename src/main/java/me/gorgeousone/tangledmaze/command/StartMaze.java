@@ -20,7 +20,7 @@ public class StartMaze extends BaseCommand {
 	}
 	
 	@Override
-	public void execute(CommandSender sender, String[] args, String alias) {
+	public void execute(CommandSender sender, String[] args) {
 		
 		Player player = (Player) sender;
 		UUID playerId = player.getUniqueId();
@@ -34,5 +34,6 @@ public class StartMaze extends BaseCommand {
 		clipHandler.setMazeClip(playerId, clip);
 		clipHandler.removeClip(playerId);
 		Bukkit.getPluginManager().callEvent(new MazeStartEvent(playerId, clip));
+		player.performCommand("tm tool exit");
 	}
 }
