@@ -4,16 +4,16 @@ import me.gorgeousone.tangledmaze.generation.paving.PathTree;
 import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
-public class MazeSegment {
+public class PathSegment {
 	
 	private final Vec2 min;
 	private final Vec2 size;
 	private final Vec2 gridPos;
 	
 	private PathTree tree;
-	private MazeSegment parent;
+	private PathSegment parent;
 	
-	public MazeSegment(Vec2 min, Vec2 size, Vec2 gridPos) {
+	public PathSegment(Vec2 min, Vec2 size, Vec2 gridPos) {
 		this.min = min;
 		this.size = size;
 		this.gridPos = gridPos;
@@ -64,11 +64,11 @@ public class MazeSegment {
 		return parent != null;
 	}
 	
-	public MazeSegment getParent() {
+	public PathSegment getParent() {
 		return parent;
 	}
 	
-	public void setParent(MazeSegment parent) {
+	public void setParent(PathSegment parent) {
 		this.parent = parent;
 	}
 }

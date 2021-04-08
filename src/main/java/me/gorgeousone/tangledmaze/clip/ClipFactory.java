@@ -58,8 +58,8 @@ public class ClipFactory {
 		int maxZ = Math.max(v0.getZ(), v1.getZ());
 		World world = v0.getWorld();
 		
-		for (int x = minX; x <= maxX; x++) {
-			for (int z = minZ; z <= maxZ; z++) {
+		for (int x = minX; x <= maxX; ++x) {
+			for (int z = minZ; z <= maxZ; ++z) {
 				Block block = BlockUtils.getSurface(world, x, height, z);
 				clip.add(block);
 				if (x == minX || x == maxX || z == minZ || z == maxZ) {

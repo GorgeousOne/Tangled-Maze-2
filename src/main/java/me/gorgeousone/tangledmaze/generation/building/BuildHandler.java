@@ -4,50 +4,67 @@ import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.generation.AreaType;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.generation.MazeMapFactory;
-import me.gorgeousone.tangledmaze.generation.MazeSegment;
+import me.gorgeousone.tangledmaze.generation.PathSegment;
 import me.gorgeousone.tangledmaze.generation.paving.PathTree;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
+import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.util.EulerAngle;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class BuildHandler {
 	
 	public void buildMaze(Clip maze, MazeSettings settings) {
 		MazeMap mazeMap = MazeMapFactory.createMazeMapOf(maze);
 		MazeMapFactory.createPaths(mazeMap, maze.getExits(), settings);
-		Vec2 mapMin = mazeMap.getMin();
-		Vec2 mapMax = mazeMap.getMax();
+		mazeMap.flip();
 		
-		for (int x = mapMin.getX(); x < mapMax.getX(); x++) {
-			for (int z = mapMin.getZ(); z < mapMax.getZ(); z++) {
-				AreaType type = mazeMap.getType(x, z);
-				
-				if (type == AreaType.WALL || type == AreaType.FREE) {
-					maze.getWorld().getBlockAt(x, mazeMap.getY(x, z) + 1, z).setType(Material.OAK_PLANKS);
-				}
+		Set<WallSegment> walls = WallGen.genWalls(mazeMap, settings);
+		buildWalls(mazeMap.getWorld(), walls);
+		
+//		Vec2 mapMin = mazeMap.getMin();
+//		Vec2 mapMax = mazeMap.getMax();
+//		for (int x = mapMin.getX(); x < mapMax.getX(); ++x) {
+//			for (int z = mapMin.getZ(); z < mapMax.getZ(); ++z) {
+//				AreaType type = mazeMap.getType(x, z);
+//
+//				if (type == AreaType.WALL || type == AreaType.FREE) {
+//					maze.getWorld().getBlockAt(x, mazeMap.getY(x, z) + 1, z).setType(Material.OAK_PLANKS);
+//				}
+//			}
+//		}
+//		displayPaths(maze, mazeMap);
+	}
+	
+	private void buildWalls(World world, Set<WallSegment> walls) {
+		for (WallSegment wall : walls) {
+			for (BlockVec block : wall.getBlocks()) {
+				world.getBlockAt(block.getX(), block.getY(), block.getZ()).setType(Material.OAK_PLANKS);
 			}
 		}
-//		displayPaths(maze, mazeMap);
 	}
 	
 	private void displayPaths(Clip maze, MazeMap mazeMap) {
 		for (PathTree tree : mazeMap.getPathTrees()) {
 			float maxDist = tree.getMaxExitDist();
 			
-			for (MazeSegment segment : tree.getSegments()) {
+			for (PathSegment segment : tree.getSegments()) {
 				Color color = rainbowColor(tree.getExitDist(segment) / maxDist);
 				Vec2 segMin = segment.getMin();
 				Vec2 segMax = segment.getMax();
 				
-				for (int x = segMin.getX(); x < segMax.getX(); x++) {
-					for (int z = segMin.getZ(); z < segMax.getZ(); z++) {
+				for (int x = segMin.getX(); x < segMax.getX(); ++x) {
+					for (int z = segMin.getZ(); z < segMax.getZ(); ++z) {
 						Block block = maze.getWorld().getBlockAt(x, mazeMap.getY(x, z) + 1, z);
 						spawnColor(block, color);
 					}
