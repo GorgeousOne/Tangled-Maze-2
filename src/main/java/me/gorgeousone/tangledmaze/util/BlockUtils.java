@@ -5,6 +5,9 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class BlockUtils {
 	
 	public static int getSurfaceY(World world, Vec2 loc, int y) {
@@ -45,5 +48,18 @@ public class BlockUtils {
 			}
 			return block;
 		}
+	}
+	
+	public static List<Vec2> getNeighbors(int x, int z, int radius) {
+		List<Vec2> neighbors = new LinkedList<>();
+		
+		for (int dx = -radius; dx <= radius; ++dx) {
+			for (int dz = -radius; dz <= radius; ++dz) {
+				if (dx != 0 && dz != 0) {
+					neighbors.add(new Vec2(x + dx, z + dz));
+				}
+			}
+		}
+		return neighbors;
 	}
 }

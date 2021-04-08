@@ -2,6 +2,7 @@ package me.gorgeousone.tangledmaze.generation;
 
 import me.gorgeousone.tangledmaze.generation.paving.PathMap;
 import me.gorgeousone.tangledmaze.generation.paving.PathTree;
+import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.World;
 
@@ -76,6 +77,9 @@ public class MazeMap {
 	}
 	
 	public int getY(int x, int z) {
+		if (!contains(x, z)) {
+			return -1;
+		}
 		return terrainMap[x - mapMin.getX()][z - mapMin.getZ()];
 	}
 	
