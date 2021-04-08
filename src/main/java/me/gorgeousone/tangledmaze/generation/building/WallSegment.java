@@ -30,12 +30,12 @@ public class WallSegment {
 		maxY = 0;
 	}
 	
-	public Vec2 getMin() {
-		return min.clone();
+	public BlockVec getMin() {
+		return new BlockVec(min.clone(), minY);
 	}
 	
-	public Vec2 getMax() {
-		return max.clone();
+	public BlockVec getMax() {
+		return new BlockVec(max.clone(), maxY);
 	}
 	
 	public void addBlock(BlockVec block) {
@@ -48,16 +48,23 @@ public class WallSegment {
 		maxY = Math.max(maxY, y);
 	}
 	
-	public int getMinY(int x, int z) {
-		int dx = x - min.getX();
-		int dz = z - min.getZ();
-		
-		for (int y = 0; y < worldHeight; ++y) {
-			if (blocks[dx][y][dz]) {
-				return y;
-			}
+	public void removeBlock(BlockVec block) {
+		removeBlock(block.getX(), block.getY(), block.getZ());
+	}
+	public void removeBlock(int x, int y, int z) {
+		blocks[x - min.getX()][y][z - min.getZ()] = false;
+	}
+	
+	public boolean isFilled(int x, int y, int z) {
+		if (contains(x, z)) {
+			return blocks[x - min.getX()][y][z - min.getZ()];
 		}
-		return -1;
+		return false;
+	}
+	
+	public boolean contains(int x, int z) {
+		return x >= min.getX() && x < max.getX() &&
+		       z >= min.getZ() && z < max.getZ();
 	}
 	
 	public Set<BlockVec> getBlocks() {

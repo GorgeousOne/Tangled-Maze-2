@@ -58,4 +58,14 @@ public enum Direction {
 		return values()[(index + 6) % values().length];
 	}
 	
+	public static void main(String[] args) {
+		System.out.println("*    " + "*".split("\\*").length);
+		System.out.println("1*   " + "1*".split("\\*").length);
+		System.out.println("1*a  " + "1*a".split("\\*").length);
+		System.out.println("1**a " + "1**a".split("\\*").length);
+		System.out.println("1**  " + "1**".split("\\*").length);
+		System.out.println("**a  " + "**a".split("\\*").length);
+		
+		System.out.println(Integer.parseInt(""));
+	}
 }

@@ -122,7 +122,7 @@ public class MazeMapFactory {
 	
 	private static boolean isSegmentFree(PathSegment segment, MazeMap mazeMap) {
 		Vec2 segMin = segment.getMin();
-		Vec2 segMax = segment.getMin().add(segment.getSize());
+		Vec2 segMax = segment.getMax();
 		
 		for (int x = segMin.getX(); x < segMax.getX(); ++x) {
 			for (int z = segMin.getZ(); z < segMax.getZ(); ++z) {

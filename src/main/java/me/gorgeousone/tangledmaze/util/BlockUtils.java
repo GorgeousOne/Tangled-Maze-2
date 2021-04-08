@@ -5,8 +5,9 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class BlockUtils {
 	
@@ -50,8 +51,8 @@ public class BlockUtils {
 		}
 	}
 	
-	public static List<Vec2> getNeighbors(int x, int z, int radius) {
-		List<Vec2> neighbors = new LinkedList<>();
+	public static Set<Vec2> getNeighbors(int x, int z, int radius) {
+		Set<Vec2> neighbors = new HashSet<>();
 		
 		for (int dx = -radius; dx <= radius; ++dx) {
 			for (int dz = -radius; dz <= radius; ++dz) {
@@ -62,4 +63,16 @@ public class BlockUtils {
 		}
 		return neighbors;
 	}
+	
+	public static Set<BlockVec> getNeighborBlocks(int x, int y, int z) {
+		return new HashSet<>(Arrays.asList(
+				new BlockVec(x - 1, y, z),
+				new BlockVec(x + 1, y, z),
+				new BlockVec(x, y - 1, z),
+				new BlockVec(x, y + 1, z),
+				new BlockVec(x, y, z - 1),
+				new BlockVec(x, y, z + 1)
+		));
+	}
+	
 }

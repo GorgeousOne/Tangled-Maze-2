@@ -44,6 +44,7 @@ public abstract class ArgCommand extends BaseCommand {
 	public void execute(CommandSender sender, String[] stringArgs) {
 		int argCount = getArgs().size();
 		int inputCount = stringArgs.length;
+		
 		ArgValue[] values = new ArgValue[Math.max(argCount, inputCount)];
 		Set<String> usedFlags = new HashSet<>();
 		
@@ -57,7 +58,7 @@ public abstract class ArgCommand extends BaseCommand {
 					usedFlags.add(matchFlag(input).getName());
 					continue;
 				}
-				values[argIndex] = getArgs().get(i).createValue(input);
+				values[argIndex] = i < argCount ? getArgs().get(i).createValue(input) : new ArgValue(input);
 				++argIndex;
 			}
 		} catch (IllegalArgumentException e) {
@@ -73,7 +74,7 @@ public abstract class ArgCommand extends BaseCommand {
 		}
 		try {
 			Double.valueOf(input);
-		}catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			return true;
 		}
 		return false;
