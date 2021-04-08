@@ -11,6 +11,10 @@ public class BlockVec {
 	private int y;
 	private int z;
 	
+	public BlockVec(Vec2 loc, int y) {
+		this(loc.getX(), y, loc.getZ());
+	}
+	
 	public BlockVec(int x, int y, int z) {
 		this.x = x;
 		this.y = y;

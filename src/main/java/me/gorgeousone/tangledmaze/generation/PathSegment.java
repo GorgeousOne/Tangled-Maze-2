@@ -7,7 +7,7 @@ import me.gorgeousone.tangledmaze.util.Vec2;
 public class PathSegment {
 	
 	private final Vec2 min;
-	private final Vec2 size;
+	private final Vec2 max;
 	private final Vec2 gridPos;
 	
 	private PathTree tree;
@@ -15,7 +15,7 @@ public class PathSegment {
 	
 	public PathSegment(Vec2 min, Vec2 size, Vec2 gridPos) {
 		this.min = min;
-		this.size = size;
+		this.max = min.clone().add(size);
 		this.gridPos = gridPos;
 	}
 	
@@ -36,11 +36,7 @@ public class PathSegment {
 	}
 	
 	public Vec2 getMax() {
-		return min.clone().add(size);
-	}
-	
-	public Vec2 getSize() {
-		return size.clone();
+		return max.clone();
 	}
 	
 	public boolean contains(BlockVec block) {
@@ -48,8 +44,8 @@ public class PathSegment {
 	}
 	
 	public boolean contains(int x, int z) {
-		return x >= min.getX() && x < min.getX() + size.getX() &&
-		       z >= min.getZ() && z < min.getZ() + size.getZ();
+		return x >= min.getX() && x < max.getX() &&
+		       z >= min.getZ() && z < max.getZ();
 	}
 	
 	public PathTree getTree() {

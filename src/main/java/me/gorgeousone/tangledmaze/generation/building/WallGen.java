@@ -7,6 +7,7 @@ import me.gorgeousone.tangledmaze.generation.paving.PathMap;
 import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.util.BlockUtils;
+import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
 import java.util.HashSet;
@@ -23,8 +24,13 @@ public class WallGen {
 				PathSegment path = pathMap.getSegment(gridX, gridZ);
 				WallSegment wall = createWall(mazeMap, path, settings.getValue(MazeProperty.WALL_HEIGHT));
 				
-				if (wall != null) {
-					walls.add(wall);
+				if (wall == null) {
+					continue;
+				}
+				walls.add(wall);
+					
+				if (settings.getValue(MazeProperty.WALL_WIDTH) > 2) {
+					hollowOutWall(wall);
 				}
 			}
 		}
@@ -70,25 +76,34 @@ public class WallGen {
 		return wall;
 	}
 	
-//	private static void addColumn(WallSegment wall, int x, int z, int height, MazeMap mazeMap) {
-//		int floorY = mazeMap.getY(x, z);
-//
-//		for (int i = 1; i <= height; ++i) {
-//			wall.addBlock(x, floorY + i, z);
-//		}
-//	}
-	
-//	private static void levelWall(WallSegment wall, MazeMap mazeMap, MazeSettings settings) {
-//		Vec2 min = wall.getMin();
-//		Vec2 max = wall.getMax();
-//		int wallHeight = settings.getValue(MazeProperty.WALL_HEIGHT);
-//
-//		for (int x = min.getX(); x < max.getX(); ++x) {
-//			for (int z = min.getZ(); z < max.getZ(); ++z) {
-//				for (Vec2 neighbor : getNeighbors(x, z)) {
-//
-//				}
-//			}
-//		}
-//	}
+	private static void hollowOutWall(WallSegment wall) {
+		BlockVec min = wall.getMin();
+		BlockVec max = wall.getMax();
+		Set<BlockVec> blocksToRemove = new HashSet<>();
+		
+		for (int x = min.getX() + 1; x < max.getX(); ++x) {
+			for (int y = min.getY() + 1; y < max.getY(); ++y) {
+				for (int z = min.getZ() + 1; z < max.getZ(); ++z) {
+					
+					if (!wall.isFilled(x, y, z)) {
+						continue;
+					}
+					boolean isSurfaceBlock = false;
+					
+					for (BlockVec block : BlockUtils.getNeighborBlocks(x, y, z)) {
+						if (!wall.isFilled(block.getX(), block.getY(), block.getZ())) {
+							isSurfaceBlock = true;
+							break;
+						}
+					}
+					if (!isSurfaceBlock) {
+						blocksToRemove.add(new BlockVec(x, y, z));
+					}
+				}
+			}
+		}
+		for (BlockVec block : blocksToRemove) {
+			wall.removeBlock(block);
+		}
+	}
 }
