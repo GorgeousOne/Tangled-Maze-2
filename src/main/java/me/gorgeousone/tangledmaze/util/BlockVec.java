@@ -1,5 +1,8 @@
 package me.gorgeousone.tangledmaze.util;
 
+import org.bukkit.Location;
+import org.bukkit.World;
+
 import java.util.Objects;
 
 public class BlockVec {
@@ -36,6 +39,10 @@ public class BlockVec {
 	
 	public void setZ(int z) {
 		this.z = z;
+	}
+	
+	public Location toLoc(World world) {
+		return new Location(world, x, y, z);
 	}
 	
 	@Override

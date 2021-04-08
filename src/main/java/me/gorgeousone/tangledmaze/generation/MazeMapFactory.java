@@ -18,7 +18,7 @@ public class MazeMapFactory {
 	
 	public static MazeMap createMazeMapOf(Clip maze) {
 		Map.Entry<Vec2, Vec2> clipBounds = calculateClipBounds(maze);
-		MazeMap map = new MazeMap(clipBounds.getKey(), clipBounds.getValue());
+		MazeMap map = new MazeMap(maze.getWorld(), clipBounds.getKey(), clipBounds.getValue());
 		copyMazeOntoMazeMap(maze, map);
 		return map;
 	}
@@ -97,8 +97,8 @@ public class MazeMapFactory {
 	}
 	
 	private static void copyMazeOntoPathMap(MazeMap mazeMap, PathMap pathMap) {
-		for (int gridX = 0; gridX < pathMap.getWidth(); gridX++) {
-			for (int gridZ = 0; gridZ < pathMap.getHeight(); gridZ++) {
+		for (int gridX = 0; gridX < pathMap.getWidth(); ++gridX) {
+			for (int gridZ = 0; gridZ < pathMap.getHeight(); ++gridZ) {
 				if (!isSegmentFree(pathMap.getSegment(gridX, gridZ), mazeMap)) {
 					pathMap.setSegmentType(gridX, gridZ, PathType.BLOCKED);
 				}
@@ -110,22 +110,22 @@ public class MazeMapFactory {
 		for (ExitSegment exit : pathMap.getExits()) {
 			mazeMap.setType(exit.getMin(), exit.getMax(), AreaType.EXIT);
 		}
-		for (int gridX = 0; gridX < pathMap.getWidth(); gridX++) {
-			for (int gridZ = 0; gridZ < pathMap.getHeight(); gridZ++) {
+		for (int gridX = 0; gridX < pathMap.getWidth(); ++gridX) {
+			for (int gridZ = 0; gridZ < pathMap.getHeight(); ++gridZ) {
 				if (pathMap.getSegmentType(gridX, gridZ) == PathType.PAVED) {
-					MazeSegment segment = pathMap.getSegment(gridX, gridZ);
+					PathSegment segment = pathMap.getSegment(gridX, gridZ);
 					mazeMap.setType(segment.getMin(), segment.getMax(), AreaType.PATH);
 				}
 			}
 		}
 	}
 	
-	private static boolean isSegmentFree(MazeSegment segment, MazeMap mazeMap) {
+	private static boolean isSegmentFree(PathSegment segment, MazeMap mazeMap) {
 		Vec2 segMin = segment.getMin();
 		Vec2 segMax = segment.getMin().add(segment.getSize());
 		
-		for (int x = segMin.getX(); x < segMax.getX(); x++) {
-			for (int z = segMin.getZ(); z < segMax.getZ(); z++) {
+		for (int x = segMin.getX(); x < segMax.getX(); ++x) {
+			for (int z = segMin.getZ(); z < segMax.getZ(); ++z) {
 				if (mazeMap.getType(x, z) != AreaType.FREE) {
 					return false;
 				}

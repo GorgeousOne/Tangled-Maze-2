@@ -1,6 +1,6 @@
 package me.gorgeousone.tangledmaze.generation.paving;
 
-import me.gorgeousone.tangledmaze.generation.MazeSegment;
+import me.gorgeousone.tangledmaze.generation.PathSegment;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.Bukkit;
@@ -29,7 +29,7 @@ public class PathGen {
 		boolean lastSegmentWasExtended = false;
 		
 		while (!openPathTrees.isEmpty()) {
-			MazeSegment currentPathEnd;
+			PathSegment currentPathEnd;
 			//continue last end or choose random after n connected ones
 			if (linkedSegmentCount <= maxLinkedSegmentCount) {
 				currentPathEnd = currentTree.getLastEnd();
@@ -55,7 +55,7 @@ public class PathGen {
 			}
 			//choose one random available direction and create new path towards that
 			Direction rndFacing = availableDirs.get(RANDOM.nextInt(availableDirs.size()));
-			MazeSegment newPathEnd = pavePath(currentPathEnd, rndFacing, pathMap);
+			PathSegment newPathEnd = pavePath(currentPathEnd, rndFacing, pathMap);
 			//to make longer straight segments which will look more fancy
 			if (!lastSegmentWasExtended) {
 				lastSegmentWasExtended = extendPath(newPathEnd, rndFacing, RANDOM.nextInt(curliness - 1) + 1, pathMap);
@@ -67,10 +67,10 @@ public class PathGen {
 		return pathTrees;
 	}
 	
-	private static List<PathTree> createPathTrees(List<MazeSegment> pathStarts) {
+	private static List<PathTree> createPathTrees(List<PathSegment> pathStarts) {
 		List<PathTree> pathTrees = new ArrayList<>();
 		
-		for (MazeSegment pathStart : pathStarts) {
+		for (PathSegment pathStart : pathStarts) {
 			PathTree tree = new PathTree(pathStarts.indexOf(pathStart));
 			tree.addSegment(pathStart, null);
 			pathTrees.add(tree);
@@ -96,7 +96,7 @@ public class PathGen {
 	 *
 	 * @return a list of available directions
 	 */
-	private static List<Direction> getAvailableDirs(MazeSegment pathEnd, PathMap pathMap) {
+	private static List<Direction> getAvailableDirs(PathSegment pathEnd, PathMap pathMap) {
 		List<Direction> branches = new ArrayList<>();
 		
 		for (Direction facing : Direction.fourCardinals()) {
@@ -112,7 +112,7 @@ public class PathGen {
 		return branches;
 	}
 	
-	private static MazeSegment pavePath(MazeSegment pathEnd, Direction facing, PathMap pathMap) {
+	private static PathSegment pavePath(PathSegment pathEnd, Direction facing, PathMap pathMap) {
 		Vec2 facingVec = facing.getVec2();
 		Vec2 newPath1 = pathEnd.getGridPos().add(facingVec);
 		Vec2 newPath2 = newPath1.clone().add(facingVec);
@@ -121,8 +121,8 @@ public class PathGen {
 		pathMap.setSegmentType(newPath2, PathType.PAVED);
 		
 		PathTree tree = pathEnd.getTree();
-		MazeSegment newSegment1 = pathMap.getSegment(newPath1);
-		MazeSegment newSegment2 = pathMap.getSegment(newPath2);
+		PathSegment newSegment1 = pathMap.getSegment(newPath1);
+		PathSegment newSegment2 = pathMap.getSegment(newPath2);
 		tree.addSegment(newSegment1, pathEnd);
 		tree.addSegment(newSegment2, newSegment1);
 		return newSegment2;
@@ -135,7 +135,7 @@ public class PathGen {
 	 * @param facing        direction to extend towards
 	 * @param maxExtensions maximum times to extend the path
 	 */
-	private static boolean extendPath(MazeSegment pathEnd, Direction facing, int maxExtensions, PathMap pathMap) {
+	private static boolean extendPath(PathSegment pathEnd, Direction facing, int maxExtensions, PathMap pathMap) {
 		Vec2 facingVec = facing.getVec2();
 		
 		for (int i = 0; i < maxExtensions; ++i) {
@@ -160,21 +160,21 @@ public class PathGen {
 	 */
 	private static void linkPathTrees2(PathMap pathMap, List<PathTree> pathTrees) {
 		while (true) {
-			Set<Map.Entry<MazeSegment, MazeSegment>> treeLinks = new HashSet<>();
+			Set<Map.Entry<PathSegment, PathSegment>> treeLinks = new HashSet<>();
 			
 			for (PathTree tree : pathTrees) {
 				addTreeLinks(pathMap, tree.getIntersections(), treeLinks);
 			}
-			Map.Entry<MazeSegment, MazeSegment> maxLengthLink = getMaxLengthLink(treeLinks);
+			Map.Entry<PathSegment, PathSegment> maxLengthLink = getMaxLengthLink(treeLinks);
 			
 			if (maxLengthLink == null) {
 				break;
 			}
-			MazeSegment keySegment = maxLengthLink.getKey();
-			MazeSegment valueSegment = maxLengthLink.getValue();
+			PathSegment keySegment = maxLengthLink.getKey();
+			PathSegment valueSegment = maxLengthLink.getValue();
 			
 			Vec2 linkingGridPos = keySegment.getGridPos().add(valueSegment.getGridPos()).floorDiv(2);
-			MazeSegment linkSegment = pathMap.getSegment(linkingGridPos);
+			PathSegment linkSegment = pathMap.getSegment(linkingGridPos);
 			pathMap.setSegmentType(linkSegment.getGridPos(), PathType.PAVED);
 			
 			PathTree keyTree = keySegment.getTree();
@@ -195,14 +195,14 @@ public class PathGen {
 	 */
 	private static void addTreeLinks(
 			PathMap pathMap,
-			Set<MazeSegment> segments,
-			Set<Map.Entry<MazeSegment, MazeSegment>> treeLinks) {
+			Set<PathSegment> segments,
+			Set<Map.Entry<PathSegment, PathSegment>> treeLinks) {
 		
 		Set<Vec2> facings = Arrays.stream(Direction.fourCardinals()).map(facing -> facing.getVec2().mult(2)).collect(Collectors.toSet());
 		
-		for (MazeSegment segment : segments) {
+		for (PathSegment segment : segments) {
 			for (Vec2 facing : facings) {
-				MazeSegment neighbor = pathMap.getSegment(segment.getGridPos().add(facing));
+				PathSegment neighbor = pathMap.getSegment(segment.getGridPos().add(facing));
 				
 				if (neighbor != null && neighbor.getTree() != null && neighbor.getTree() != segment.getTree()) {
 					treeLinks.add(new AbstractMap.SimpleEntry<>(segment, neighbor));
@@ -215,13 +215,13 @@ public class PathGen {
 	 * Returns the pair of maze segments that cover the greatest distance between two exits if they were connected.
 	 * @param treeLinks pairs of segments to look up in
 	 */
-	private static Map.Entry<MazeSegment, MazeSegment> getMaxLengthLink(Set<Map.Entry<MazeSegment, MazeSegment>> treeLinks) {
+	private static Map.Entry<PathSegment, PathSegment> getMaxLengthLink(Set<Map.Entry<PathSegment, PathSegment>> treeLinks) {
 		int maxDist = -1;
-		Map.Entry<MazeSegment, MazeSegment> maxEntry = null;
+		Map.Entry<PathSegment, PathSegment> maxEntry = null;
 		
-		for (Map.Entry<MazeSegment, MazeSegment> entry : treeLinks) {
-			MazeSegment seg1 = entry.getKey();
-			MazeSegment seg2 = entry.getValue();
+		for (Map.Entry<PathSegment, PathSegment> entry : treeLinks) {
+			PathSegment seg1 = entry.getKey();
+			PathSegment seg2 = entry.getValue();
 			int dist = seg1.getTree().getExitDist(seg1) + seg2.getTree().getExitDist(seg2);
 			
 			if (dist > maxDist) {
