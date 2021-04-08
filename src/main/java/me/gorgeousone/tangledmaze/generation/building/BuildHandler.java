@@ -28,6 +28,7 @@ public class BuildHandler {
 		MazeMap mazeMap = MazeMapFactory.createMazeMapOf(maze);
 		MazeMapFactory.createPaths(mazeMap, maze.getExits(), settings);
 		mazeMap.flip();
+		TerrainEditor.improveTerrain(mazeMap);
 		
 		Set<WallSegment> walls = WallGen.genWalls(mazeMap, settings);
 		buildWalls(mazeMap.getWorld(), walls);

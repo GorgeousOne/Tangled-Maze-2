@@ -26,9 +26,16 @@ public class WallSegment {
 		int sizeX = max.getX() - min.getX();
 		int sizeZ = max.getZ() - min.getZ();
 		blocks = new boolean[sizeX][worldHeight][sizeZ];
-		
 		minY = worldHeight;
 		maxY = 0;
+	}
+	
+	public Vec2 getMin() {
+		return min.clone();
+	}
+	
+	public Vec2 getMax() {
+		return max.clone();
 	}
 	
 	public void addBlock(BlockVec block) {
