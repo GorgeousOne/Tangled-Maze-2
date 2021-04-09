@@ -6,7 +6,7 @@ import me.gorgeousone.tangledmaze.generation.PathSegment;
 import me.gorgeousone.tangledmaze.generation.paving.PathMap;
 import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
-import me.gorgeousone.tangledmaze.util.BlockUtils;
+import me.gorgeousone.tangledmaze.util.BlockUtil;
 import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
@@ -54,7 +54,7 @@ public class WallGen {
 					maxFloorY = Math.max(maxFloorY, mazeMap.getY(x, z));
 				}
 				
-				for (Vec2 neighbor : BlockUtils.getNeighbors(x, z, 2)) {
+				for (Vec2 neighbor : BlockUtil.getNeighbors(x, z, 2)) {
 					if (mazeMap.getType(neighbor) == AreaType.PATH) {
 						maxFloorY = Math.max(maxFloorY, mazeMap.getY(neighbor));
 					}
@@ -90,7 +90,7 @@ public class WallGen {
 					}
 					boolean isSurfaceBlock = false;
 					
-					for (BlockVec block : BlockUtils.getNeighborBlocks(x, y, z)) {
+					for (BlockVec block : BlockUtil.getNeighborBlocks(x, y, z)) {
 						if (!wall.isFilled(block.getX(), block.getY(), block.getZ())) {
 							isSurfaceBlock = true;
 							break;

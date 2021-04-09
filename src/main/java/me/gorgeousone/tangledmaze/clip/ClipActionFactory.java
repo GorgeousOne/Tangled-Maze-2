@@ -1,6 +1,6 @@
 package me.gorgeousone.tangledmaze.clip;
 
-import me.gorgeousone.tangledmaze.util.BlockUtils;
+import me.gorgeousone.tangledmaze.util.BlockUtil;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.block.Block;
@@ -163,7 +163,7 @@ public class ClipActionFactory {
 		for (Direction dir : Direction.values()) {
 			
 			Vec2 neighbor = loc.clone().add(dir.getVec2());
-			int height = BlockUtils.getSurfaceY(maze.getWorld(), neighbor, maze.getY(loc));
+			int height = BlockUtil.getSurfaceY(maze.getWorld(), neighbor, maze.getY(loc));
 			
 			if (!maze.contains(neighbor)) {
 				
