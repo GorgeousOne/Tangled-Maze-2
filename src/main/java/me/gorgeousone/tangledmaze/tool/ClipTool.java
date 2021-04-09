@@ -3,7 +3,7 @@ package me.gorgeousone.tangledmaze.tool;
 import me.gorgeousone.tangledmaze.clip.ClipFactory;
 import me.gorgeousone.tangledmaze.clip.ClipShape;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
-import me.gorgeousone.tangledmaze.util.BlockUtils;
+import me.gorgeousone.tangledmaze.util.BlockUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 
@@ -40,7 +40,7 @@ public class ClipTool {
 	}
 	
 	public void addVertex(Block vertex) {
-		vertex = BlockUtils.getSurface(vertex);
+		vertex = BlockUtil.getSurface(vertex);
 		int vertexCount = vertices.size();
 		int requiredVertexCount = shape.getVertexCount();
 		

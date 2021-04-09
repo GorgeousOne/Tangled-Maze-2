@@ -1,6 +1,6 @@
 package me.gorgeousone.tangledmaze.clip;
 
-import me.gorgeousone.tangledmaze.util.BlockUtils;
+import me.gorgeousone.tangledmaze.util.BlockUtil;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
@@ -30,8 +30,8 @@ public class ClipFactory {
 		int maxY = Math.max(v0.getY(), v2.getY());
 		World world = v0.getWorld();
 		
-		Block v1 = BlockUtils.getSurface(world, v0.getX(), maxY, v2.getZ());
-		Block v3 = BlockUtils.getSurface(world, v2.getX(), maxY, v0.getZ());
+		Block v1 = BlockUtil.getSurface(world, v0.getX(), maxY, v2.getZ());
+		Block v3 = BlockUtil.getSurface(world, v2.getX(), maxY, v0.getZ());
 		return new ArrayList<>(Arrays.asList(v0, v1, v2, v3));
 	}
 	
@@ -60,7 +60,7 @@ public class ClipFactory {
 		
 		for (int x = minX; x <= maxX; ++x) {
 			for (int z = minZ; z <= maxZ; ++z) {
-				Block block = BlockUtils.getSurface(world, x, height, z);
+				Block block = BlockUtil.getSurface(world, x, height, z);
 				clip.add(block);
 				if (x == minX || x == maxX || z == minZ || z == maxZ) {
 					clip.addBorder(block);

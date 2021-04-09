@@ -6,9 +6,7 @@ import org.bukkit.block.data.BlockData;
 import java.util.HashSet;
 import java.util.Set;
 
-public final class MatUtilsAquatic {
-	
-	private MatUtilsAquatic() {}
+public final class MaterialUtil {
 	
 	private static final Set<String> BLOCK_NAMES = new HashSet<>();
 	
@@ -20,37 +18,41 @@ public final class MatUtilsAquatic {
 		}
 	}
 	
+	private static boolean isLegacyServer;
+	
+	private MaterialUtil() {}
+	
 	public static Set<String> getBlockNames() {
 		return BLOCK_NAMES;
 	}
 	
 	public static BlockData read(String argument) {
-		String[] argSplit = argument.split(":");
-		String stringMat = argSplit[0];
-		Material material = Material.matchMaterial(stringMat);
+	
+		String[] stringParts = argument.split(":");
+		String typeString = stringParts[0];
+		Material type = Material.matchMaterial(typeString);
 		
-		if (material == null || !material.isBlock()) {
+		if (type == null || !type.isBlock()) {
 			throw new IllegalArgumentException("invalid block");
 		}
-		BlockData blockData = material.createBlockData();
+		BlockData blockData = type.createBlockData();
 		
-		if (material.name().contains("LEAVES")) {
-			blockData = blockData.merge(material.createBlockData("[persistent=true]"));
-		}
-		if (argSplit.length <= 1) {
+		
+		if (stringParts.length <= 1) {
 			return blockData;
 		}
-		for (int i = 1; i < argSplit.length; i++) {
-			String blockProperty = argSplit[i];
+		for (int i = 1; i < stringParts.length; i++) {
+			String blockProperty = stringParts[i];
 			
 //			try {
-			blockData = blockData.merge(material.createBlockData("[" + blockProperty + "]"));
+			blockData = blockData.merge(type.createBlockData("[" + blockProperty + "]"));
 //			} catch (IllegalArgumentException ex) {
 //				createPlayerMessageFromException(ex.getCause().getLocalizedMessage(), stringMat, blockProperty.split("="));
 //			}
 		}
 		return blockData;
 	}
+	
 	
 //	private static void createPlayerMessageFromException(String exceptionMessage, String material,
 //	                                                     String[] blockProperty) throws TextException {

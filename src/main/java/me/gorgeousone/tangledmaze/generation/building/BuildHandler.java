@@ -6,6 +6,7 @@ import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.generation.MazeMapFactory;
 import me.gorgeousone.tangledmaze.generation.PathSegment;
 import me.gorgeousone.tangledmaze.generation.paving.PathTree;
+import me.gorgeousone.tangledmaze.maze.MazePart;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.Vec2;
@@ -20,37 +21,29 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.util.EulerAngle;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 public class BuildHandler {
 	
-	public void buildMaze(Clip maze, MazeSettings settings) {
+	public void buildMaze(Clip maze, MazeSettings settings, MazePart mazePart) {
 		MazeMap mazeMap = MazeMapFactory.createMazeMapOf(maze);
 		MazeMapFactory.createPaths(mazeMap, maze.getExits(), settings);
 		mazeMap.flip();
 		TerrainEditor.improveTerrain(mazeMap);
 		
 		Set<WallSegment> walls = WallGen.genWalls(mazeMap, settings);
-		buildWalls(mazeMap.getWorld(), walls);
-		
-//		Vec2 mapMin = mazeMap.getMin();
-//		Vec2 mapMax = mazeMap.getMax();
-//		for (int x = mapMin.getX(); x < mapMax.getX(); ++x) {
-//			for (int z = mapMin.getZ(); z < mapMax.getZ(); ++z) {
-//				AreaType type = mazeMap.getType(x, z);
-//
-//				if (type == AreaType.WALL || type == AreaType.FREE) {
-//					maze.getWorld().getBlockAt(x, mazeMap.getY(x, z) + 1, z).setType(Material.OAK_PLANKS);
-//				}
-//			}
-//		}
+		buildWalls(mazeMap.getWorld(), walls, settings.getPalette(mazePart));
 //		displayPaths(maze, mazeMap);
 	}
 	
-	private void buildWalls(World world, Set<WallSegment> walls) {
+	Random random = new Random();
+	
+	private void buildWalls(World world, Set<WallSegment> walls, BlockPalette palette) {
 		for (WallSegment wall : walls) {
-			for (BlockVec block : wall.getBlocks()) {
-				world.getBlockAt(block.getX(), block.getY(), block.getZ()).setType(Material.OAK_PLANKS);
+			for (BlockVec blockVec : wall.getBlocks()) {
+				Block block = world.getBlockAt(blockVec.getX(), blockVec.getY(), blockVec.getZ());
+				palette.getBlock(random.nextInt(palette.size())).updateBlock(block, false);
 			}
 		}
 	}

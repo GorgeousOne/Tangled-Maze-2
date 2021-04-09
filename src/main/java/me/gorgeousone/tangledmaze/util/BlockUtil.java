@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class BlockUtils {
+public class BlockUtil {
 	
 	public static int getSurfaceY(World world, Vec2 loc, int y) {
 		return getSurface(world.getBlockAt(loc.getX(), y, loc.getZ())).getY();

@@ -2,7 +2,7 @@ package me.gorgeousone.tangledmaze.generation.building;
 
 import me.gorgeousone.tangledmaze.generation.AreaType;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
-import me.gorgeousone.tangledmaze.util.BlockUtils;
+import me.gorgeousone.tangledmaze.util.BlockUtil;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
 import java.util.Collections;
@@ -44,7 +44,7 @@ public class TerrainEditor {
 	private static  List<Integer> getNeighborYs(int x, int z, int radius, MazeMap mazeMap) {
 		List<Integer> neighborYs = new LinkedList<>();
 		
-		for (Vec2 neighbor : BlockUtils.getNeighbors(x, z, radius)) {
+		for (Vec2 neighbor : BlockUtil.getNeighbors(x, z, radius)) {
 			int y = mazeMap.getY(neighbor);
 
 			if (y != -1) {
@@ -69,7 +69,7 @@ public class TerrainEditor {
 				}
 				int floorY = mazeMap.getY(x, z);
 				
-				for (Vec2 neighbor : BlockUtils.getNeighbors(x, z, 1)) {
+				for (Vec2 neighbor : BlockUtil.getNeighbors(x, z, 1)) {
 					if (mazeMap.getType(neighbor) != AreaType.PATH) {
 						continue;
 					}

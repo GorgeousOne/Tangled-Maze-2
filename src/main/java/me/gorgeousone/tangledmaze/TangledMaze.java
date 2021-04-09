@@ -12,10 +12,13 @@ import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
 import me.gorgeousone.tangledmaze.listener.ClickListener;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
+import me.gorgeousone.tangledmaze.util.VersionUtil;
+import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import sun.misc.Version;
 
 public final class TangledMaze extends JavaPlugin {
 	
@@ -26,6 +29,7 @@ public final class TangledMaze extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
+		BlockType.configureVersion(VersionUtil.IS_LEGACY_SERVER);
 		sessionHandler = new SessionHandler();
 		toolHandler = new ToolHandler(sessionHandler);
 		renderHandler = new RenderHandler(this, sessionHandler);
