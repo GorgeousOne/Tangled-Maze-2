@@ -1,11 +1,10 @@
 package me.gorgeousone.tangledmaze.listener;
 
+import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.clip.ClipFactory;
-import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
 import me.gorgeousone.tangledmaze.tool.ClipTool;
-import me.gorgeousone.tangledmaze.tool.Ray;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -16,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.BlockIterator;
 
 import java.util.UUID;
 
@@ -68,9 +68,24 @@ public class ClickListener implements Listener {
 		}
 	}
 	
+	boolean hoverClickEnabled = true;
+	int hoverRange = 100;
+	
 	private Block traceBlock(Player player, PlayerInteractEvent event) {
 		Block clickedBlock = event.getClickedBlock();
-		return clickedBlock == null ? new Ray(player).traceBlock(100) : clickedBlock;
+		
+		if (clickedBlock == null && hoverClickEnabled) {
+			BlockIterator iter = new BlockIterator(player, hoverRange);
+			
+			while (iter.hasNext()) {
+				Block nextBlock = iter.next();
+				
+				if (nextBlock.getType().isSolid()) {
+					return nextBlock;
+				}
+			}
+		}
+		return clickedBlock;
 	}
 	
 	/**
@@ -95,9 +110,6 @@ public class ClickListener implements Listener {
 	 * Returns if the given ItemStack is a wand for maze creation
 	 */
 	boolean isMazeWand(ItemStack item) {
-		if (item.getType() != Material.GOLDEN_SHOVEL) {
-			return false;
-		}
-		return true;
+		return item.getType() == Material.GOLDEN_SHOVEL;
 	}
 }

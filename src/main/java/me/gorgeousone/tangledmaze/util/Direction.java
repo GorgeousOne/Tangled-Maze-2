@@ -57,5 +57,4 @@ public enum Direction {
 		int index = java.util.Arrays.asList(values()).indexOf(this);
 		return values()[(index + 6) % values().length];
 	}
-	
 }

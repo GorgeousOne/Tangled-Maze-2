@@ -10,7 +10,7 @@ import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -20,22 +20,22 @@ public class SettingsCommand extends ArgCommand {
 	
 	public SettingsCommand(SessionHandler sessionHandler) {
 		super("setting");
-		addArg(new Argument("property", ArgType.STRING, MazeProperty.commandNames()));
+		addArg(new Argument("setting", ArgType.STRING, MazeProperty.commandNames()));
 		addArg(new Argument("integer", ArgType.INTEGER));
 		this.sessionHandler = sessionHandler;
 	}
 	
 	@Override
-	protected void executeArgs(CommandSender sender, ArgValue[] argValues, Set<String> usedFlags) {
+	protected void executeArgs(CommandSender sender, List<ArgValue> argValues, Set<String> usedFlags) {
 		Player player = (Player) sender;
 		UUID playerId = player.getUniqueId();
 		
-		MazeProperty property = MazeProperty.match(argValues[0].get());
+		MazeProperty property = MazeProperty.match(argValues.get(0).get());
 		if (property == null) {
-			sender.sendMessage("doesn't look good");
+			sender.sendMessage("invalid setting");
 			return;
 		}
-		int inputValue = argValues[1].getInt();
+		int inputValue = argValues.get(1).getInt();
 		MazeSettings settings = sessionHandler.getSettings(playerId);
 		sender.sendMessage("Set " + property.textName() + " to " + settings.setValue(property, inputValue) + " blocks(s).");
 	}

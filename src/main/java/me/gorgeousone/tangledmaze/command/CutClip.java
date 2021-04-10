@@ -1,9 +1,9 @@
 package me.gorgeousone.tangledmaze.command;
 
+import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.clip.ClipAction;
 import me.gorgeousone.tangledmaze.clip.ClipActionFactory;
-import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.cmdframework.command.BaseCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,7 +28,7 @@ public class CutClip extends BaseCommand {
 		Clip maze = sessionHandler.getMazeClip(playerId);
 		
 		if (maze == null || clip == null) {
-			sender.sendMessage("WRO-HONG!");
+			sender.sendMessage("no maze / clip");
 			return;
 		}
 		sessionHandler.removeClip(playerId, true);

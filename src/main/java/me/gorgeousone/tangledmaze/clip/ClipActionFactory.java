@@ -1,6 +1,6 @@
 package me.gorgeousone.tangledmaze.clip;
 
-import me.gorgeousone.tangledmaze.util.BlockUtils;
+import me.gorgeousone.tangledmaze.util.BlockUtil;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.block.Block;
@@ -118,16 +118,16 @@ public class ClipActionFactory {
 			}
 		}
 		//remove every part of the new added border not sealing the maze anyway
-//		Iterator<Vec2> iterator = deletion.getAddedBorder().iterator();
-//
-//		while (iterator.hasNext()) {
-//			Vec2 newBorder = iterator.next();
-//
-//			if (!touchesFill(deletion, newBorder, Direction.values())) {
-//				iterator.remove();
-//				deletion.removeFill(newBorder, maze.getY(newBorder));
-//			}
-//		}
+		//		Iterator<Vec2> iterator = deletion.getAddedBorder().iterator();
+		//
+		//		while (iterator.hasNext()) {
+		//			Vec2 newBorder = iterator.next();
+		//
+		//			if (!touchesFill(deletion, newBorder, Direction.values())) {
+		//				iterator.remove();
+		//				deletion.removeFill(newBorder, maze.getY(newBorder));
+		//			}
+		//		}
 	}
 	
 	/**
@@ -163,7 +163,7 @@ public class ClipActionFactory {
 		for (Direction dir : Direction.values()) {
 			
 			Vec2 neighbor = loc.clone().add(dir.getVec2());
-			int height = BlockUtils.getSurfaceY(maze.getWorld(), neighbor, maze.getY(loc));
+			int height = BlockUtil.getSurfaceY(maze.getWorld(), neighbor, maze.getY(loc));
 			
 			if (!maze.contains(neighbor)) {
 				

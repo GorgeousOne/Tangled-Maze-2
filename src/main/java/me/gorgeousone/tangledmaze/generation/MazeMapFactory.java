@@ -1,6 +1,7 @@
 package me.gorgeousone.tangledmaze.generation;
 
 import me.gorgeousone.tangledmaze.clip.Clip;
+import me.gorgeousone.tangledmaze.generation.building.TerrainEditor;
 import me.gorgeousone.tangledmaze.generation.paving.ExitSegment;
 import me.gorgeousone.tangledmaze.generation.paving.PathGen;
 import me.gorgeousone.tangledmaze.generation.paving.PathMap;
@@ -16,10 +17,14 @@ import java.util.Map;
 
 public class MazeMapFactory {
 	
-	public static MazeMap createMazeMapOf(Clip maze) {
+	public static MazeMap createMazeMapOf(Clip maze, MazeSettings settings) {
 		Map.Entry<Vec2, Vec2> clipBounds = calculateClipBounds(maze);
-		MazeMap map = new MazeMap(clipBounds.getKey(), clipBounds.getValue());
+		MazeMap map = new MazeMap(maze.getWorld(), clipBounds.getKey(), clipBounds.getValue());
 		copyMazeOntoMazeMap(maze, map);
+		
+		MazeMapFactory.createPaths(map, maze.getExits(), settings);
+		map.flip();
+		TerrainEditor.improveTerrain(map);
 		return map;
 	}
 	
@@ -53,6 +58,9 @@ public class MazeMapFactory {
 		return new AbstractMap.SimpleEntry<>(min, max);
 	}
 	
+	/**
+	 * Copies the shape of a maze clip onto a maze map
+	 */
 	private static void copyMazeOntoMazeMap(Clip maze, MazeMap map) {
 		for (Vec2 loc : maze.getFill().keySet()) {
 			map.setType(loc, AreaType.FREE);
@@ -81,7 +89,7 @@ public class MazeMapFactory {
 			}
 		}
 		mazeMap.setPathMap(pathMap);
-		mazeMap.setPathTrees(PathGen.generatePaths(pathMap, settings.getValue(MazeProperty.CURLINESS)));
+		mazeMap.setPathTrees(PathGen.genPaths(pathMap, settings.getValue(MazeProperty.CURLINESS)));
 		copyPathsOntoMazeMap(pathMap, mazeMap);
 	}
 	
@@ -97,8 +105,8 @@ public class MazeMapFactory {
 	}
 	
 	private static void copyMazeOntoPathMap(MazeMap mazeMap, PathMap pathMap) {
-		for (int gridX = 0; gridX < pathMap.getWidth(); gridX++) {
-			for (int gridZ = 0; gridZ < pathMap.getHeight(); gridZ++) {
+		for (int gridX = 0; gridX < pathMap.getWidth(); ++gridX) {
+			for (int gridZ = 0; gridZ < pathMap.getHeight(); ++gridZ) {
 				if (!isSegmentFree(pathMap.getSegment(gridX, gridZ), mazeMap)) {
 					pathMap.setSegmentType(gridX, gridZ, PathType.BLOCKED);
 				}
@@ -110,22 +118,22 @@ public class MazeMapFactory {
 		for (ExitSegment exit : pathMap.getExits()) {
 			mazeMap.setType(exit.getMin(), exit.getMax(), AreaType.EXIT);
 		}
-		for (int gridX = 0; gridX < pathMap.getWidth(); gridX++) {
-			for (int gridZ = 0; gridZ < pathMap.getHeight(); gridZ++) {
+		for (int gridX = 0; gridX < pathMap.getWidth(); ++gridX) {
+			for (int gridZ = 0; gridZ < pathMap.getHeight(); ++gridZ) {
 				if (pathMap.getSegmentType(gridX, gridZ) == PathType.PAVED) {
-					MazeSegment segment = pathMap.getSegment(gridX, gridZ);
+					GridSegment segment = pathMap.getSegment(gridX, gridZ);
 					mazeMap.setType(segment.getMin(), segment.getMax(), AreaType.PATH);
 				}
 			}
 		}
 	}
 	
-	private static boolean isSegmentFree(MazeSegment segment, MazeMap mazeMap) {
+	private static boolean isSegmentFree(GridSegment segment, MazeMap mazeMap) {
 		Vec2 segMin = segment.getMin();
-		Vec2 segMax = segment.getMin().add(segment.getSize());
+		Vec2 segMax = segment.getMax();
 		
-		for (int x = segMin.getX(); x < segMax.getX(); x++) {
-			for (int z = segMin.getZ(); z < segMax.getZ(); z++) {
+		for (int x = segMin.getX(); x < segMax.getX(); ++x) {
+			for (int z = segMin.getZ(); z < segMax.getZ(); ++z) {
 				if (mazeMap.getType(x, z) != AreaType.FREE) {
 					return false;
 				}
