@@ -1,7 +1,7 @@
 package me.gorgeousone.tangledmaze.command;
 
-import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.SessionHandler;
+import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.cmdframework.command.BaseCommand;
 import me.gorgeousone.tangledmaze.event.MazeStartEvent;
 import org.bukkit.Bukkit;
@@ -21,13 +21,12 @@ public class StartMaze extends BaseCommand {
 	
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-		
 		Player player = (Player) sender;
 		UUID playerId = player.getUniqueId();
 		Clip clip = sessionHandler.getClip(playerId);
 		
 		if (clip == null) {
-			sender.sendMessage("WRONG!");
+			sender.sendMessage("no clip");
 			return;
 		}
 		

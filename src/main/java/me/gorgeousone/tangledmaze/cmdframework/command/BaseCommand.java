@@ -1,5 +1,6 @@
 package me.gorgeousone.tangledmaze.cmdframework.command;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.HashSet;
@@ -14,11 +15,22 @@ public abstract class BaseCommand {
 	
 	private final String name;
 	private final Set<String> aliases;
+	private ParentCommand parent;
 	
 	public BaseCommand(String name) {
 		this.name = name.toLowerCase();
+		
 		aliases = new HashSet<>();
 		aliases.add(this.name);
+	}
+	
+	protected ParentCommand getParent() {
+		return parent;
+	}
+	
+	public BaseCommand setParent(ParentCommand parent) {
+		this.parent = parent;
+		return this;
 	}
 	
 	public abstract void execute(CommandSender sender, String[] args);
@@ -35,8 +47,15 @@ public abstract class BaseCommand {
 		return aliases.contains(alias);
 	}
 	
+	public String getUsage() {
+		if (getParent() != null) {
+			return getParent().getParentUsage() + " " + getName();
+		}
+		return ChatColor.RED + "/" + getName();
+	}
+	
 	public void sendUsage(CommandSender sender) {
-		sender.sendMessage("WRONG!");
+		sender.sendMessage(getUsage());
 	}
 	
 	public List<String> getTabList(String[] arguments) {

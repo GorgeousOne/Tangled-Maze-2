@@ -3,17 +3,20 @@ package me.gorgeousone.tangledmaze.generation;
 import me.gorgeousone.tangledmaze.generation.paving.PathMap;
 import me.gorgeousone.tangledmaze.generation.paving.PathTree;
 import me.gorgeousone.tangledmaze.util.Vec2;
+import org.bukkit.World;
 
 import java.util.List;
 
 public class MazeMap {
 	
+	private final World world;
 	private final Vec2 mapMin;
 	private final Vec2 mapMax;
 	private final AreaType[][] areaMap;
 	private final int[][] terrainMap;
 	
-	public MazeMap(Vec2 min, Vec2 max) {
+	public MazeMap(World world, Vec2 min, Vec2 max) {
+		this.world = world;
 		this.mapMin = min;
 		this.mapMax = max.add(1, 1);
 		
@@ -21,6 +24,10 @@ public class MazeMap {
 		int sizeZ = max.getZ() - min.getZ();
 		areaMap = new AreaType[sizeX][sizeZ];
 		terrainMap = new int[sizeX][sizeZ];
+	}
+	
+	public World getWorld() {
+		return world;
 	}
 	
 	public Vec2 getMin() {
@@ -56,14 +63,21 @@ public class MazeMap {
 	}
 	
 	public void setType(Vec2 min, Vec2 max, AreaType type) {
-		for (int x = min.getX() - mapMin.getX(); x < max.getX() - mapMin.getX(); x++) {
-			for (int z = min.getZ() - mapMin.getZ(); z < max.getZ() - mapMin.getZ(); z++) {
+		for (int x = min.getX() - mapMin.getX(); x < max.getX() - mapMin.getX(); ++x) {
+			for (int z = min.getZ() - mapMin.getZ(); z < max.getZ() - mapMin.getZ(); ++z) {
 				areaMap[x][z] = type;
 			}
 		}
 	}
 	
+	public int getY(Vec2 loc) {
+		return getY(loc.getX(), loc.getZ());
+	}
+	
 	public int getY(int x, int z) {
+		if (!contains(x, z)) {
+			return -1;
+		}
 		return terrainMap[x - mapMin.getX()][z - mapMin.getZ()];
 	}
 	
@@ -76,6 +90,7 @@ public class MazeMap {
 	}
 	
 	private PathMap pathMap;
+	
 	private List<PathTree> pathTrees;
 	
 	public PathMap getPathMap() {
@@ -92,5 +107,24 @@ public class MazeMap {
 	
 	public void setPathTrees(List<PathTree> pathTrees) {
 		this.pathTrees = pathTrees;
+	}
+	
+	public void flip() {
+		for (int x = 0; x < terrainMap.length; ++x) {
+			for (int z = 0; z < terrainMap[0].length; ++z) {
+				AreaType type = areaMap[x][z];
+				
+				switch (type) {
+					case FREE:
+						areaMap[x][z] = AreaType.WALL;
+						break;
+					case EXIT:
+						areaMap[x][z] = AreaType.PATH;
+						break;
+					default:
+						break;
+				}
+			}
+		}
 	}
 }
