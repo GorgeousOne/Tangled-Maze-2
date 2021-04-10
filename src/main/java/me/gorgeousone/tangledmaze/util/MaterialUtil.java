@@ -1,18 +1,19 @@
 package me.gorgeousone.tangledmaze.util;
 
 import org.bukkit.Material;
-import org.bukkit.block.data.BlockData;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 public final class MaterialUtil {
 	
-	private static final Set<String> BLOCK_NAMES = new HashSet<>();
+	private static final List<String> BLOCK_NAMES = new LinkedList<>();
 	
 	static {
 		for (Material mat : Material.values()) {
-			if (mat.isBlock()) {
+			if (mat.isBlock() && (mat.isOccluding() || mat.name().endsWith("LEAVES"))) {
 				BLOCK_NAMES.add(mat.name().toLowerCase());
 			}
 		}
@@ -20,7 +21,7 @@ public final class MaterialUtil {
 	
 	private MaterialUtil() {}
 	
-	public static Set<String> getBlockNames() {
+	public static List<String> getBlockNames() {
 		return BLOCK_NAMES;
 	}
 }

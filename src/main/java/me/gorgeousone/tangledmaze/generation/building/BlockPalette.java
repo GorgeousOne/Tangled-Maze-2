@@ -40,7 +40,7 @@ public class BlockPalette {
 	 * @param index between 0 and size-1 of palette
 	 */
 	public BlockType getBlock(int index) {
-		int iter = 0;
+		int iter = -1;
 		
 		for (Map.Entry<BlockType, Integer> entry : blocks) {
 			iter += entry.getValue();

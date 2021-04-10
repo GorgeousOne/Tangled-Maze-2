@@ -3,7 +3,6 @@ package me.gorgeousone.tangledmaze.command;
 import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.cmdframework.argument.ArgValue;
-import me.gorgeousone.tangledmaze.cmdframework.argument.Flag;
 import me.gorgeousone.tangledmaze.cmdframework.command.ArgCommand;
 import me.gorgeousone.tangledmaze.generation.building.BlockPalette;
 import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
@@ -13,11 +12,11 @@ import me.gorgeousone.tangledmaze.util.MaterialUtil;
 import me.gorgeousone.tangledmaze.util.MathUtil;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -61,7 +60,8 @@ public class BuildMaze extends ArgCommand {
 				sender.sendMessage("created " + palette.size() + " blocks for " + mazePart.name().toLowerCase());
 				settings.setPalette(palette, mazePart);
 			} catch (Exception e) {
-				sender.sendMessage(e.getMessage());
+				sender.sendMessage("Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 		buildHandler.buildMaze(maze, settings, mazePart);
@@ -72,36 +72,26 @@ public class BuildMaze extends ArgCommand {
 		
 		for (ArgValue input : stringArgs) {
 			String inputString = input.get();
-			String countString = "";
-			String materialString = "";
+			int  count = 1;
+			String materialString;
 			
 			if (inputString.contains("*")) {
 				String[] stringParts = inputString.split("\\*");
 				
-				if (stringParts.length < 1 || stringParts.length > 2) {
+				if (stringParts.length < 1 || !MathUtil.isInt(stringParts[0])) {
 					throw new IllegalArgumentException("invalid input: " + inputString);
 				}
-				if (!MathUtil.isInt(stringParts[0])) {
-					throw new IllegalArgumentException("invalid multiplier: " + inputString);
-				}
-				countString = stringParts[0];
-				
-				if (stringParts.length == 2) {
-					materialString = stringParts[1];
-				}
-			} else if (MathUtil.isInt(inputString)) {
-				countString = inputString;
+				count = Integer.parseInt(stringParts[0]);
+				materialString = stringParts[1];
 			} else {
 				materialString = inputString;
 			}
-			BlockType blockType;
 			try {
-				blockType = BlockType.deserialize(materialString);
+				BlockType blockType = BlockType.of(materialString);
+				palette.addBlock(blockType, MathUtil.clamp(count, 1, 1000));
 			} catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException("invalid block: " + materialString);
 			}
-			int count = MathUtil.clamp(Integer.parseInt(countString), 1, 1000);
-			palette.addBlock(blockType, count);
 		}
 		return palette;
 	}
@@ -114,8 +104,7 @@ public class BuildMaze extends ArgCommand {
 			return tabList;
 		}
 		String tabbedArg = stringArgs[stringArgs.length - 1];
-		String factorString = "";
-		String materialString = "";
+		String factorString;
 		
 		if (tabbedArg.contains("*")) {
 			String[] stringParts = tabbedArg.split("\\*");
@@ -125,18 +114,14 @@ public class BuildMaze extends ArgCommand {
 			}
 			factorString = stringParts[0] + "*";
 			
-			if (stringParts.length == 2) {
-				materialString = stringParts[1];
-			}
 		} else if (MathUtil.isInt(tabbedArg)) {
 			factorString = tabbedArg + "*";
-		} else {
-			materialString = tabbedArg;
+		}else {
+			return MaterialUtil.getBlockNames();
 		}
+		
 		for (String blockName : MaterialUtil.getBlockNames()) {
-			if (blockName.startsWith(materialString)) {
-				tabList.add(factorString + blockName);
-			}
+			tabList.add(factorString + blockName);
 		}
 		return tabList;
 	}
