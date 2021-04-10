@@ -16,13 +16,15 @@ import java.util.Set;
  */
 public abstract class ArgCommand extends BaseCommand {
 	
-	protected List<Argument> arguments;
-	protected Set<Flag> flags;
+	protected final List<Argument> arguments;
+	protected final Set<Flag> flags;
+	private final List<String> flagNames;
 	
 	public ArgCommand(String name) {
 		super(name);
 		arguments = new ArrayList<>();
 		flags = new HashSet<>();
+		flagNames = new LinkedList<>();
 	}
 	
 	public void addArg(Argument argument) {
@@ -31,6 +33,11 @@ public abstract class ArgCommand extends BaseCommand {
 	
 	public void addFlag(Flag flag) {
 		flags.add(flag);
+		flagNames.add("-" + flag.getName());
+		
+		if (flag.getShortName() != null) {
+			flagNames.add("-" + flag.getShortName());
+		}
 	}
 	
 	public List<Argument> getArgs() {
@@ -95,9 +102,15 @@ public abstract class ArgCommand extends BaseCommand {
 	
 	@Override
 	public List<String> getTabList(String[] stringArgs) {
-		if (this.arguments.size() < stringArgs.length) {
-			return new LinkedList<>();
+		String tabbedArg = stringArgs[stringArgs.length - 1];
+		
+		if (isFlag(tabbedArg)) {
+			return flagNames;
 		}
-		return this.arguments.get(stringArgs.length - 1).getTabList();
+		
+		if (this.arguments.size() >= stringArgs.length) {
+			return this.arguments.get(stringArgs.length - 1).getTabList();
+		}
+		return new LinkedList<>();
 	}
 }

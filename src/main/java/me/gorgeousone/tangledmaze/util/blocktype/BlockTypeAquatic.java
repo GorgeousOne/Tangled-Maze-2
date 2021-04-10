@@ -5,36 +5,57 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.Orientable;
 
 import java.util.Objects;
+import java.util.Random;
 
 /**
  * Wrapper for the block data of blocks after the aquatic update (1.13)
  */
 public class BlockTypeAquatic extends BlockType {
 	
+	private static final String[] FACINGS = {"east", "south", "west", "north"};
+	private static final String[] ORIENTATIONS = {"x", "y", "z"};
+	private static final Random RANDOM = new Random();
+	
 	private final BlockData blockData;
-	private boolean isDirectional;
-	private boolean osOrientable;
+	private final boolean isFreelyDirectional;
+	private final boolean isFreelyOrientable;
+	
+	public BlockTypeAquatic(BlockData data) {
+		if (!data.getMaterial().isBlock()) {
+			throw new IllegalArgumentException("is not a block");
+		}
+		blockData = data.clone();
+		isFreelyDirectional = blockData instanceof Directional && !blockData.getAsString(true).contains("facing");
+		isFreelyOrientable = blockData instanceof Orientable && !blockData.getAsString(true).contains("axis");
+	}
 	
 	public BlockTypeAquatic(Material material) {
-		blockData = material.createBlockData();
+		this(material.createBlockData());
 	}
 	
 	public BlockTypeAquatic(Block block) {
-		blockData = block.getBlockData().clone();
+		this(block.getBlockData().clone());
 	}
 	
 	public BlockTypeAquatic(BlockState state) {
-		blockData = state.getBlockData().clone();
-	}
-	
-	public BlockTypeAquatic(BlockData data) {
-		blockData = data.clone();
+		this(state.getBlockData().clone());
 	}
 	
 	public BlockTypeAquatic(String serialized) {
-		blockData = Bukkit.createBlockData(serialized);
+		this(deserialize(serialized));
+	}
+	
+	public static BlockData deserialize(String serialized) {
+		BlockData data = Bukkit.createBlockData(serialized);
+
+		if (serialized.contains("leaves") && !serialized.contains("persistent")) {
+			data = data.merge(data.getMaterial().createBlockData("[persistent=true]"));
+		}
+		return data;
 	}
 	
 	@Override
@@ -46,7 +67,14 @@ public class BlockTypeAquatic extends BlockType {
 	public BlockState updateBlock(Block block, boolean physics) {
 		BlockState oldState = block.getState();
 		BlockState newState = block.getState();
-		newState.setBlockData(blockData);
+		BlockData copy = blockData.clone();
+		
+		if (isFreelyOrientable) {
+			copy = copy.merge(copy.getMaterial().createBlockData("[axis=" + ORIENTATIONS[RANDOM.nextInt(ORIENTATIONS.length)] + "]"));
+		}else if (isFreelyDirectional) {
+			copy = copy.merge(copy.getMaterial().createBlockData("[facing=" + FACINGS[RANDOM.nextInt(FACINGS.length)] + "]"));
+		}
+		newState.setBlockData(copy);
 		newState.update(true, physics);
 		return oldState;
 	}

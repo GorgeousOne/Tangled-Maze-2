@@ -30,11 +30,9 @@ public class ParentCommand extends BaseCommand {
 	
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-		
 		if (args.length == 0) {
 			sendUsage(sender);
 		}
-		
 		for (BaseCommand child : children) {
 			if (child.matchesAlias(args[0])) {
 				child.execute(sender, Arrays.copyOfRange(args, 1, args.length));
@@ -53,7 +51,6 @@ public class ParentCommand extends BaseCommand {
 			}
 			return tabList;
 		}
-		
 		for (BaseCommand child : getChildren()) {
 			if (child.matchesAlias(arguments[0])) {
 				return child.getTabList(Arrays.copyOfRange(arguments, 1, arguments.length));
