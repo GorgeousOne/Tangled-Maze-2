@@ -12,7 +12,9 @@ public abstract class BlockType {
 	private static boolean isLegacyServer;
 	
 	public abstract Material getType();
+	
 	public abstract BlockState updateBlock(Block block, boolean physics);
+	
 	public abstract BlockType clone();
 	
 	/**

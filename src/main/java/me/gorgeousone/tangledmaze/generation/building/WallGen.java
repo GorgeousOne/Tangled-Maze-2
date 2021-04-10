@@ -1,8 +1,8 @@
 package me.gorgeousone.tangledmaze.generation.building;
 
 import me.gorgeousone.tangledmaze.generation.AreaType;
+import me.gorgeousone.tangledmaze.generation.GridSegment;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
-import me.gorgeousone.tangledmaze.generation.PathSegment;
 import me.gorgeousone.tangledmaze.generation.paving.PathMap;
 import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
@@ -21,14 +21,14 @@ public class WallGen {
 		
 		for (int gridX = 0; gridX < pathMap.getWidth(); ++gridX) {
 			for (int gridZ = 0; gridZ < pathMap.getHeight(); ++gridZ) {
-				PathSegment path = pathMap.getSegment(gridX, gridZ);
-				WallSegment wall = createWall(mazeMap, path, settings.getValue(MazeProperty.WALL_HEIGHT));
+				GridSegment segment = pathMap.getSegment(gridX, gridZ);
+				WallSegment wall = createWall(mazeMap, segment, settings.getValue(MazeProperty.WALL_HEIGHT));
 				
 				if (wall == null) {
 					continue;
 				}
 				walls.add(wall);
-					
+				
 				if (settings.getValue(MazeProperty.WALL_WIDTH) > 2) {
 					hollowOutWall(wall);
 				}
@@ -37,11 +37,17 @@ public class WallGen {
 		return walls;
 	}
 	
-	private static WallSegment createWall(MazeMap mazeMap, PathSegment path, int height) {
-		Vec2 min = path.getMin();
-		Vec2 max = path.getMax();
-		WallSegment wall = new WallSegment(path.getMin(), path.getMax(), path.getGridPos(), mazeMap.getWorld().getMaxHeight());
-		
+	/**
+	 * Creates a piece of wall on the given grid segment. The height of each wall column is the same,
+	 * dependent on the highest piece of path nearby all the columns
+	 *
+	 * @param mazeMap for looking for wall coordinates
+	 * @param segment segment to build the wall in
+	 * @param height  height of the wall
+	 */
+	private static WallSegment createWall(MazeMap mazeMap, GridSegment segment, int height) {
+		Vec2 min = segment.getMin();
+		Vec2 max = segment.getMax();
 		Set<Vec2> columns = new HashSet<>();
 		int maxFloorY = -1;
 		
@@ -49,10 +55,11 @@ public class WallGen {
 			for (int z = min.getZ(); z < max.getZ(); ++z) {
 				AreaType type = mazeMap.getType(x, z);
 				
-				if (type == AreaType.WALL) {
-					columns.add(new Vec2(x, z));
-					maxFloorY = Math.max(maxFloorY, mazeMap.getY(x, z));
+				if (type != AreaType.WALL) {
+					continue;
 				}
+				columns.add(new Vec2(x, z));
+				maxFloorY = Math.max(maxFloorY, mazeMap.getY(x, z));
 				
 				for (Vec2 neighbor : BlockUtil.getNeighbors(x, z, 2)) {
 					if (mazeMap.getType(neighbor) == AreaType.PATH) {
@@ -61,10 +68,10 @@ public class WallGen {
 				}
 			}
 		}
-		
 		if (columns.isEmpty()) {
 			return null;
 		}
+		WallSegment wall = new WallSegment(segment.getMin(), segment.getMax(), segment.getGridPos(), mazeMap.getWorld().getMaxHeight());
 		
 		for (Vec2 column : columns) {
 			int floorY = mazeMap.getY(column);

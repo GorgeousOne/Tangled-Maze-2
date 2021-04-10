@@ -2,11 +2,9 @@ package me.gorgeousone.tangledmaze.generation;
 
 import me.gorgeousone.tangledmaze.generation.paving.PathMap;
 import me.gorgeousone.tangledmaze.generation.paving.PathTree;
-import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.World;
 
-import java.awt.geom.Area;
 import java.util.List;
 
 public class MazeMap {
@@ -90,6 +88,7 @@ public class MazeMap {
 	public void setY(int x, int z, int y) {
 		terrainMap[x - mapMin.getX()][z - mapMin.getZ()] = y;
 	}
+	
 	private PathMap pathMap;
 	
 	private List<PathTree> pathTrees;
@@ -112,7 +111,7 @@ public class MazeMap {
 	
 	public void flip() {
 		for (int x = 0; x < terrainMap.length; ++x) {
-			for (int z =0; z < terrainMap[0].length; ++z) {
+			for (int z = 0; z < terrainMap[0].length; ++z) {
 				AreaType type = areaMap[x][z];
 				
 				switch (type) {

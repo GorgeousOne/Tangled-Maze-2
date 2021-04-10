@@ -51,6 +51,7 @@ public class WallSegment {
 	public void removeBlock(BlockVec block) {
 		removeBlock(block.getX(), block.getY(), block.getZ());
 	}
+	
 	public void removeBlock(int x, int y, int z) {
 		blocks[x - min.getX()][y][z - min.getZ()] = false;
 	}

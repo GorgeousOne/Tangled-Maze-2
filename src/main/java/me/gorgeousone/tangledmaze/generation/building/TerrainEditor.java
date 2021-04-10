@@ -41,12 +41,12 @@ public class TerrainEditor {
 		}
 	}
 	
-	private static  List<Integer> getNeighborYs(int x, int z, int radius, MazeMap mazeMap) {
+	private static List<Integer> getNeighborYs(int x, int z, int radius, MazeMap mazeMap) {
 		List<Integer> neighborYs = new LinkedList<>();
 		
 		for (Vec2 neighbor : BlockUtil.getNeighbors(x, z, radius)) {
 			int y = mazeMap.getY(neighbor);
-
+			
 			if (y != -1) {
 				neighborYs.add(y);
 			}

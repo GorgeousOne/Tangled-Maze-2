@@ -1,15 +1,15 @@
 package me.gorgeousone.tangledmaze.generation.building;
 
 import me.gorgeousone.tangledmaze.clip.Clip;
-import me.gorgeousone.tangledmaze.generation.AreaType;
+import me.gorgeousone.tangledmaze.generation.GridSegment;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.generation.MazeMapFactory;
-import me.gorgeousone.tangledmaze.generation.PathSegment;
 import me.gorgeousone.tangledmaze.generation.paving.PathTree;
 import me.gorgeousone.tangledmaze.maze.MazePart;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.Vec2;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,28 +20,49 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.util.EulerAngle;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Set;
 
 public class BuildHandler {
 	
+	private final HashMap<Clip, MazeMap> mazeMaps;
+	
+	public BuildHandler() {
+		this.mazeMaps = new HashMap<>();
+	}
+	
 	public void buildMaze(Clip maze, MazeSettings settings, MazePart mazePart) {
-		MazeMap mazeMap = MazeMapFactory.createMazeMapOf(maze);
-		MazeMapFactory.createPaths(mazeMap, maze.getExits(), settings);
-		mazeMap.flip();
-		TerrainEditor.improveTerrain(mazeMap);
 		
-		Set<WallSegment> walls = WallGen.genWalls(mazeMap, settings);
-		buildWalls(mazeMap.getWorld(), walls, settings.getPalette(mazePart));
-//		displayPaths(maze, mazeMap);
+		if (!mazeMaps.containsKey(maze) && mazePart != MazePart.WALLS) {
+			Bukkit.broadcastMessage("sry lad, walls first pls");
+			return;
+		}
+		
+		mazeMaps.computeIfAbsent(maze, map -> MazeMapFactory.createMazeMapOf(maze, settings));
+		MazeMap mazeMap = mazeMaps.get(maze);
+		
+		switch (mazePart) {
+			case WALLS:
+				mazeMaps.put(maze, mazeMap);
+				Set<WallSegment> walls = WallGen.genWalls(mazeMap, settings);
+				buildSegments(mazeMap.getWorld(), walls, settings.getPalette(mazePart));
+				//displayPaths(maze, mazeMap);
+				break;
+			case FLOOR:
+				Set<WallSegment> paths = FloorGen.genFloor(mazeMap);
+				buildSegments(mazeMap.getWorld(), paths, settings.getPalette(mazePart));
+				break;
+			case ROOF:
+				break;
+		}
 	}
 	
 	Random random = new Random();
 	
-	private void buildWalls(World world, Set<WallSegment> walls, BlockPalette palette) {
-		for (WallSegment wall : walls) {
-			for (BlockVec blockVec : wall.getBlocks()) {
+	private void buildSegments(World world, Set<WallSegment> segments, BlockPalette palette) {
+		for (WallSegment segment : segments) {
+			for (BlockVec blockVec : segment.getBlocks()) {
 				Block block = world.getBlockAt(blockVec.getX(), blockVec.getY(), blockVec.getZ());
 				palette.getBlock(random.nextInt(palette.size())).updateBlock(block, false);
 			}
@@ -52,7 +73,7 @@ public class BuildHandler {
 		for (PathTree tree : mazeMap.getPathTrees()) {
 			float maxDist = tree.getMaxExitDist();
 			
-			for (PathSegment segment : tree.getSegments()) {
+			for (GridSegment segment : tree.getSegments()) {
 				Color color = rainbowColor(tree.getExitDist(segment) / maxDist);
 				Vec2 segMin = segment.getMin();
 				Vec2 segMax = segment.getMax();

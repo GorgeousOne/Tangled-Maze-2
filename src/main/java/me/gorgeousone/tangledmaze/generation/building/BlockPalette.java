@@ -37,6 +37,7 @@ public class BlockPalette {
 	
 	/**
 	 * Returns the block type at the given index.
+	 *
 	 * @param index between 0 and size-1 of palette
 	 */
 	public BlockType getBlock(int index) {

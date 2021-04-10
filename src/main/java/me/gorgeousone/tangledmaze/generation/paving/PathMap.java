@@ -1,6 +1,6 @@
 package me.gorgeousone.tangledmaze.generation.paving;
 
-import me.gorgeousone.tangledmaze.generation.PathSegment;
+import me.gorgeousone.tangledmaze.generation.GridSegment;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
@@ -17,10 +17,10 @@ public class PathMap {
 	
 	private Vec2 gridMin;
 	private Vec2 gridOffset;
-	private PathSegment[][] gridSegments;
+	private GridSegment[][] gridSegments;
 	private PathType[][] segmentTypes;
 	private final List<ExitSegment> exits;
-	private final List<PathSegment> pathStarts;
+	private final List<GridSegment> pathStarts;
 	
 	public PathMap(Vec2 mapMin,
 	               Vec2 mapMax,
@@ -47,7 +47,7 @@ public class PathMap {
 		return exits;
 	}
 	
-	public List<PathSegment> getPathStarts() {
+	public List<GridSegment> getPathStarts() {
 		return pathStarts;
 	}
 	
@@ -57,11 +57,11 @@ public class PathMap {
 		return gridPos;
 	}
 	
-	public PathSegment getSegment(Vec2 gridPos) {
+	public GridSegment getSegment(Vec2 gridPos) {
 		return getSegment(gridPos.getX(), gridPos.getZ());
 	}
 	
-	public PathSegment getSegment(int gridX, int gridZ) {
+	public GridSegment getSegment(int gridX, int gridZ) {
 		if (contains(gridX, gridZ)) {
 			return gridSegments[gridX][gridZ];
 		}
@@ -213,11 +213,11 @@ public class PathMap {
 		int gridWidth = 2 * (int) Math.ceil(1f * (mapMax.getX() - gridMin.getX()) / gridMeshSize);
 		int gridHeight = 2 * (int) Math.ceil(1f * (mapMax.getZ() - gridMin.getZ()) / gridMeshSize);
 		
-		gridSegments = new PathSegment[gridWidth][gridHeight];
+		gridSegments = new GridSegment[gridWidth][gridHeight];
 		segmentTypes = new PathType[gridWidth][gridHeight];
 	}
 	
-	private PathSegment createGridSegment(int gridX, int gridZ) {
+	private GridSegment createGridSegment(int gridX, int gridZ) {
 		Vec2 segmentStart = gridMin.clone();
 		
 		segmentStart.add(
@@ -230,7 +230,7 @@ public class PathMap {
 				gridX % 2 == 0 ? pathWidth : wallWidth,
 				gridZ % 2 == 0 ? pathWidth : wallWidth);
 		
-		return new PathSegment(segmentStart, segmentSize, new Vec2(gridX, gridZ));
+		return new GridSegment(segmentStart, segmentSize, new Vec2(gridX, gridZ));
 	}
 	
 	public Vec2 getBlockLoc(int gridX, int gridZ) {
