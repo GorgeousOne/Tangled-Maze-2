@@ -51,7 +51,7 @@ public class BlockTypeAquatic extends BlockType {
 	
 	public static BlockData deserialize(String serialized) {
 		BlockData data = Bukkit.createBlockData(serialized);
-
+		
 		if (serialized.contains("leaves") && !serialized.contains("persistent")) {
 			data = data.merge(data.getMaterial().createBlockData("[persistent=true]"));
 		}
@@ -71,7 +71,7 @@ public class BlockTypeAquatic extends BlockType {
 		
 		if (isFreelyOrientable) {
 			copy = copy.merge(copy.getMaterial().createBlockData("[axis=" + ORIENTATIONS[RANDOM.nextInt(ORIENTATIONS.length)] + "]"));
-		}else if (isFreelyDirectional) {
+		} else if (isFreelyDirectional) {
 			copy = copy.merge(copy.getMaterial().createBlockData("[facing=" + FACINGS[RANDOM.nextInt(FACINGS.length)] + "]"));
 		}
 		newState.setBlockData(copy);

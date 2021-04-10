@@ -118,16 +118,16 @@ public class ClipActionFactory {
 			}
 		}
 		//remove every part of the new added border not sealing the maze anyway
-//		Iterator<Vec2> iterator = deletion.getAddedBorder().iterator();
-//
-//		while (iterator.hasNext()) {
-//			Vec2 newBorder = iterator.next();
-//
-//			if (!touchesFill(deletion, newBorder, Direction.values())) {
-//				iterator.remove();
-//				deletion.removeFill(newBorder, maze.getY(newBorder));
-//			}
-//		}
+		//		Iterator<Vec2> iterator = deletion.getAddedBorder().iterator();
+		//
+		//		while (iterator.hasNext()) {
+		//			Vec2 newBorder = iterator.next();
+		//
+		//			if (!touchesFill(deletion, newBorder, Direction.values())) {
+		//				iterator.remove();
+		//				deletion.removeFill(newBorder, maze.getY(newBorder));
+		//			}
+		//		}
 	}
 	
 	/**

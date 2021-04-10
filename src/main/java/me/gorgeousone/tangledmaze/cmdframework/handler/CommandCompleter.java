@@ -21,8 +21,8 @@ public class CommandCompleter implements TabCompleter {
 	
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		
 		for (BaseCommand command : cmdHandler.getCommands()) {
+			
 			if (command.matchesAlias(cmd.getName())) {
 				List<String> tabList = new LinkedList<>();
 				

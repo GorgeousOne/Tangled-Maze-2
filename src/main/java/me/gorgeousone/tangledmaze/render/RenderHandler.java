@@ -1,8 +1,8 @@
 package me.gorgeousone.tangledmaze.render;
 
+import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.clip.ClipAction;
-import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.event.ClipActionProcessEvent;
 import me.gorgeousone.tangledmaze.event.ClipDeleteEvent;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;

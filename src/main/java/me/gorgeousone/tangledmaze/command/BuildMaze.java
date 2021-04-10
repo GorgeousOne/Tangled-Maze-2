@@ -12,7 +12,6 @@ import me.gorgeousone.tangledmaze.util.MaterialUtil;
 import me.gorgeousone.tangledmaze.util.MathUtil;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -27,23 +26,25 @@ public class BuildMaze extends ArgCommand {
 	
 	public BuildMaze(SessionHandler sessionHandler, BuildHandler buildHandler) {
 		super("build");
+		addFlag("floor");
+		addFlag("roof");
 		
 		this.sessionHandler = sessionHandler;
 		this.buildHandler = buildHandler;
 	}
 	
 	@Override
-	protected void executeArgs(CommandSender sender, ArgValue[] argValues, Set<String> usedFlags) {
+	protected void executeArgs(CommandSender sender, List<ArgValue> argValues, Set<String> usedFlags) {
 		Player player = (Player) sender;
 		UUID playerId = player.getUniqueId();
 		Clip maze = sessionHandler.getMazeClip(playerId);
 		
 		if (maze == null) {
-			sender.sendMessage(ChatColor.GRAY + "Well well well");
+			sender.sendMessage(ChatColor.GRAY + "no maze");
 			return;
 		}
 		if (maze.getExits().isEmpty()) {
-			sender.sendMessage(ChatColor.GRAY + "Mhh mhh mhh");
+			sender.sendMessage(ChatColor.GRAY + "no exits");
 			return;
 		}
 		MazeSettings settings = sessionHandler.getSettings(playerId);
@@ -51,10 +52,10 @@ public class BuildMaze extends ArgCommand {
 		
 		if (usedFlags.contains("floor")) {
 			mazePart = MazePart.FLOOR;
-		}else if (usedFlags.contains("roof")) {
+		} else if (usedFlags.contains("roof")) {
 			mazePart = MazePart.ROOF;
 		}
-		if (argValues.length != 0) {
+		if (argValues.size() != 0) {
 			try {
 				BlockPalette palette = deserializeBlockPalette(argValues);
 				sender.sendMessage("created " + palette.size() + " blocks for " + mazePart.name().toLowerCase());
@@ -67,12 +68,12 @@ public class BuildMaze extends ArgCommand {
 		buildHandler.buildMaze(maze, settings, mazePart);
 	}
 	
-	public BlockPalette deserializeBlockPalette(ArgValue[] stringArgs) {
+	public BlockPalette deserializeBlockPalette(List<ArgValue> stringArgs) {
 		BlockPalette palette = new BlockPalette();
 		
 		for (ArgValue input : stringArgs) {
 			String inputString = input.get();
-			int  count = 1;
+			int count = 1;
 			String materialString;
 			
 			if (inputString.contains("*")) {
@@ -116,7 +117,7 @@ public class BuildMaze extends ArgCommand {
 			
 		} else if (MathUtil.isInt(tabbedArg)) {
 			factorString = tabbedArg + "*";
-		}else {
+		} else {
 			return MaterialUtil.getBlockNames();
 		}
 		

@@ -24,7 +24,7 @@ public final class VersionUtil {
 			
 			if (versionDiff > 0) {
 				return false;
-			}else if (versionDiff < 0){
+			} else if (versionDiff < 0) {
 				return true;
 			}
 		}

@@ -18,7 +18,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import sun.misc.Version;
 
 public final class TangledMaze extends JavaPlugin {
 	
@@ -62,6 +61,7 @@ public final class TangledMaze extends JavaPlugin {
 		mazeCmd.addChild(new SwitchTool(toolHandler));
 		mazeCmd.addChild(new BuildMaze(sessionHandler, buildHandler));
 		mazeCmd.addChild(new SettingsCommand(sessionHandler));
+		
 		CommandHandler cmdHandler = new CommandHandler(this);
 		cmdHandler.registerCommand(mazeCmd);
 	}
