@@ -8,6 +8,7 @@ import me.gorgeousone.tangledmaze.command.CutClip;
 import me.gorgeousone.tangledmaze.command.SettingsCommand;
 import me.gorgeousone.tangledmaze.command.StartMaze;
 import me.gorgeousone.tangledmaze.command.SwitchTool;
+import me.gorgeousone.tangledmaze.command.UnbuildMaze;
 import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
 import me.gorgeousone.tangledmaze.listener.ClickListener;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
@@ -41,6 +42,7 @@ public final class TangledMaze extends JavaPlugin {
 	public void onDisable() {
 		renderHandler.disable();
 		sessionHandler.disable();
+		buildHandler.disable();
 		Bukkit.broadcastMessage(ChatColor.GOLD + "TODO mazemap setType contains check");
 	}
 	
@@ -59,8 +61,9 @@ public final class TangledMaze extends JavaPlugin {
 		mazeCmd.addChild(new AddClip(sessionHandler));
 		mazeCmd.addChild(new CutClip(sessionHandler));
 		mazeCmd.addChild(new SwitchTool(toolHandler));
-		mazeCmd.addChild(new BuildMaze(sessionHandler, buildHandler));
 		mazeCmd.addChild(new SettingsCommand(sessionHandler));
+		mazeCmd.addChild(new BuildMaze(sessionHandler, buildHandler));
+		mazeCmd.addChild(new UnbuildMaze(sessionHandler, buildHandler));
 		
 		CommandHandler cmdHandler = new CommandHandler(this);
 		cmdHandler.registerCommand(mazeCmd);

@@ -15,14 +15,14 @@ import java.util.Set;
 
 public class WallGen {
 	
-	public static Set<WallSegment> genWalls(MazeMap mazeMap, MazeSettings settings) {
+	public static Set<BlockSegment> genWalls(MazeMap mazeMap, MazeSettings settings) {
 		PathMap pathMap = mazeMap.getPathMap();
-		Set<WallSegment> walls = new HashSet<>();
+		Set<BlockSegment> walls = new HashSet<>();
 		
 		for (int gridX = 0; gridX < pathMap.getWidth(); ++gridX) {
 			for (int gridZ = 0; gridZ < pathMap.getHeight(); ++gridZ) {
 				GridSegment segment = pathMap.getSegment(gridX, gridZ);
-				WallSegment wall = createWall(mazeMap, segment, settings.getValue(MazeProperty.WALL_HEIGHT));
+				BlockSegment wall = createWall(mazeMap, segment, settings.getValue(MazeProperty.WALL_HEIGHT));
 				
 				if (wall == null) {
 					continue;
@@ -45,7 +45,7 @@ public class WallGen {
 	 * @param segment segment to build the wall in
 	 * @param height  height of the wall
 	 */
-	private static WallSegment createWall(MazeMap mazeMap, GridSegment segment, int height) {
+	private static BlockSegment createWall(MazeMap mazeMap, GridSegment segment, int height) {
 		Vec2 min = segment.getMin();
 		Vec2 max = segment.getMax();
 		Set<Vec2> columns = new HashSet<>();
@@ -71,7 +71,7 @@ public class WallGen {
 		if (columns.isEmpty()) {
 			return null;
 		}
-		WallSegment wall = new WallSegment(segment.getMin(), segment.getMax(), segment.getGridPos(), mazeMap.getWorld().getMaxHeight());
+		BlockSegment wall = new BlockSegment(segment.getMin(), segment.getMax(), segment.getGridPos(), mazeMap.getWorld().getMaxHeight());
 		
 		for (Vec2 column : columns) {
 			int floorY = mazeMap.getY(column);
@@ -83,7 +83,7 @@ public class WallGen {
 		return wall;
 	}
 	
-	private static void hollowOutWall(WallSegment wall) {
+	private static void hollowOutWall(BlockSegment wall) {
 		BlockVec min = wall.getMin();
 		BlockVec max = wall.getMax();
 		Set<BlockVec> blocksToRemove = new HashSet<>();
