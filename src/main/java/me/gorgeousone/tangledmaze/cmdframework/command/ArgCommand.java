@@ -81,9 +81,8 @@ public abstract class ArgCommand extends BaseCommand {
 	
 	protected String matchFlag(String input) {
 		for (String flag : flags) {
-			System.out.println(flag + ", " + input);
 			if (flag.equals(input)) {
-				return flag;
+				return flag.substring(1);
 			}
 		}
 		throw new IllegalArgumentException("No flag '" + input + "' found.");

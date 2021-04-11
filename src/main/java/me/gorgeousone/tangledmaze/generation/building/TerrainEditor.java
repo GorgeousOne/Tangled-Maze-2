@@ -56,7 +56,7 @@ public class TerrainEditor {
 	
 	/**
 	 * Lowers the feet of walls (is that how you say it?) down to level of any path next to it.
-	 * So the wall looks more consistent.
+	 * So the wall looks consistent till 1 under the floor.
 	 */
 	private static void cleanWallEdges(MazeMap mazeMap) {
 		Vec2 min = mazeMap.getMin();
@@ -77,8 +77,8 @@ public class TerrainEditor {
 					
 					if (neighborY < floorY) {
 						mazeMap.setY(x, z, neighborY);
+						floorY = neighborY;
 					}
-					floorY = Math.min(floorY, mazeMap.getY(neighbor));
 				}
 			}
 		}

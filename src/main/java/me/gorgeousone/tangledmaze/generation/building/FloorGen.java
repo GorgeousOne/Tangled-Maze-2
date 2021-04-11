@@ -12,14 +12,14 @@ import java.util.Set;
 
 public class FloorGen {
 	
-	public static Set<WallSegment> genFloor(MazeMap mazeMap) {
+	public static Set<BlockSegment> genFloor(MazeMap mazeMap) {
 		PathMap pathMap = mazeMap.getPathMap();
-		Set<WallSegment> paths = new HashSet<>();
+		Set<BlockSegment> paths = new HashSet<>();
 		
 		for (int gridX = 0; gridX < pathMap.getWidth(); ++gridX) {
 			for (int gridZ = 0; gridZ < pathMap.getHeight(); ++gridZ) {
 				GridSegment segment = pathMap.getSegment(gridX, gridZ);
-				WallSegment path = createPath(mazeMap, segment);
+				BlockSegment path = createPath(mazeMap, segment);
 				
 				if (path == null) {
 					continue;
@@ -30,7 +30,7 @@ public class FloorGen {
 		return paths;
 	}
 	
-	private static WallSegment createPath(MazeMap mazeMap, GridSegment segment) {
+	private static BlockSegment createPath(MazeMap mazeMap, GridSegment segment) {
 		Vec2 min = segment.getMin();
 		Vec2 max = segment.getMax();
 		Set<Vec2> columns = new HashSet<>();
@@ -49,7 +49,7 @@ public class FloorGen {
 		if (columns.isEmpty()) {
 			return null;
 		}
-		WallSegment path = new WallSegment(segment.getMin(), segment.getMax(), segment.getGridPos(), mazeMap.getWorld().getMaxHeight());
+		BlockSegment path = new BlockSegment(segment.getMin(), segment.getMax(), segment.getGridPos(), mazeMap.getWorld().getMaxHeight());
 		
 		for (Vec2 column : columns) {
 			int maxFloorY = mazeMap.getY(column);

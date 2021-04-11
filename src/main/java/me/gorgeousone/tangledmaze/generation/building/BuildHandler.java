@@ -5,67 +5,110 @@ import me.gorgeousone.tangledmaze.generation.GridSegment;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.generation.MazeMapFactory;
 import me.gorgeousone.tangledmaze.generation.paving.PathTree;
+import me.gorgeousone.tangledmaze.maze.MazeBackup;
 import me.gorgeousone.tangledmaze.maze.MazePart;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.Vec2;
+import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.util.EulerAngle;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
 public class BuildHandler {
 	
-	private final HashMap<Clip, MazeMap> mazeMaps;
+	private final HashMap<Clip, MazeBackup> mazeBackups;
 	
 	public BuildHandler() {
-		this.mazeMaps = new HashMap<>();
+		this.mazeBackups = new HashMap<>();
+	}
+	
+	public void disable() {
+		for (Clip maze : mazeBackups.keySet()) {
+			unbuildMaze(maze, MazePart.WALLS);
+		}
 	}
 	
 	public void buildMaze(Clip maze, MazeSettings settings, MazePart mazePart) {
-		
-		if (!mazeMaps.containsKey(maze) && mazePart != MazePart.WALLS) {
+		if (!mazeBackups.containsKey(maze) && mazePart != MazePart.WALLS) {
 			Bukkit.broadcastMessage("sry lad, walls first pls");
 			return;
 		}
-		
-		mazeMaps.computeIfAbsent(maze, map -> MazeMapFactory.createMazeMapOf(maze, settings));
-		MazeMap mazeMap = mazeMaps.get(maze);
+		mazeBackups.computeIfAbsent(maze, backup -> {
+			MazeMap mazeMap = MazeMapFactory.createMazeMapOf(maze, settings);
+			return new MazeBackup(mazeMap);
+		});
+		MazeBackup backup = mazeBackups.get(maze);
+		MazeMap mazeMap = backup.getMazeMap();
+		Set<BlockSegment> segments;
 		
 		switch (mazePart) {
 			case WALLS:
-				mazeMaps.put(maze, mazeMap);
-				Set<WallSegment> walls = WallGen.genWalls(mazeMap, settings);
-				buildSegments(mazeMap.getWorld(), walls, settings.getPalette(mazePart));
-				//displayPaths(maze, mazeMap);
+				segments = backup.getOrCompute(MazePart.WALLS, walls -> WallGen.genWalls(mazeMap, settings));
 				break;
 			case FLOOR:
-				Set<WallSegment> paths = FloorGen.genFloor(mazeMap);
-				buildSegments(mazeMap.getWorld(), paths, settings.getPalette(mazePart));
+				segments = backup.getOrCompute(MazePart.FLOOR, floor -> FloorGen.genFloor(mazeMap));
 				break;
-			case ROOF:
-				break;
+			default:
+				Bukkit.broadcastMessage("not implemented");
+				return;
 		}
+		Set<BlockState> backupBlocks = buildSegments(mazeMap.getWorld(), segments, settings.getPalette(mazePart));
+		backup.setSegments(mazePart, segments);
+		backup.setBlocks(mazePart, backupBlocks);
 	}
 	
 	Random random = new Random();
 	
-	private void buildSegments(World world, Set<WallSegment> segments, BlockPalette palette) {
-		for (WallSegment segment : segments) {
+	private Set<BlockState> buildSegments(World world, Set<BlockSegment> segments, BlockPalette palette) {
+		Set<BlockState> backupBlocks = new HashSet<>();
+		
+		for (BlockSegment segment : segments) {
 			for (BlockVec blockVec : segment.getBlocks()) {
 				Block block = world.getBlockAt(blockVec.getX(), blockVec.getY(), blockVec.getZ());
-				palette.getBlock(random.nextInt(palette.size())).updateBlock(block, false);
+				BlockType type = palette.getBlock(random.nextInt(palette.size()));
+				backupBlocks.add(type.updateBlock(block, false));
 			}
+		}
+		return backupBlocks;
+	}
+	
+	public void unbuildMaze(Clip maze, MazePart mazePart) {
+		if (!mazeBackups.containsKey(maze)) {
+			throw new IllegalArgumentException("no built maze");
+		}
+		MazeBackup backup = mazeBackups.get(maze);
+		
+		if (mazePart == MazePart.WALLS) {
+			for (MazePart builtPart : backup.getBuiltParts()) {
+				unbuildMazePart(backup.getBlocks(builtPart));
+			}
+			mazeBackups.remove(maze);
+			return;
+		}
+		if (!backup.getBuiltParts().contains(mazePart)) {
+			throw new IllegalArgumentException("didnt build " + mazePart.name());
+		}
+		unbuildMazePart(backup.getBlocks(mazePart));
+		backup.removeMazePart(mazePart);
+	}
+	
+	private void unbuildMazePart(Set<BlockState> backupBlocks) {
+		for (BlockState block : backupBlocks) {
+			block.update(true, false);
 		}
 	}
 	

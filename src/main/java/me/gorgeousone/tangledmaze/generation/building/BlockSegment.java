@@ -6,7 +6,7 @@ import me.gorgeousone.tangledmaze.util.Vec2;
 import java.util.HashSet;
 import java.util.Set;
 
-public class WallSegment {
+public class BlockSegment {
 	
 	private final Vec2 min;
 	private final Vec2 max;
@@ -17,7 +17,7 @@ public class WallSegment {
 	private int maxY;
 	private final boolean[][][] blocks;
 	
-	public WallSegment(Vec2 min, Vec2 max, Vec2 gridPos, int worldHeight) {
+	public BlockSegment(Vec2 min, Vec2 max, Vec2 gridPos, int worldHeight) {
 		this.min = min;
 		this.max = max;
 		this.gridPos = gridPos;

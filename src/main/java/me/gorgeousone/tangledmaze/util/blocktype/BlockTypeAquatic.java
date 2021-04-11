@@ -3,6 +3,7 @@ package me.gorgeousone.tangledmaze.util.blocktype;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
@@ -16,13 +17,14 @@ import java.util.Random;
  */
 public class BlockTypeAquatic extends BlockType {
 	
-	private static final String[] FACINGS = {"east", "south", "west", "north"};
-	private static final String[] ORIENTATIONS = {"x", "y", "z"};
 	private static final Random RANDOM = new Random();
 	
 	private final BlockData blockData;
 	private final boolean isFreelyDirectional;
 	private final boolean isFreelyOrientable;
+	
+	private String[] allowedFaces;
+	private String[] allowedAxes;
 	
 	public BlockTypeAquatic(BlockData data) {
 		if (!data.getMaterial().isBlock()) {
@@ -31,6 +33,12 @@ public class BlockTypeAquatic extends BlockType {
 		blockData = data.clone();
 		isFreelyDirectional = blockData instanceof Directional && !blockData.getAsString(true).contains("facing");
 		isFreelyOrientable = blockData instanceof Orientable && !blockData.getAsString(true).contains("axis");
+		
+		if (isFreelyDirectional) {
+			allowedFaces = ((Directional) blockData).getFaces().stream().map(face -> face.name().toLowerCase()).toArray(String[]::new);
+		}else if (isFreelyOrientable) {
+			allowedFaces = ((Orientable) blockData).getAxes().stream().map(face -> face.name().toLowerCase()).toArray(String[]::new);
+		}
 	}
 	
 	public BlockTypeAquatic(Material material) {
@@ -70,9 +78,9 @@ public class BlockTypeAquatic extends BlockType {
 		BlockData copy = blockData.clone();
 		
 		if (isFreelyOrientable) {
-			copy = copy.merge(copy.getMaterial().createBlockData("[axis=" + ORIENTATIONS[RANDOM.nextInt(ORIENTATIONS.length)] + "]"));
+			copy = copy.merge(copy.getMaterial().createBlockData("[axis=" + allowedAxes[RANDOM.nextInt(allowedAxes.length)] + "]"));
 		} else if (isFreelyDirectional) {
-			copy = copy.merge(copy.getMaterial().createBlockData("[facing=" + FACINGS[RANDOM.nextInt(FACINGS.length)] + "]"));
+			copy = copy.merge(copy.getMaterial().createBlockData("[facing=" + allowedFaces[RANDOM.nextInt(allowedFaces.length)] + "]"));
 		}
 		newState.setBlockData(copy);
 		newState.update(true, physics);
