@@ -11,6 +11,7 @@ import me.gorgeousone.tangledmaze.command.SwitchTool;
 import me.gorgeousone.tangledmaze.command.UnbuildMaze;
 import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
 import me.gorgeousone.tangledmaze.listener.ClickListener;
+import me.gorgeousone.tangledmaze.listener.PlayerQuitListener;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import me.gorgeousone.tangledmaze.util.VersionUtil;
@@ -48,8 +49,10 @@ public final class TangledMaze extends JavaPlugin {
 	
 	void registerListeners() {
 		PluginManager manager = Bukkit.getPluginManager();
+		manager.registerEvents(toolHandler, this);
 		manager.registerEvents(renderHandler, this);
 		manager.registerEvents(new ClickListener(sessionHandler, toolHandler), this);
+		manager.registerEvents(new PlayerQuitListener(sessionHandler, renderHandler), this);
 	}
 	
 	private void registerCommands() {

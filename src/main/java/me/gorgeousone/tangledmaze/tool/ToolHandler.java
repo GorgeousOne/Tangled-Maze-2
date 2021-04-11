@@ -1,12 +1,15 @@
 package me.gorgeousone.tangledmaze.tool;
 
 import me.gorgeousone.tangledmaze.SessionHandler;
+import me.gorgeousone.tangledmaze.event.MazeBuildEvent;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class ToolHandler {
+public class ToolHandler implements Listener {
 	
 	private final SessionHandler sessionHandler;
 	private final Map<UUID, ToolType> playerTools;
@@ -28,5 +31,11 @@ public class ToolHandler {
 			sessionHandler.removeClip(playerId, true);
 		}
 		return switchedTool;
+	}
+	
+	@EventHandler
+	public void onMazeBuild(MazeBuildEvent event) {
+		UUID playerId = event.getPlayerId();
+		playerTools.put(playerId, ToolType.CLIP);
 	}
 }

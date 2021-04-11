@@ -8,6 +8,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,12 +59,12 @@ public class Clip {
 		return border;
 	}
 	
-	public Map<Vec2, Integer> getBorderBlocks() {
-		return border.stream().collect(Collectors.toMap(Function.identity(), fill::get));
+	public Map<Vec2, Integer> getBlocks(Collection<Vec2> locs) {
+		return locs.stream().collect(Collectors.toMap(Function.identity(), this::getY));
 	}
 	
-	public int getY(Vec2 border) {
-		return fill.get(border);
+	public int getY(Vec2 loc) {
+		return fill.get(loc);
 	}
 	
 	public List<Vec2> getExits() {

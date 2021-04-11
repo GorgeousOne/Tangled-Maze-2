@@ -78,8 +78,4 @@ public class SessionHandler {
 		mazeSettings.computeIfAbsent(playerId, setting -> new MazeSettings());
 		return mazeSettings.get(playerId);
 	}
-	
-	public void removeSettings(UUID playerId) {
-		mazeSettings.remove(playerId);
-	}
 }

@@ -1,6 +1,8 @@
 package me.gorgeousone.tangledmaze.generation.building;
 
 import me.gorgeousone.tangledmaze.clip.Clip;
+import me.gorgeousone.tangledmaze.event.MazeBuildEvent;
+import me.gorgeousone.tangledmaze.event.MazeStartEvent;
 import me.gorgeousone.tangledmaze.generation.GridSegment;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.generation.MazeMapFactory;
@@ -27,6 +29,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 
 public class BuildHandler {
 	
@@ -38,11 +41,11 @@ public class BuildHandler {
 	
 	public void disable() {
 		for (Clip maze : mazeBackups.keySet()) {
-			unbuildMaze(maze, MazePart.WALLS);
+			unbuildMaze(null, maze, MazePart.WALLS);
 		}
 	}
 	
-	public void buildMaze(Clip maze, MazeSettings settings, MazePart mazePart) {
+	public void buildMaze(UUID playerId, Clip maze, MazeSettings settings, MazePart mazePart) {
 		if (!mazeBackups.containsKey(maze) && mazePart != MazePart.WALLS) {
 			Bukkit.broadcastMessage("sry lad, walls first pls");
 			return;
@@ -68,7 +71,11 @@ public class BuildHandler {
 		}
 		Set<BlockState> backupBlocks = buildSegments(mazeMap.getWorld(), segments, settings.getPalette(mazePart));
 		backup.setSegments(mazePart, segments);
-		backup.setBlocks(mazePart, backupBlocks);
+		boolean isFirstBuild = backup.setBlocks(mazePart, backupBlocks);
+		
+		if (mazePart == MazePart.WALLS && isFirstBuild) {
+			Bukkit.getPluginManager().callEvent(new MazeBuildEvent(maze, playerId));
+		}
 	}
 	
 	Random random = new Random();
@@ -86,7 +93,7 @@ public class BuildHandler {
 		return backupBlocks;
 	}
 	
-	public void unbuildMaze(Clip maze, MazePart mazePart) {
+	public void unbuildMaze(UUID playerId, Clip maze, MazePart mazePart) {
 		if (!mazeBackups.containsKey(maze)) {
 			throw new IllegalArgumentException("no built maze");
 		}
@@ -97,6 +104,7 @@ public class BuildHandler {
 				unbuildMazePart(backup.getBlocks(builtPart));
 			}
 			mazeBackups.remove(maze);
+			Bukkit.getPluginManager().callEvent(new MazeStartEvent(playerId, maze));
 			return;
 		}
 		if (!backup.getBuiltParts().contains(mazePart)) {
