@@ -48,7 +48,7 @@ public class UnbuildMaze extends ArgCommand {
 		}
 		
 		try {
-			buildHandler.unbuildMaze(maze, mazePart);
+			buildHandler.unbuildMaze(playerId, maze, mazePart);
 		}catch (IllegalArgumentException e) {
 			sender.sendMessage("Error: " + e.getMessage());
 		}

@@ -6,9 +6,11 @@ import me.gorgeousone.tangledmaze.clip.ClipAction;
 import me.gorgeousone.tangledmaze.event.ClipActionProcessEvent;
 import me.gorgeousone.tangledmaze.event.ClipDeleteEvent;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
+import me.gorgeousone.tangledmaze.event.MazeBuildEvent;
 import me.gorgeousone.tangledmaze.event.MazeExitSetEvent;
 import me.gorgeousone.tangledmaze.event.MazeStartEvent;
 import me.gorgeousone.tangledmaze.tool.ClipTool;
+import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.event.EventHandler;
@@ -18,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -70,6 +73,10 @@ public class RenderHandler implements Listener {
 		return render;
 	}
 	
+	public void removePlayer(UUID playerId) {
+		renderings.remove(playerId);
+	}
+	
 	/**
 	 * Updates vertices and borders of clips when being created with a clip tool
 	 */
@@ -86,7 +93,7 @@ public class RenderHandler implements Listener {
 					case COMPLETE:
 						Clip clip = sessionHandler.getClip(tool.getPlayerId());
 						session.addLayer(CLIP_VERTEX_LAYER, tool.getVertices(), CLIP_VERTEX_MAT);
-						session.addLayer(CLIP_BORDER_LAYER, clip.getBorderBlocks(), CLIP_BORDER_MAT);
+						session.addLayer(CLIP_BORDER_LAYER, clip.getBlocks(clip.getBorder()), CLIP_BORDER_MAT);
 						break;
 					case RESTART:
 						session.removeLayer(CLIP_BORDER_LAYER, true);
@@ -111,12 +118,20 @@ public class RenderHandler implements Listener {
 		
 		session.removeLayer(CLIP_BORDER_LAYER, false);
 		session.removeLayer(MAZE_EXIT_LAYER, false);
+		session.removeLayer(MAZE_MAIN_EXIT_LAYER, false);
 		session.removeLayer(MAZE_BORDER_LAYER, true);
 		session.removeLayer(CLIP_VERTEX_LAYER, true);
-		session.addLayer(MAZE_BORDER_LAYER, clip.getBorderBlocks(), MAZE_BORDER_MAT);
 		
-		session.addLayer(MAZE_EXIT_LAYER, new HashMap<>(), MAZE_EXIT_MAT);
-		session.addLayer(MAZE_MAIN_EXIT_LAYER, new HashMap<>(), MAZE_MAIN_EXIT_MAT);
+		session.addLayer(MAZE_BORDER_LAYER, clip.getBlocks(clip.getBorder()), MAZE_BORDER_MAT);
+		List<Vec2> exits = clip.getExits();
+		
+		if (!exits.isEmpty()) {
+			session.addLayer(MAZE_MAIN_EXIT_LAYER, clip.getBlocks(exits.subList(0, 1)), MAZE_MAIN_EXIT_MAT);
+			session.addLayer(MAZE_EXIT_LAYER, clip.getBlocks(exits), MAZE_EXIT_MAT);
+		} else {
+			session.addLayer(MAZE_MAIN_EXIT_LAYER, new HashMap<>(), MAZE_MAIN_EXIT_MAT);
+			session.addLayer(MAZE_EXIT_LAYER, new HashMap<>(), MAZE_EXIT_MAT);
+		}
 	}
 	
 	/**
@@ -152,5 +167,13 @@ public class RenderHandler implements Listener {
 		session.removeFromLayer(MAZE_MAIN_EXIT_LAYER, event.getRemovedMainExits(), true);
 		session.addToLayer(MAZE_MAIN_EXIT_LAYER, event.getAddedMainExits());
 		session.addToLayer(MAZE_EXIT_LAYER, event.getAddedMainExits());
+	}
+	
+	@EventHandler
+	public void onMazeBuild(MazeBuildEvent event) {
+		UUID playerId = event.getPlayerId();
+		RenderSession session = getRenderSession(playerId);
+		session.clear();
+		removePlayer(playerId);
 	}
 }

@@ -65,7 +65,7 @@ public class BuildMaze extends ArgCommand {
 				e.printStackTrace();
 			}
 		}
-		buildHandler.buildMaze(maze, settings, mazePart);
+		buildHandler.buildMaze(playerId, maze, settings, mazePart);
 	}
 	
 	public BlockPalette deserializeBlockPalette(List<ArgValue> stringArgs) {

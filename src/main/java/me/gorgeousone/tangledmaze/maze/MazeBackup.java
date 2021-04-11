@@ -46,8 +46,12 @@ public class MazeBackup {
 		partSegments.put(mazePart, segments);
 	}
 	
-	public void setBlocks(MazePart mazePart, Set<BlockState> backupBlocks) {
-		partBlocks.putIfAbsent(mazePart, backupBlocks);
+	/**
+	 * Saves the previous block states of the block changed for this maze part, if none have been saved before.
+	 * Returns true if this maze part didn't already have backup blocks.
+	 */
+	public boolean setBlocks(MazePart mazePart, Set<BlockState> backupBlocks) {
+		return partBlocks.putIfAbsent(mazePart, backupBlocks) == null;
 	}
 	
 	public void removeMazePart(MazePart mazePart) {
