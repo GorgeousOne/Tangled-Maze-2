@@ -3,22 +3,13 @@ package me.gorgeousone.tangledmaze;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.clip.ClipShape;
 import me.gorgeousone.tangledmaze.event.ClipDeleteEvent;
-import me.gorgeousone.tangledmaze.event.TerrainChangeEvent;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.tool.ClipTool;
-import me.gorgeousone.tangledmaze.util.BlockUtil;
-import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.Bukkit;
-import org.bukkit.block.Block;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 public class SessionHandler implements Listener {

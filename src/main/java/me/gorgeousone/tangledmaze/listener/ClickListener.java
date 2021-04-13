@@ -4,8 +4,12 @@ import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.clip.ClipFactory;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
+import me.gorgeousone.tangledmaze.render.RenderHandler;
+import me.gorgeousone.tangledmaze.render.RenderSession;
 import me.gorgeousone.tangledmaze.tool.ClipTool;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
+import me.gorgeousone.tangledmaze.util.Direction;
+import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -15,8 +19,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -24,12 +32,18 @@ import java.util.UUID;
  */
 public class ClickListener implements Listener {
 	
+	private final JavaPlugin plugin;
 	private final SessionHandler sessionHandler;
 	private final ToolHandler toolHandler;
+	private final RenderHandler renderHandler;
 	
-	public ClickListener(SessionHandler sessionHandler, ToolHandler toolHandler) {
+	public ClickListener(JavaPlugin plugin, SessionHandler sessionHandler,
+	                     ToolHandler toolHandler,
+	                     RenderHandler renderHandler) {
+		this.plugin = plugin;
 		this.sessionHandler = sessionHandler;
 		this.toolHandler = toolHandler;
+		this.renderHandler = renderHandler;
 	}
 	
 	/**
@@ -43,10 +57,6 @@ public class ClickListener implements Listener {
 		Player player = event.getPlayer();
 		ItemStack heldItem = player.getInventory().getItemInMainHand();
 		
-		if (heldItem.getType() == Material.STONE_SHOVEL) {
-			event.setCancelled(true);
-			return;
-		}
 		if (!isMazeWand(heldItem)) {
 			return;
 		}
@@ -70,9 +80,9 @@ public class ClickListener implements Listener {
 			case BRUSH:
 				break;
 		}
-		//		if (event.getClickedBlock() != null) {
-		//			createBlockUpdateEvent(event.getClickedBlock());
-		//		}
+		if (event.getClickedBlock() != null) {
+			updateClickedBlocks(player, event.getClickedBlock());
+		}
 	}
 	
 	boolean hoverClickEnabled = true;
@@ -95,15 +105,27 @@ public class ClickListener implements Listener {
 		return clickedBlock;
 	}
 	
-	//	public void createBlockUpdateEvent(Block clickedBlock) {
-	//		Set<Block> updatedBlocks = new HashSet<>();
-	//		updatedBlocks.add(clickedBlock);
-	//
-	//		for (BlockFace face : BlockUtil.DIRECT_FACES) {
-	//			updatedBlocks.add(clickedBlock.getRelative(face));
-	//		}
-	//		Bukkit.getPluginManager().callEvent(new BlockUpdateEvent(updatedBlocks));
-	//	}
+	public void updateClickedBlocks(Player player, Block clickedBlock) {
+		RenderSession render = renderHandler.getPlayerRender(player.getUniqueId());
+		
+		if (render == null) {
+			return;
+		}
+		Set<Vec2> updatedBlocks = new HashSet<>();
+		updatedBlocks.add(new Vec2(clickedBlock));
+		
+		for (Direction dir : Direction.fourCardinals()) {
+			Vec2 facing = dir.getVec2();
+			updatedBlocks.add(new Vec2(clickedBlock.getRelative(facing.getX(), 0, facing.getZ())));
+		}
+		
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				render.redisplayBlocks(updatedBlocks);
+			}
+		}.runTaskLater(plugin, 2);
+	}
 	
 	/**
 	 * Creates a clip for the player when a clip tool reaches the required amount of vertices for it.

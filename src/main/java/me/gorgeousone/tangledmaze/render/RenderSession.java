@@ -165,4 +165,17 @@ public class RenderSession {
 			}
 		}
 	}
+	
+	public void redisplayBlocks(Set<Vec2> locs) {
+		Player player = Bukkit.getPlayer(playerId);
+		World world = player.getWorld();
+		
+		for (Vec2 loc : locs) {
+			int topLayer = getTopLayer(loc);
+			
+			if (topLayer != -1) {
+				player.sendBlockChange(loc.toLocation(world, layers.get(topLayer).get(loc)), layerMats.get(topLayer));
+			}
+		}
+	}
 }
