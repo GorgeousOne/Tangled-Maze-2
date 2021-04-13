@@ -10,16 +10,10 @@ public class MazeStartEvent extends Event {
 	
 	private static final HandlerList HANDLERS = new HandlerList();
 	
-	private final UUID playerId;
 	private final Clip clip;
 	
-	public MazeStartEvent(UUID playerId, Clip clip) {
-		this.playerId = playerId;
+	public MazeStartEvent(Clip clip) {
 		this.clip = clip;
-	}
-	
-	public UUID getPlayerId() {
-		return playerId;
 	}
 	
 	public Clip getClip() {

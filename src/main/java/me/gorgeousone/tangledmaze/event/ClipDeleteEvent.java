@@ -10,19 +10,13 @@ public class ClipDeleteEvent extends Event {
 	
 	private static final HandlerList HANDLERS = new HandlerList();
 	private final Clip clip;
-	private final UUID playerId;
 	
-	public ClipDeleteEvent(Clip clip, UUID playerId) {
+	public ClipDeleteEvent(Clip clip) {
 		this.clip = clip;
-		this.playerId = playerId;
 	}
 	
 	public Clip getClip() {
 		return clip;
-	}
-	
-	public UUID getPlayerId() {
-		return playerId;
 	}
 	
 	@Override

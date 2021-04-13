@@ -6,6 +6,7 @@ import me.gorgeousone.tangledmaze.clip.ClipAction;
 import me.gorgeousone.tangledmaze.event.ClipActionProcessEvent;
 import me.gorgeousone.tangledmaze.event.ClipDeleteEvent;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
+import me.gorgeousone.tangledmaze.event.ClipUpdateEvent;
 import me.gorgeousone.tangledmaze.event.MazeBuildEvent;
 import me.gorgeousone.tangledmaze.event.MazeExitSetEvent;
 import me.gorgeousone.tangledmaze.event.MazeStartEvent;
@@ -113,8 +114,8 @@ public class RenderHandler implements Listener {
 	 */
 	@EventHandler
 	public void onMazeStart(MazeStartEvent event) {
-		RenderSession session = getRenderSession(event.getPlayerId());
 		Clip clip = event.getClip();
+		RenderSession session = getRenderSession(clip.getPlayerId());
 		
 		session.removeLayer(CLIP_BORDER_LAYER, false);
 		session.removeLayer(MAZE_EXIT_LAYER, false);
@@ -139,7 +140,7 @@ public class RenderHandler implements Listener {
 	 */
 	@EventHandler
 	public void onClipDelete(ClipDeleteEvent event) {
-		RenderSession session = getRenderSession(event.getPlayerId());
+		RenderSession session = getRenderSession(event.getClip().getPlayerId());
 		session.removeLayer(CLIP_BORDER_LAYER, true);
 		session.removeLayer(CLIP_VERTEX_LAYER, true);
 	}
@@ -149,7 +150,7 @@ public class RenderHandler implements Listener {
 	 */
 	@EventHandler
 	public void onClipActionProcess(ClipActionProcessEvent event) {
-		UUID playerId = event.getPlayerId();
+		UUID playerId = event.getClip().getPlayerId();
 		RenderSession session = getRenderSession(playerId);
 		ClipAction change = event.getAction();
 		
@@ -160,7 +161,7 @@ public class RenderHandler implements Listener {
 	
 	@EventHandler
 	public void onExitSet(MazeExitSetEvent event) {
-		UUID playerId = event.getPlayerId();
+		UUID playerId = event.getMaze().getPlayerId();
 		RenderSession session = getRenderSession(playerId);
 		
 		session.removeFromLayer(MAZE_EXIT_LAYER, event.getRemovedExits(), true);
@@ -175,5 +176,12 @@ public class RenderHandler implements Listener {
 		RenderSession session = getRenderSession(playerId);
 		session.clear();
 		removePlayer(playerId);
+	}
+	
+	@EventHandler
+	public void onClipUpdate(ClipUpdateEvent event) {
+		UUID playerId = event.getClip().getPlayerId();
+		RenderSession session = getRenderSession(playerId);
+		session.updateBlock(event.getLoc(), event.getNewY());
 	}
 }
