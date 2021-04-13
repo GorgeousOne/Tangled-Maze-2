@@ -1,6 +1,7 @@
 package me.gorgeousone.tangledmaze.clip;
 
 import me.gorgeousone.tangledmaze.event.ClipActionProcessEvent;
+import me.gorgeousone.tangledmaze.event.ClipUpdateEvent;
 import me.gorgeousone.tangledmaze.event.MazeExitSetEvent;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.Bukkit;
@@ -9,7 +10,6 @@ import org.bukkit.block.Block;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +41,10 @@ public class Clip {
 		border = new TreeSet<>();
 		exits = new ArrayList<>();
 		actionHistory = new Stack<>();
+	}
+	
+	public UUID getPlayerId() {
+		return playerId;
 	}
 	
 	public World getWorld() {
@@ -104,6 +108,11 @@ public class Clip {
 		return border.contains(loc);
 	}
 	
+	public boolean isFillBlock(Block block) {
+		Vec2 blockLoc = new Vec2(block);
+		return contains(blockLoc) && block.getY() == getY(blockLoc);
+	}
+	
 	public boolean isBorderBlock(Block block) {
 		Vec2 blockLoc = new Vec2(block);
 		return borderContains(blockLoc) && block.getY() == getY(blockLoc);
@@ -129,7 +138,7 @@ public class Clip {
 		if (saveToHistory) {
 			actionHistory.push(action);
 		}
-		Bukkit.getPluginManager().callEvent(new ClipActionProcessEvent(this, action, playerId));
+		Bukkit.getPluginManager().callEvent(new ClipActionProcessEvent(this, action));
 	}
 	
 	public void toggleExit(Block block) {
@@ -147,7 +156,7 @@ public class Clip {
 	}
 	
 	private void addExit(Vec2 loc, int y) {
-		MazeExitSetEvent exitSetEvent = new MazeExitSetEvent(playerId, this);
+		MazeExitSetEvent exitSetEvent = new MazeExitSetEvent(this);
 		
 		if (!exits.isEmpty()) {
 			exitSetEvent.removeMainExit(exits.get(0));
@@ -159,7 +168,7 @@ public class Clip {
 	}
 	
 	private void removeExit(Vec2 loc) {
-		MazeExitSetEvent exitSetEvent = new MazeExitSetEvent(playerId, this);
+		MazeExitSetEvent exitSetEvent = new MazeExitSetEvent(this);
 		int index = exits.indexOf(loc);
 		exits.remove(index);
 		exitSetEvent.removeExit(loc);
@@ -172,4 +181,13 @@ public class Clip {
 		}
 		Bukkit.getPluginManager().callEvent(exitSetEvent);
 	}
+	
+	public void updateLoc(Vec2 loc, int newY) {
+		fill.put(loc, newY);
+		
+		if (borderContains(loc)) {
+			Bukkit.getPluginManager().callEvent(new ClipUpdateEvent(this, loc, newY));
+		}
+	}
+	
 }

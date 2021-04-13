@@ -52,10 +52,6 @@ public class RenderSession {
 		layerMats.clear();
 	}
 	
-	public boolean hasLayer(int layerIndex) {
-		return layers.containsKey(layerIndex);
-	}
-	
 	public void addLayer(int layerIndex, Collection<Block> blocks, BlockData material) {
 		Map<Vec2, Integer> blockLocs = new TreeMap<>();
 		blocks.forEach(block -> blockLocs.put(new Vec2(block), block.getY()));
@@ -99,7 +95,7 @@ public class RenderSession {
 		Map<Vec2, Integer> removedLayer = layers.remove(layerIndex);
 		
 		if (updateFakeBlocks) {
-			hideBlocks(Bukkit.getPlayer(playerId), layerIndex, removedLayer);
+			hideBlocks(layerIndex, removedLayer);
 		}
 	}
 	
@@ -112,11 +108,15 @@ public class RenderSession {
 		layers.get(layerIndex).keySet().removeAll(blocks.keySet());
 		
 		if (updateFakeBlocks) {
-			hideBlocks(Bukkit.getPlayer(playerId), layerIndex, blocks);
+			hideBlocks(layerIndex, blocks);
 		}
 	}
 	
-	private void hideBlocks(Player player, int layerIndex, Map<Vec2, Integer> blocks) {
+	/**
+	 * Hides the given blocks on the selected layer by displaying underlying layers or the original block type itself
+	 */
+	private void hideBlocks(int layerIndex, Map<Vec2, Integer> blocks) {
+		Player player = Bukkit.getPlayer(playerId);
 		World world = player.getWorld();
 		
 		for (Map.Entry<Vec2, Integer> entry : blocks.entrySet()) {
@@ -142,5 +142,27 @@ public class RenderSession {
 			}
 		}
 		return -1;
+	}
+	
+	public void updateBlock(Vec2 loc, int newY) {
+		Player player = Bukkit.getPlayer(playerId);
+		World world = player.getWorld();
+		boolean updatedTopLayer = false;
+		
+		for (int layerKey : layers.keySet()) {
+			Map<Vec2, Integer> layer = layers.get(layerKey);
+			
+			if (layer.containsKey(loc)) {
+				if (!updatedTopLayer) {
+					Location blockLoc = loc.toLocation(world, layer.get(loc));
+					player.sendBlockChange(blockLoc, blockLoc.getBlock().getBlockData());
+					
+					blockLoc.setY(newY);
+					player.sendBlockChange(blockLoc, layerMats.get(layerKey));
+					updatedTopLayer = true;
+				}
+				layer.put(loc, newY);
+			}
+		}
 	}
 }

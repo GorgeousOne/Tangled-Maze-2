@@ -18,26 +18,19 @@ public class MazeExitSetEvent extends Event {
 	
 	private static final HandlerList HANDLERS = new HandlerList();
 	
-	private final UUID playerId;
 	private final Clip maze;
-	
 	private final Map<Vec2, Integer> addedExits;
 	private final Map<Vec2, Integer> addedMainExits;
 	private final Set<Vec2> removedExits;
 	private final Set<Vec2> removedMainExits;
 	
-	public MazeExitSetEvent(UUID playerId, Clip maze) {
-		this.playerId = playerId;
+	public MazeExitSetEvent(Clip maze) {
 		this.maze = maze;
 		
 		addedExits = new HashMap<>();
 		addedMainExits = new HashMap<>();
 		removedExits = new HashSet<>();
 		removedMainExits = new HashSet<>();
-	}
-	
-	public UUID getPlayerId() {
-		return playerId;
 	}
 	
 	public Clip getMaze() {

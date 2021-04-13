@@ -104,7 +104,7 @@ public class BuildHandler {
 				unbuildMazePart(backup.getBlocks(builtPart));
 			}
 			mazeBackups.remove(maze);
-			Bukkit.getPluginManager().callEvent(new MazeStartEvent(playerId, maze));
+			Bukkit.getPluginManager().callEvent(new MazeStartEvent(maze));
 			return;
 		}
 		if (!backup.getBuiltParts().contains(mazePart)) {

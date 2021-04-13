@@ -32,7 +32,7 @@ public class StartMaze extends BaseCommand {
 		
 		sessionHandler.setMazeClip(playerId, clip);
 		sessionHandler.removeClip(playerId);
-		Bukkit.getPluginManager().callEvent(new MazeStartEvent(playerId, clip));
+		Bukkit.getPluginManager().callEvent(new MazeStartEvent(clip));
 		player.performCommand("tm tool exit");
 	}
 }

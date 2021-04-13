@@ -11,6 +11,15 @@ import java.util.Set;
 
 public class BlockUtil {
 	
+	public static final BlockFace[] DIRECT_FACES = {
+			BlockFace.UP,
+			BlockFace.DOWN,
+			BlockFace.NORTH,
+			BlockFace.SOUTH,
+			BlockFace.EAST,
+			BlockFace.WEST
+	};
+	
 	public static int getSurfaceY(World world, Vec2 loc, int y) {
 		return getSurface(world.getBlockAt(loc.getX(), y, loc.getZ())).getY();
 	}

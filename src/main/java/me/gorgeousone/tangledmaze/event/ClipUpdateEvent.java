@@ -1,29 +1,37 @@
 package me.gorgeousone.tangledmaze.event;
 
 import me.gorgeousone.tangledmaze.clip.Clip;
-import me.gorgeousone.tangledmaze.clip.ClipAction;
+import me.gorgeousone.tangledmaze.util.Vec2;
+import org.bukkit.block.Block;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import java.util.UUID;
+import java.util.Collection;
 
-public class ClipActionProcessEvent extends Event {
+public class ClipUpdateEvent extends Event{
 	
 	private static final HandlerList HANDLERS = new HandlerList();
-	private final Clip clip;
-	private final ClipAction action;
 	
-	public ClipActionProcessEvent(Clip clip, ClipAction action) {
+	private final Clip clip;
+	private final Vec2 blockLoc;
+	private final int newY;
+	
+	public ClipUpdateEvent(Clip clip, Vec2 blockLoc, int newY) {
 		this.clip = clip;
-		this.action = action;
+		this.blockLoc = blockLoc;
+		this.newY = newY;
 	}
 	
 	public Clip getClip() {
 		return clip;
 	}
 	
-	public ClipAction getAction() {
-		return action;
+	public Vec2 getLoc() {
+		return blockLoc;
+	}
+	
+	public int getNewY() {
+		return newY;
 	}
 	
 	@Override

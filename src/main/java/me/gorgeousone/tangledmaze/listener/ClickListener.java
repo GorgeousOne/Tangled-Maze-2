@@ -43,29 +43,36 @@ public class ClickListener implements Listener {
 		Player player = event.getPlayer();
 		ItemStack heldItem = player.getInventory().getItemInMainHand();
 		
+		if (heldItem.getType() == Material.STONE_SHOVEL) {
+			event.setCancelled(true);
+			return;
+		}
 		if (!isMazeWand(heldItem)) {
 			return;
 		}
 		event.setCancelled(true);
 		UUID playerId = player.getUniqueId();
-		Block clickedBlock = traceBlock(player, event);
+		Block tracedBlock = traceBlock(player, event);
 		
-		if (clickedBlock == null) {
+		if (tracedBlock == null) {
 			return;
 		}
 		switch (toolHandler.getTool(playerId)) {
 			case CLIP:
-				sessionHandler.getClipTool(playerId).addVertex(clickedBlock);
+				sessionHandler.getClipTool(playerId).addVertex(tracedBlock);
 				break;
 			case EXIT:
 				Clip maze = sessionHandler.getMazeClip(playerId);
 				if (maze != null) {
-					maze.toggleExit(clickedBlock);
+					maze.toggleExit(tracedBlock);
 				}
 				break;
 			case BRUSH:
 				break;
 		}
+		//		if (event.getClickedBlock() != null) {
+		//			createBlockUpdateEvent(event.getClickedBlock());
+		//		}
 	}
 	
 	boolean hoverClickEnabled = true;
@@ -87,6 +94,16 @@ public class ClickListener implements Listener {
 		}
 		return clickedBlock;
 	}
+	
+	//	public void createBlockUpdateEvent(Block clickedBlock) {
+	//		Set<Block> updatedBlocks = new HashSet<>();
+	//		updatedBlocks.add(clickedBlock);
+	//
+	//		for (BlockFace face : BlockUtil.DIRECT_FACES) {
+	//			updatedBlocks.add(clickedBlock.getRelative(face));
+	//		}
+	//		Bukkit.getPluginManager().callEvent(new BlockUpdateEvent(updatedBlocks));
+	//	}
 	
 	/**
 	 * Creates a clip for the player when a clip tool reaches the required amount of vertices for it.
