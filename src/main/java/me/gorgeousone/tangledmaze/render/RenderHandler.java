@@ -78,6 +78,10 @@ public class RenderHandler implements Listener {
 		renderings.remove(playerId);
 	}
 	
+	public RenderSession getPlayerRender(UUID playerId) {
+		return renderings.get(playerId);
+	}
+	
 	/**
 	 * Updates vertices and borders of clips when being created with a clip tool
 	 */
