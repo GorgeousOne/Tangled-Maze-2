@@ -2,10 +2,8 @@ package me.gorgeousone.tangledmaze.listener;
 
 import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
-import me.gorgeousone.tangledmaze.event.TerrainChangeEvent;
 import me.gorgeousone.tangledmaze.util.BlockUtil;
 import me.gorgeousone.tangledmaze.util.Vec2;
-import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -47,7 +45,6 @@ public class BlockChangeListener implements Listener {
 	}
 	
 	private void updateClips(Collection<Block> changedBlocks, Player cause) {
-		Bukkit.getPluginManager().callEvent(new TerrainChangeEvent(changedBlocks, cause));
 		for (Block changedBlock : changedBlocks) {
 			Set<Clip> clipsToUpdate = new HashSet<>();
 			
@@ -57,7 +54,7 @@ public class BlockChangeListener implements Listener {
 				}
 			}
 			for (Clip maze : sessionHandler.getPlayerMazes().values()) {
-				if (maze.isFillBlock(changedBlock)) {
+				if (maze.isActive() && maze.isFillBlock(changedBlock)) {
 					clipsToUpdate.add(maze);
 				}
 			}

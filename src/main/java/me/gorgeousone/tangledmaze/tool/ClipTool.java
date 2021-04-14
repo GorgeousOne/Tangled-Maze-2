@@ -24,7 +24,6 @@ public class ClipTool {
 	}
 	
 	public void reset() {
-		Bukkit.getPlayer(playerId).sendMessage(ChatColor.GRAY + "-reset-");
 		vertices.clear();
 	}
 	

@@ -8,6 +8,7 @@ import me.gorgeousone.tangledmaze.generation.building.BlockPalette;
 import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
 import me.gorgeousone.tangledmaze.maze.MazePart;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
+import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.util.MaterialUtil;
 import me.gorgeousone.tangledmaze.util.MathUtil;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
@@ -23,14 +24,18 @@ public class BuildMaze extends ArgCommand {
 	
 	private final SessionHandler sessionHandler;
 	private final BuildHandler buildHandler;
+	private final RenderHandler renderHandler;
 	
-	public BuildMaze(SessionHandler sessionHandler, BuildHandler buildHandler) {
+	public BuildMaze(SessionHandler sessionHandler,
+	                 BuildHandler buildHandler,
+	                 RenderHandler renderHandler) {
 		super("build");
 		addFlag("floor");
 		addFlag("roof");
 		
 		this.sessionHandler = sessionHandler;
 		this.buildHandler = buildHandler;
+		this.renderHandler = renderHandler;
 	}
 	
 	@Override
@@ -65,6 +70,8 @@ public class BuildMaze extends ArgCommand {
 				e.printStackTrace();
 			}
 		}
+		
+		maze.setActive(false);
 		buildHandler.buildMaze(playerId, maze, settings, mazePart);
 	}
 	

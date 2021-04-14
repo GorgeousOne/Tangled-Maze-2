@@ -3,11 +3,13 @@ package me.gorgeousone.tangledmaze.clip;
 import me.gorgeousone.tangledmaze.event.ClipActionProcessEvent;
 import me.gorgeousone.tangledmaze.event.ClipUpdateEvent;
 import me.gorgeousone.tangledmaze.event.MazeExitSetEvent;
+import me.gorgeousone.tangledmaze.event.MazeStateChangeEvent;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
+import javax.swing.text.rtf.RTFEditorKit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,8 +33,8 @@ public class Clip {
 	private final TreeMap<Vec2, Integer> fill;
 	private final TreeSet<Vec2> border;
 	private final List<Vec2> exits;
-	
 	private final Stack<ClipAction> actionHistory;
+	private boolean isActive;
 	
 	public Clip(UUID playerId, World world) {
 		this.playerId = playerId;
@@ -41,6 +43,7 @@ public class Clip {
 		border = new TreeSet<>();
 		exits = new ArrayList<>();
 		actionHistory = new Stack<>();
+		isActive = true;
 	}
 	
 	public UUID getPlayerId() {
@@ -49,6 +52,17 @@ public class Clip {
 	
 	public World getWorld() {
 		return world;
+	}
+	
+	public boolean isActive() {
+		return isActive;
+	}
+	
+	public void setActive(boolean active) {
+		if (isActive != active) {
+			Bukkit.getPluginManager().callEvent(new MazeStateChangeEvent(this, active));
+		}
+		isActive = active;
 	}
 	
 	public Stack<ClipAction> getActionHistory() {
@@ -142,9 +156,6 @@ public class Clip {
 	}
 	
 	public void toggleExit(Block block) {
-		if (!isBorderBlock(block)) {
-			return;
-		}
 		Vec2 exitLoc = new Vec2(block);
 		int exitY = block.getY();
 		

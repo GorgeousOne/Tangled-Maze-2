@@ -2,7 +2,6 @@ package me.gorgeousone.tangledmaze.generation.building;
 
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.event.MazeBuildEvent;
-import me.gorgeousone.tangledmaze.event.MazeStartEvent;
 import me.gorgeousone.tangledmaze.generation.GridSegment;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.generation.MazeMapFactory;
@@ -104,7 +103,7 @@ public class BuildHandler {
 				unbuildMazePart(backup.getBlocks(builtPart));
 			}
 			mazeBackups.remove(maze);
-			Bukkit.getPluginManager().callEvent(new MazeStartEvent(maze));
+			maze.setActive(true);
 			return;
 		}
 		if (!backup.getBuiltParts().contains(mazePart)) {
