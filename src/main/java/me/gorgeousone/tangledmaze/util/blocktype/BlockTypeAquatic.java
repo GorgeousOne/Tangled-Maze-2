@@ -1,6 +1,7 @@
 package me.gorgeousone.tangledmaze.util.blocktype;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -8,6 +9,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Orientable;
+import org.bukkit.entity.Player;
 
 import java.util.Objects;
 import java.util.Random;
@@ -85,6 +87,11 @@ public class BlockTypeAquatic extends BlockType {
 		newState.setBlockData(copy);
 		newState.update(true, physics);
 		return oldState;
+	}
+	
+	@Override
+	public void sendBlockChange(Player player, Location location) {
+		player.sendBlockChange(location, blockData);
 	}
 	
 	@Override

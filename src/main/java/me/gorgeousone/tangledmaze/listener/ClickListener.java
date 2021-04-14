@@ -17,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -56,13 +57,17 @@ public class ClickListener implements Listener {
 		}
 		Player player = event.getPlayer();
 		ItemStack heldItem = player.getInventory().getItemInMainHand();
+		Block clickedBlock = event.getClickedBlock();
 		
 		if (!isMazeWand(heldItem)) {
+			if (clickedBlock != null) {
+				hideClipsOnClick(player, clickedBlock);
+			}
 			return;
 		}
 		event.setCancelled(true);
 		UUID playerId = player.getUniqueId();
-		Block tracedBlock = traceBlock(player, event);
+		Block tracedBlock = traceBlock(player, clickedBlock);
 		
 		if (tracedBlock == null) {
 			return;
@@ -85,12 +90,28 @@ public class ClickListener implements Listener {
 		}
 	}
 	
+	private void hideClipsOnClick(Player player, Block clickedBlock) {
+		UUID playerId = player.getUniqueId();
+		RenderSession render = renderHandler.getPlayerRender(playerId);
+		
+		if (render == null || !render.isVisible()) {
+			return;
+		}
+		ClipTool clipTool = sessionHandler.getClipTool(playerId);
+		Clip clip = sessionHandler.getClip(playerId);
+		Clip maze = sessionHandler.getMazeClip(playerId);
+		
+		if (clipTool != null && clipTool.getVertices().contains(clickedBlock) ||
+		    clip != null && clip.isBorderBlock(clickedBlock) ||
+		    maze != null && maze.isBorderBlock(clickedBlock)) {
+			render.hide();
+		}
+	}
+	
 	boolean hoverClickEnabled = true;
 	int hoverRange = 100;
 	
-	private Block traceBlock(Player player, PlayerInteractEvent event) {
-		Block clickedBlock = event.getClickedBlock();
-		
+	private Block traceBlock(Player player, Block clickedBlock) {
 		if (clickedBlock == null && hoverClickEnabled) {
 			BlockIterator iter = new BlockIterator(player, hoverRange);
 			
@@ -145,10 +166,25 @@ public class ClickListener implements Listener {
 		}
 	}
 	
+	@EventHandler
+	public void onSlotSwitch(PlayerItemHeldEvent event) {
+		Player player = event.getPlayer();
+		ItemStack newItem = player.getInventory().getItem(event.getNewSlot());
+		
+		if (!isMazeWand(newItem)) {
+			return;
+		}
+		RenderSession render = renderHandler.getPlayerRender(player.getUniqueId());
+		
+		if (render != null && !render.isVisible()) {
+			render.show();
+		}
+	}
+	
 	/**
 	 * Returns if the given ItemStack is a wand for maze creation
 	 */
 	boolean isMazeWand(ItemStack item) {
-		return item.getType() == Material.GOLDEN_SHOVEL;
+		return item != null && item.getType() == Material.GOLDEN_SHOVEL;
 	}
 }

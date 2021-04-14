@@ -1,19 +1,23 @@
 package me.gorgeousone.tangledmaze.util.blocktype;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.Player;
 
 /**
  * A wrapper for block materials and their (block-) data to support copying blocks across all Minecraft versions.
  */
 public abstract class BlockType {
 	
-	private static boolean isLegacyServer;
+	private static Boolean isLegacyServer;
 	
 	public abstract Material getType();
 	
 	public abstract BlockState updateBlock(Block block, boolean physics);
+	
+	public abstract void sendBlockChange(Player player, Location location);
 	
 	public abstract BlockType clone();
 	

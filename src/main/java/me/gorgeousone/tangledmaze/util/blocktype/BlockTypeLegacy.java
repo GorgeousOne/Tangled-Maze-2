@@ -1,8 +1,10 @@
 package me.gorgeousone.tangledmaze.util.blocktype;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.Player;
 import org.bukkit.material.MaterialData;
 
 import java.util.Locale;
@@ -59,6 +61,11 @@ public class BlockTypeLegacy extends BlockType {
 		newState.setRawData(materialData.getData());
 		newState.update(true, physics);
 		return oldState;
+	}
+	
+	@Override
+	public void sendBlockChange(Player player, Location location) {
+		player.sendBlockChange(location, materialData.getItemType(), materialData.getData());
 	}
 	
 	@Override

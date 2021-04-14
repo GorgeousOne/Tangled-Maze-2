@@ -114,6 +114,10 @@ public class MazeMap {
 			for (int z = 0; z < terrainMap[0].length; ++z) {
 				AreaType type = areaMap[x][z];
 				
+				if (type == null) {
+					areaMap[x][z] = AreaType.NOT_MAZE;
+					continue;
+				}
 				switch (type) {
 					case FREE:
 						areaMap[x][z] = AreaType.WALL;
