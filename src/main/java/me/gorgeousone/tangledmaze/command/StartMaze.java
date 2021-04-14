@@ -4,6 +4,7 @@ import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.cmdframework.command.BaseCommand;
 import me.gorgeousone.tangledmaze.event.MazeStartEvent;
+import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,10 +14,12 @@ import java.util.UUID;
 public class StartMaze extends BaseCommand {
 	
 	private final SessionHandler sessionHandler;
+	private final ToolHandler toolHandler;
 	
-	public StartMaze(SessionHandler sessionHandler) {
+	public StartMaze(SessionHandler sessionHandler, ToolHandler toolHandler) {
 		super("start");
 		this.sessionHandler = sessionHandler;
+		this.toolHandler = toolHandler;
 	}
 	
 	@Override
@@ -31,7 +34,7 @@ public class StartMaze extends BaseCommand {
 		}
 		
 		sessionHandler.setMazeClip(playerId, clip);
-		sessionHandler.removeClipTool(playerId);
+		toolHandler.resetClipTool(playerId);
 		Bukkit.getPluginManager().callEvent(new MazeStartEvent(clip));
 	}
 }

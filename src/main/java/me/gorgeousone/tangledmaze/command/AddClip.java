@@ -5,6 +5,7 @@ import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.clip.ClipAction;
 import me.gorgeousone.tangledmaze.clip.ClipActionFactory;
 import me.gorgeousone.tangledmaze.cmdframework.command.BaseCommand;
+import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -13,9 +14,11 @@ import java.util.UUID;
 public class AddClip extends BaseCommand {
 	
 	private final SessionHandler sessionHandler;
+	private final ToolHandler toolHandler;
 	
-	public AddClip(SessionHandler sessionHandler) {
+	public AddClip(SessionHandler sessionHandler, ToolHandler toolHandler) {
 		super("add");
+		this.toolHandler = toolHandler;
 		addAlias("merge");
 		this.sessionHandler = sessionHandler;
 	}
@@ -31,7 +34,7 @@ public class AddClip extends BaseCommand {
 			sender.sendMessage("no maze / clip");
 			return;
 		}
-		sessionHandler.removeClipTool(playerId);
+		toolHandler.resetClipTool(playerId);
 		ClipAction changes = ClipActionFactory.addClip(maze, clip);
 		maze.processAction(changes, true);
 	}
