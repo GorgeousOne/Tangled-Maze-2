@@ -1,0 +1,4 @@
+wand-item: golden_shovel
+hover-clicking:
+    enabled: true
+    range: 50
