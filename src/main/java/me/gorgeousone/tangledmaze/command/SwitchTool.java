@@ -6,7 +6,6 @@ import me.gorgeousone.tangledmaze.cmdframework.argument.ArgValue;
 import me.gorgeousone.tangledmaze.cmdframework.argument.Argument;
 import me.gorgeousone.tangledmaze.cmdframework.command.ArgCommand;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
-import me.gorgeousone.tangledmaze.tool.ToolType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -33,14 +32,18 @@ public class SwitchTool extends ArgCommand {
 		switch (toolName) {
 			case "rect":
 			case "rectangle":
-				toolHandler.setClipShape(playerId, ClipShape.RECTANGLE);
+				if (toolHandler.setClipShape(playerId, ClipShape.RECTANGLE)) {
+					sender.sendMessage("switched to rectangle");
+				}
 				break;
 			case "circle":
-				toolHandler.setClipShape(playerId, ClipShape.ELLIPSE);
+				if (toolHandler.setClipShape(playerId, ClipShape.ELLIPSE)) {
+					sender.sendMessage("switched to circle");
+				}
 				break;
 			default:
 				sender.sendMessage("invalid tool");
-				return;
+				break;
 		}
 	}
 }

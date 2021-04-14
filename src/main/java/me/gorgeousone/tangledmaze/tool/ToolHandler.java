@@ -26,7 +26,7 @@ public class ToolHandler implements Listener {
 		playerClipTools = new HashMap<>();
 	}
 	
-	void disable() {
+	public void disable() {
 		playerTools.clear();
 		playerClipTools.clear();
 	}
@@ -48,7 +48,7 @@ public class ToolHandler implements Listener {
 		sessionHandler.removeClip(playerId, true);
 	}
 	
-	public void setClipShape(UUID playerId, ClipShape newShape) {
+	public boolean setClipShape(UUID playerId, ClipShape newShape) {
 		ClipTool clipTool = createClipToolIfAbsent(playerId);
 		
 		if (clipTool.getShape() != newShape) {
@@ -58,7 +58,9 @@ public class ToolHandler implements Listener {
 				sessionHandler.removeClip(playerId, true);
 				Bukkit.getPluginManager().callEvent(new ClipToolChangeEvent(clipTool, ClipToolChangeEvent.Cause.COMPLETE));
 			}
+			return true;
 		}
+		return false;
 	}
 	
 //	public boolean setTool(UUID playerId, ToolType toolType) {

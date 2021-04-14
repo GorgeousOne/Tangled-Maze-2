@@ -1,0 +1,34 @@
+help-pages:
+    wand-command: 'Gives you the maze wand. It''s works like the world edit wand only for mazes :P \nClick two blocks and continue with "/maze start"'
+    start-command: Converts you clipboard selected with the maze wand into a maze clip (redstone). You can add/remove new clips to it and place exits on it now.
+    tool-command: Switch between rectangular and elliptic clipboards shapes with this command.
+    add-cut-command:
+    setting-command: 'Change how your maze will be built later:'
+    settings:
+        wall-height: height of walls in blocks
+        path-width: width of paths to walk on
+        wall-width: with of walls between the paths
+        roof-width: width of the roof.
+        curliness: '1: short stretches of path, many turns, 10: long alleys, fewer turns'
+    build-command: Builds your maze. Type in names of blocks to build with, e.g.:\n &2/maze build roof 5*oak_leaves 2*oak_log[axis=y] glowstone
+    teleport-command: Teleports you back to your floor plan.
+    unbuild-command: Unbuilds your whole maze, or a part of it. You can now edit the floor plan further.
+messages:
+    plugin-reloaded: Reloaded Tangled Maze.
+    tool-switched: Switched to %tool%.
+    setting-changed: Set %setting% to %value%.
+    maze-building-completed: Built your maze part with %count% blocks.
+    maze-unbuilding-started: Deconstructed your maze.
+errors:
+    insufficient-permission: You do not have the permission for this command.
+    clipboard-not-started: No clipboard selected with the maze wand yet. /maze wand
+    maze-not-started: No maze started yet. /maze start
+    clipboard-not-touching-maze: Your clipboard does not touch your maze.
+    no-maze-exit-set: No exits set (click on the maze border).
+    maze-not-built: Please build the maze first (without any flags).
+    no-maze-to-unbuild: No maze found to remove.
+    invalid-dimension: 'Invalid setting ''%setting%'''
+    invalid-block-name: 'Invalid block name ''%block%'''
+    invalid-block-property: 'Invalid property ''%property%'' for block ''%block%''.'
+    invalid-block-property-value: 'Invalid value ''%value%'' for property ''%property%''.'
+    missing-block-property-value: 'Missing property value: ''%property%=...''.'
