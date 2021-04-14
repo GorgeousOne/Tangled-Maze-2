@@ -2,6 +2,7 @@ package me.gorgeousone.tangledmaze.listener;
 
 import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
+import me.gorgeousone.tangledmaze.clip.ClipActionFactory;
 import me.gorgeousone.tangledmaze.clip.ClipFactory;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
@@ -79,10 +80,11 @@ public class ClickListener implements Listener {
 				Clip maze = sessionHandler.getMazeClip(playerId);
 				
 				if (isOnlyMazeBorderClicked(clipTool, clip, maze, tracedBlock)) {
-					maze.toggleExit(tracedBlock);
+					if (ClipActionFactory.canBeExit(maze, new Vec2(tracedBlock))) {
+						maze.toggleExit(tracedBlock);
+					}
 				} else {
 					clipTool.addVertex(tracedBlock);
-					player.sendMessage("click");
 				}
 				break;
 			case BRUSH:

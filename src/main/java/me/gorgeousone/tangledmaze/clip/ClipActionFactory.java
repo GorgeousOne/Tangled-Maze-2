@@ -5,6 +5,7 @@ import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.block.Block;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,11 @@ import java.util.Map;
  * A factory for creating clip actions
  */
 public class ClipActionFactory {
+	
+	public static boolean canBeExit(Clip clip, Vec2 loc) {
+		ClipAction noChanges = new ClipAction(clip);
+		return sealsClipBorder(noChanges, loc, Direction.fourCardinals());
+	}
 	
 	/**
 	 * Creates a clip action for merging the given clip into the given maze
@@ -72,7 +78,7 @@ public class ClipActionFactory {
 	 */
 	private static void removeMazeExits(List<Vec2> exits, ClipAction changes) {
 		for (Vec2 exit : exits) {
-			if (!changes.clipBorderWillContain(exit)) {
+			if (!sealsClipBorder(changes, exit, Direction.fourCardinals())) {
 				changes.removeExit(exit);
 			}
 		}
@@ -117,17 +123,17 @@ public class ClipActionFactory {
 				deletion.addBorder(clipBorder);
 			}
 		}
-		//remove every part of the new added border not sealing the maze anyway
-		//		Iterator<Vec2> iterator = deletion.getAddedBorder().iterator();
-		//
-		//		while (iterator.hasNext()) {
-		//			Vec2 newBorder = iterator.next();
-		//
-		//			if (!touchesFill(deletion, newBorder, Direction.values())) {
-		//				iterator.remove();
-		//				deletion.removeFill(newBorder, maze.getY(newBorder));
-		//			}
-		//		}
+//		remove every part of the new added border not sealing the maze anyway
+		Iterator<Vec2> iter = deletion.getAddedBorder().iterator();
+		
+		while (iter.hasNext()) {
+			Vec2 newBorder = iter.next();
+			
+			if (!touchesFill(deletion, newBorder, Direction.values())) {
+				iter.remove();
+				deletion.removeFill(newBorder, maze.getY(newBorder));
+			}
+		}
 	}
 	
 	/**

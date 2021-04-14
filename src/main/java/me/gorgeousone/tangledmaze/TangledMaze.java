@@ -67,7 +67,7 @@ public final class TangledMaze extends JavaPlugin {
 		mazeCmd.addChild(new CutClip(sessionHandler));
 		//mazeCmd.addChild(new SwitchTool(toolHandler));
 		mazeCmd.addChild(new SettingsCommand(sessionHandler));
-		mazeCmd.addChild(new BuildMaze(sessionHandler, buildHandler));
+		mazeCmd.addChild(new BuildMaze(sessionHandler, buildHandler, renderHandler));
 		mazeCmd.addChild(new UnbuildMaze(sessionHandler, buildHandler));
 		
 		CommandHandler cmdHandler = new CommandHandler(this);

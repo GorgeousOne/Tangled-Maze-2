@@ -7,9 +7,9 @@ import me.gorgeousone.tangledmaze.event.ClipActionProcessEvent;
 import me.gorgeousone.tangledmaze.event.ClipDeleteEvent;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
 import me.gorgeousone.tangledmaze.event.ClipUpdateEvent;
-import me.gorgeousone.tangledmaze.event.MazeBuildEvent;
 import me.gorgeousone.tangledmaze.event.MazeExitSetEvent;
 import me.gorgeousone.tangledmaze.event.MazeStartEvent;
+import me.gorgeousone.tangledmaze.event.MazeStateChangeEvent;
 import me.gorgeousone.tangledmaze.tool.ClipTool;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
@@ -114,25 +114,15 @@ public class RenderHandler implements Listener {
 	 */
 	@EventHandler
 	public void onMazeStart(MazeStartEvent event) {
-		Clip clip = event.getClip();
-		RenderSession session = createRenderIfAbsent(clip.getPlayerId());
+		Clip maze = event.getMaze();
+		RenderSession session = createRenderIfAbsent(maze.getPlayerId());
 		
 		session.removeLayer(CLIP_BORDER_LAYER, false);
 		session.removeLayer(MAZE_EXIT_LAYER, false);
 		session.removeLayer(MAZE_MAIN_EXIT_LAYER, false);
 		session.removeLayer(MAZE_BORDER_LAYER, true);
 		session.removeLayer(CLIP_VERTEX_LAYER, true);
-		
-		session.addLayer(MAZE_BORDER_LAYER, clip.getBlocks(clip.getBorder()), MAZE_BORDER_MAT);
-		List<Vec2> exits = clip.getExits();
-		
-		if (!exits.isEmpty()) {
-			session.addLayer(MAZE_MAIN_EXIT_LAYER, clip.getBlocks(exits.subList(0, 1)), MAZE_MAIN_EXIT_MAT);
-			session.addLayer(MAZE_EXIT_LAYER, clip.getBlocks(exits), MAZE_EXIT_MAT);
-		} else {
-			session.addLayer(MAZE_MAIN_EXIT_LAYER, new HashMap<>(), MAZE_MAIN_EXIT_MAT);
-			session.addLayer(MAZE_EXIT_LAYER, new HashMap<>(), MAZE_EXIT_MAT);
-		}
+		displayMaze(session, maze);
 	}
 	
 	/**
@@ -172,17 +162,36 @@ public class RenderHandler implements Listener {
 	}
 	
 	@EventHandler
-	public void onMazeBuild(MazeBuildEvent event) {
-		UUID playerId = event.getPlayerId();
-		RenderSession session = createRenderIfAbsent(playerId);
-		session.clear();
-		removePlayer(playerId);
-	}
-	
-	@EventHandler
 	public void onClipUpdate(ClipUpdateEvent event) {
 		UUID playerId = event.getClip().getPlayerId();
 		RenderSession session = createRenderIfAbsent(playerId);
 		session.updateBlock(event.getLoc(), event.getNewY());
+	}
+	
+	@EventHandler
+	public void onMazeStateChange(MazeStateChangeEvent event) {
+		Clip maze = event.getMaze();
+		RenderSession session = getPlayerRender(maze.getPlayerId());
+		
+		if (event.isMazeActive()) {
+			displayMaze(session, maze);
+		} else {
+			session.removeLayer(MAZE_MAIN_EXIT_LAYER, false);
+			session.removeLayer(MAZE_EXIT_LAYER, true);
+			session.removeLayer(MAZE_BORDER_LAYER, true);
+		}
+	}
+	
+	private void displayMaze(RenderSession render, Clip maze) {
+		render.addLayer(MAZE_BORDER_LAYER, maze.getBlocks(maze.getBorder()), MAZE_BORDER_MAT);
+		List<Vec2> exits = maze.getExits();
+		
+		if (!exits.isEmpty()) {
+			render.addLayer(MAZE_MAIN_EXIT_LAYER, maze.getBlocks(exits.subList(0, 1)), MAZE_MAIN_EXIT_MAT);
+			render.addLayer(MAZE_EXIT_LAYER, maze.getBlocks(exits), MAZE_EXIT_MAT);
+		} else {
+			render.addLayer(MAZE_MAIN_EXIT_LAYER, new HashMap<>(), MAZE_MAIN_EXIT_MAT);
+			render.addLayer(MAZE_EXIT_LAYER, new HashMap<>(), MAZE_EXIT_MAT);
+		}
 	}
 }
