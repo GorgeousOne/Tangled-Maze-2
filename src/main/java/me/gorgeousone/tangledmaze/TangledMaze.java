@@ -7,7 +7,6 @@ import me.gorgeousone.tangledmaze.command.BuildMaze;
 import me.gorgeousone.tangledmaze.command.CutClip;
 import me.gorgeousone.tangledmaze.command.SettingsCommand;
 import me.gorgeousone.tangledmaze.command.StartMaze;
-import me.gorgeousone.tangledmaze.command.SwitchTool;
 import me.gorgeousone.tangledmaze.command.UnbuildMaze;
 import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
 import me.gorgeousone.tangledmaze.listener.BlockChangeListener;
@@ -66,7 +65,7 @@ public final class TangledMaze extends JavaPlugin {
 		mazeCmd.addChild(new StartMaze(sessionHandler));
 		mazeCmd.addChild(new AddClip(sessionHandler));
 		mazeCmd.addChild(new CutClip(sessionHandler));
-		mazeCmd.addChild(new SwitchTool(toolHandler));
+		//mazeCmd.addChild(new SwitchTool(toolHandler));
 		mazeCmd.addChild(new SettingsCommand(sessionHandler));
 		mazeCmd.addChild(new BuildMaze(sessionHandler, buildHandler));
 		mazeCmd.addChild(new UnbuildMaze(sessionHandler, buildHandler));

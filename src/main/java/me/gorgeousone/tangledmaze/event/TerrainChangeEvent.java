@@ -7,7 +7,7 @@ import org.bukkit.event.HandlerList;
 
 import java.util.Collection;
 
-public class TerrainChangeEvent extends Event{
+public class TerrainChangeEvent extends Event {
 	
 	private static final HandlerList HANDLERS = new HandlerList();
 	

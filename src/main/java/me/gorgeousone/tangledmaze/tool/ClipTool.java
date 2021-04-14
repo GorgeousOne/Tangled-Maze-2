@@ -5,6 +5,7 @@ import me.gorgeousone.tangledmaze.clip.ClipShape;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
 import me.gorgeousone.tangledmaze.util.BlockUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 
 import java.util.ArrayList;
@@ -20,6 +21,11 @@ public class ClipTool {
 		this.playerId = playerId;
 		vertices = new ArrayList<>();
 		this.shape = shape;
+	}
+	
+	public void reset() {
+		Bukkit.getPlayer(playerId).sendMessage(ChatColor.GRAY + "-reset-");
+		vertices.clear();
 	}
 	
 	public UUID getPlayerId() {
@@ -43,19 +49,23 @@ public class ClipTool {
 		vertex = BlockUtil.getSurface(vertex);
 		int vertexCount = vertices.size();
 		int requiredVertexCount = shape.getVertexCount();
+		ClipToolChangeEvent.Cause changeType;
 		
 		if (vertexCount >= requiredVertexCount) {
-			vertices.clear();
+			reset();
+			changeType = ClipToolChangeEvent.Cause.RESTART;
+			Bukkit.getPluginManager().callEvent(new ClipToolChangeEvent(this, changeType));
 			vertices.add(vertex);
-			Bukkit.getPluginManager().callEvent(new ClipToolChangeEvent(this, ClipToolChangeEvent.Cause.RESTART));
+			
 		} else if (vertexCount == requiredVertexCount - 1) {
 			vertices.add(vertex);
 			setVertices(ClipFactory.createVertices(getVertices(), shape));
-			Bukkit.getPluginManager().callEvent(new ClipToolChangeEvent(this, ClipToolChangeEvent.Cause.COMPLETE));
+			changeType = ClipToolChangeEvent.Cause.COMPLETE;
 		} else {
 			vertices.add(vertex);
-			Bukkit.getPluginManager().callEvent(new ClipToolChangeEvent(this, ClipToolChangeEvent.Cause.PROGRESS));
+			changeType = ClipToolChangeEvent.Cause.PROGRESS;
 		}
+		Bukkit.getPluginManager().callEvent(new ClipToolChangeEvent(this, changeType));
 	}
 	
 	public boolean isComplete() {

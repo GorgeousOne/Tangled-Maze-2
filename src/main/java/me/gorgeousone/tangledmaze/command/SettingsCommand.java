@@ -30,7 +30,7 @@ public class SettingsCommand extends ArgCommand {
 		Player player = (Player) sender;
 		UUID playerId = player.getUniqueId();
 		MazeProperty property = MazeProperty.match(argValues.get(0).get());
-
+		
 		if (property == null) {
 			sender.sendMessage("invalid setting");
 			return;

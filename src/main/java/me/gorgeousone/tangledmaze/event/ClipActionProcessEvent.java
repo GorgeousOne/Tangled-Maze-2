@@ -5,8 +5,6 @@ import me.gorgeousone.tangledmaze.clip.ClipAction;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import java.util.UUID;
-
 public class ClipActionProcessEvent extends Event {
 	
 	private static final HandlerList HANDLERS = new HandlerList();

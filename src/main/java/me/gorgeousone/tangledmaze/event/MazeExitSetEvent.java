@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Stores changes when exits are set/removed. Main exits are saved in both exit maps and main exit maps.

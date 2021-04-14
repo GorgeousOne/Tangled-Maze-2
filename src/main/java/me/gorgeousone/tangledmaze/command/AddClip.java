@@ -31,8 +31,7 @@ public class AddClip extends BaseCommand {
 			sender.sendMessage("no maze / clip");
 			return;
 		}
-		sessionHandler.removeClip(playerId, true);
-		
+		sessionHandler.removeClipTool(playerId);
 		ClipAction changes = ClipActionFactory.addClip(maze, clip);
 		maze.processAction(changes, true);
 	}

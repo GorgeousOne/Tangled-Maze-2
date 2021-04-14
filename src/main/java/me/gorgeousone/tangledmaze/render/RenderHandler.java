@@ -136,7 +136,7 @@ public class RenderHandler implements Listener {
 	}
 	
 	/**
-	 * Hides a (not maze) clip when bring deleted
+	 * Hides a (not maze) clip when being deleted
 	 */
 	@EventHandler
 	public void onClipDelete(ClipDeleteEvent event) {
@@ -155,6 +155,7 @@ public class RenderHandler implements Listener {
 		ClipAction change = event.getAction();
 		
 		session.removeFromLayer(MAZE_BORDER_LAYER, change.getRemovedBorder(), true);
+		session.removeFromLayer(MAZE_MAIN_EXIT_LAYER, change.getRemovedExits(), false);
 		session.removeFromLayer(MAZE_EXIT_LAYER, change.getRemovedExits(), true);
 		session.addToLayer(MAZE_BORDER_LAYER, change.getAddedBorderBlocks());
 	}
