@@ -4,8 +4,6 @@ import me.gorgeousone.tangledmaze.clip.Clip;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import java.util.UUID;
-
 public class ClipDeleteEvent extends Event {
 	
 	private static final HandlerList HANDLERS = new HandlerList();

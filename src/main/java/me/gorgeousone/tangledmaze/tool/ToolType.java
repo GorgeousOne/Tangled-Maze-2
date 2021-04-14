@@ -2,7 +2,6 @@ package me.gorgeousone.tangledmaze.tool;
 
 public enum ToolType {
 	CLIP("clip tool"),
-	EXIT("exit setter"),
 	BRUSH("brush tool");
 	
 	private final String name;

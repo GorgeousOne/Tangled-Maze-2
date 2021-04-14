@@ -74,12 +74,15 @@ public class ClickListener implements Listener {
 		}
 		switch (toolHandler.getTool(playerId)) {
 			case CLIP:
-				sessionHandler.getClipTool(playerId).addVertex(tracedBlock);
-				break;
-			case EXIT:
+				ClipTool clipTool = sessionHandler.createClipToolIfAbsent(playerId);
+				Clip clip = sessionHandler.getClip(playerId);
 				Clip maze = sessionHandler.getMazeClip(playerId);
-				if (maze != null) {
+				
+				if (isOnlyMazeBorderClicked(clipTool, clip, maze, tracedBlock)) {
 					maze.toggleExit(tracedBlock);
+				} else {
+					clipTool.addVertex(tracedBlock);
+					player.sendMessage("click");
 				}
 				break;
 			case BRUSH:
@@ -97,11 +100,11 @@ public class ClickListener implements Listener {
 		if (render == null || !render.isVisible()) {
 			return;
 		}
-		ClipTool clipTool = sessionHandler.getClipTool(playerId);
+		ClipTool clipTool = sessionHandler.createClipToolIfAbsent(playerId);
 		Clip clip = sessionHandler.getClip(playerId);
 		Clip maze = sessionHandler.getMazeClip(playerId);
 		
-		if (clipTool != null && clipTool.getVertices().contains(clickedBlock) ||
+		if (clipTool.getVertices().contains(clickedBlock) ||
 		    clip != null && clip.isBorderBlock(clickedBlock) ||
 		    maze != null && maze.isBorderBlock(clickedBlock)) {
 			render.hide();
@@ -126,7 +129,14 @@ public class ClickListener implements Listener {
 		return clickedBlock;
 	}
 	
-	public void updateClickedBlocks(Player player, Block clickedBlock) {
+	private boolean isOnlyMazeBorderClicked(ClipTool clipTool, Clip clip, Clip maze, Block clickedBlock) {
+		return maze != null && maze.isBorderBlock(clickedBlock) &&
+		       (clip == null || !clip.isBorderBlock(clickedBlock)) &&
+		       !clipTool.getVertices().contains(clickedBlock) &&
+		       (clip != null || clipTool.getVertices().size() == 0);
+	}
+	
+	private void updateClickedBlocks(Player player, Block clickedBlock) {
 		RenderSession render = renderHandler.getPlayerRender(player.getUniqueId());
 		
 		if (render == null) {
@@ -139,7 +149,6 @@ public class ClickListener implements Listener {
 			Vec2 facing = dir.getVec2();
 			updatedBlocks.add(new Vec2(clickedBlock.getRelative(facing.getX(), 0, facing.getZ())));
 		}
-		
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -161,6 +170,7 @@ public class ClickListener implements Listener {
 				sessionHandler.setClip(playerId, ClipFactory.createClip(playerId, tool.getVertices(), tool.getShape()));
 				break;
 			case RESTART:
+				sessionHandler.removeClip(playerId, false);
 			case PROGRESS:
 				break;
 		}

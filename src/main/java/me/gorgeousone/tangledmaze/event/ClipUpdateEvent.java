@@ -2,13 +2,10 @@ package me.gorgeousone.tangledmaze.event;
 
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.util.Vec2;
-import org.bukkit.block.Block;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import java.util.Collection;
-
-public class ClipUpdateEvent extends Event{
+public class ClipUpdateEvent extends Event {
 	
 	private static final HandlerList HANDLERS = new HandlerList();
 	

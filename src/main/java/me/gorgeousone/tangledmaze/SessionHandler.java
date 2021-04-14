@@ -51,8 +51,12 @@ public class SessionHandler implements Listener {
 	/**
 	 * Returns existing player clip or creates a new one
 	 */
-	public ClipTool getClipTool(UUID playerId) {
+	public ClipTool createClipToolIfAbsent(UUID playerId) {
 		playerClipTools.computeIfAbsent(playerId, function -> new ClipTool(playerId, ClipShape.RECTANGLE));
+		return playerClipTools.get(playerId);
+	}
+	
+	public ClipTool getClipTool(UUID playerId) {
 		return playerClipTools.get(playerId);
 	}
 	
@@ -68,12 +72,14 @@ public class SessionHandler implements Listener {
 		playerClips.put(playerId, clip);
 	}
 	
-	public void removeClip(UUID playerId) {
-		playerClips.remove(playerId);
+	public void removeClipTool(UUID playerId) {
+		playerClipTools.remove(playerId);
+		removeClip(playerId, true);
 	}
 	
 	public void removeClip(UUID playerId, boolean callEvent) {
 		Clip clip = playerClips.remove(playerId);
+		
 		if (clip != null && callEvent) {
 			Bukkit.getPluginManager().callEvent(new ClipDeleteEvent(clip));
 		}

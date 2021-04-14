@@ -32,7 +32,7 @@ public class ParentCommand extends BaseCommand {
 	
 	public String getParentUsage() {
 		if (getParent() != null) {
-			return getParent().getParentUsage() + " " + getName() ;
+			return getParent().getParentUsage() + " " + getName();
 		}
 		return ChatColor.RED + "/" + getName();
 	}

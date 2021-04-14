@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
@@ -38,7 +37,7 @@ public class BlockTypeAquatic extends BlockType {
 		
 		if (isFreelyDirectional) {
 			allowedFaces = ((Directional) blockData).getFaces().stream().map(face -> face.name().toLowerCase()).toArray(String[]::new);
-		}else if (isFreelyOrientable) {
+		} else if (isFreelyOrientable) {
 			allowedFaces = ((Orientable) blockData).getAxes().stream().map(face -> face.name().toLowerCase()).toArray(String[]::new);
 		}
 	}
