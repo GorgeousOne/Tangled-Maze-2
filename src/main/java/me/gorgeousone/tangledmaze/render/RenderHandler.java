@@ -12,8 +12,8 @@ import me.gorgeousone.tangledmaze.event.MazeExitSetEvent;
 import me.gorgeousone.tangledmaze.event.MazeStartEvent;
 import me.gorgeousone.tangledmaze.tool.ClipTool;
 import me.gorgeousone.tangledmaze.util.Vec2;
+import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import org.bukkit.Material;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -36,11 +36,11 @@ public class RenderHandler implements Listener {
 	private final static int CLIP_BORDER_LAYER = 40;
 	private final static int CLIP_VERTEX_LAYER = 50;
 	
-	private final static BlockData MAZE_BORDER_MAT = Material.REDSTONE_BLOCK.createBlockData();
-	private final static BlockData MAZE_MAIN_EXIT_MAT = Material.DIAMOND_BLOCK.createBlockData();
-	private final static BlockData MAZE_EXIT_MAT = Material.EMERALD_BLOCK.createBlockData();
-	private final static BlockData CLIP_BORDER_MAT = Material.GOLD_BLOCK.createBlockData();
-	private final static BlockData CLIP_VERTEX_MAT = Material.LAPIS_BLOCK.createBlockData();
+	private final BlockType MAZE_BORDER_MAT = BlockType.get(Material.REDSTONE_BLOCK);
+	private final BlockType MAZE_MAIN_EXIT_MAT = BlockType.get(Material.DIAMOND_BLOCK);
+	private final BlockType MAZE_EXIT_MAT = BlockType.get(Material.EMERALD_BLOCK);
+	private final BlockType CLIP_BORDER_MAT = BlockType.get(Material.GOLD_BLOCK);
+	private final BlockType CLIP_VERTEX_MAT = BlockType.get(Material.LAPIS_BLOCK);
 	
 	private final JavaPlugin plugin;
 	private final SessionHandler sessionHandler;
@@ -62,23 +62,19 @@ public class RenderHandler implements Listener {
 		renderings.clear();
 	}
 	
-	/**
-	 * Returns the render session of the player with this UUID or creates a new one
-	 */
-	RenderSession getRenderSession(UUID playerId) {
-		if (renderings.containsKey(playerId)) {
-			return renderings.get(playerId);
-		}
-		RenderSession render = new RenderSession(playerId);
-		renderings.put(playerId, render);
-		return render;
+	public RenderSession getPlayerRender(UUID playerId) {
+		return renderings.get(playerId);
 	}
 	
 	public void removePlayer(UUID playerId) {
 		renderings.remove(playerId);
 	}
 	
-	public RenderSession getPlayerRender(UUID playerId) {
+	/**
+	 * Returns the render session of the player with this UUID or creates a new one
+	 */
+	private RenderSession createRenderIfAbsent(UUID playerId) {
+		renderings.computeIfAbsent(playerId, render -> new RenderSession(playerId));
 		return renderings.get(playerId);
 	}
 	
@@ -89,7 +85,7 @@ public class RenderHandler implements Listener {
 	public void onClipToolChange(ClipToolChangeEvent event) {
 		ClipTool tool = event.getTool();
 		ClipToolChangeEvent.Cause cause = event.getCause();
-		RenderSession session = getRenderSession(event.getPlayerId());
+		RenderSession session = createRenderIfAbsent(event.getPlayerId());
 		
 		new BukkitRunnable() {
 			@Override
@@ -119,7 +115,7 @@ public class RenderHandler implements Listener {
 	@EventHandler
 	public void onMazeStart(MazeStartEvent event) {
 		Clip clip = event.getClip();
-		RenderSession session = getRenderSession(clip.getPlayerId());
+		RenderSession session = createRenderIfAbsent(clip.getPlayerId());
 		
 		session.removeLayer(CLIP_BORDER_LAYER, false);
 		session.removeLayer(MAZE_EXIT_LAYER, false);
@@ -144,7 +140,7 @@ public class RenderHandler implements Listener {
 	 */
 	@EventHandler
 	public void onClipDelete(ClipDeleteEvent event) {
-		RenderSession session = getRenderSession(event.getClip().getPlayerId());
+		RenderSession session = createRenderIfAbsent(event.getClip().getPlayerId());
 		session.removeLayer(CLIP_BORDER_LAYER, true);
 		session.removeLayer(CLIP_VERTEX_LAYER, true);
 	}
@@ -155,7 +151,7 @@ public class RenderHandler implements Listener {
 	@EventHandler
 	public void onClipActionProcess(ClipActionProcessEvent event) {
 		UUID playerId = event.getClip().getPlayerId();
-		RenderSession session = getRenderSession(playerId);
+		RenderSession session = createRenderIfAbsent(playerId);
 		ClipAction change = event.getAction();
 		
 		session.removeFromLayer(MAZE_BORDER_LAYER, change.getRemovedBorder(), true);
@@ -166,7 +162,7 @@ public class RenderHandler implements Listener {
 	@EventHandler
 	public void onExitSet(MazeExitSetEvent event) {
 		UUID playerId = event.getMaze().getPlayerId();
-		RenderSession session = getRenderSession(playerId);
+		RenderSession session = createRenderIfAbsent(playerId);
 		
 		session.removeFromLayer(MAZE_EXIT_LAYER, event.getRemovedExits(), true);
 		session.removeFromLayer(MAZE_MAIN_EXIT_LAYER, event.getRemovedMainExits(), true);
@@ -177,7 +173,7 @@ public class RenderHandler implements Listener {
 	@EventHandler
 	public void onMazeBuild(MazeBuildEvent event) {
 		UUID playerId = event.getPlayerId();
-		RenderSession session = getRenderSession(playerId);
+		RenderSession session = createRenderIfAbsent(playerId);
 		session.clear();
 		removePlayer(playerId);
 	}
@@ -185,7 +181,7 @@ public class RenderHandler implements Listener {
 	@EventHandler
 	public void onClipUpdate(ClipUpdateEvent event) {
 		UUID playerId = event.getClip().getPlayerId();
-		RenderSession session = getRenderSession(playerId);
+		RenderSession session = createRenderIfAbsent(playerId);
 		session.updateBlock(event.getLoc(), event.getNewY());
 	}
 }
