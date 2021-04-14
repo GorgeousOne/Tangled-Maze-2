@@ -15,7 +15,7 @@ public class ClipTool {
 	
 	private final UUID playerId;
 	private final ArrayList<Block> vertices;
-	private final ClipShape shape;
+	private ClipShape shape;
 	
 	public ClipTool(UUID playerId, ClipShape shape) {
 		this.playerId = playerId;
@@ -44,6 +44,10 @@ public class ClipTool {
 		return shape;
 	}
 	
+	public void setShape(ClipShape shape) {
+		this.shape = shape;
+	}
+	
 	public void addVertex(Block vertex) {
 		vertex = BlockUtil.getSurface(vertex);
 		int vertexCount = vertices.size();
@@ -60,6 +64,7 @@ public class ClipTool {
 			vertices.add(vertex);
 			setVertices(ClipFactory.createVertices(getVertices(), shape));
 			changeType = ClipToolChangeEvent.Cause.COMPLETE;
+			
 		} else {
 			vertices.add(vertex);
 			changeType = ClipToolChangeEvent.Cause.PROGRESS;

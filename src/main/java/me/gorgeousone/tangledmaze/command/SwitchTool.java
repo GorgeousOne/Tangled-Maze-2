@@ -1,5 +1,6 @@
 package me.gorgeousone.tangledmaze.command;
 
+import me.gorgeousone.tangledmaze.clip.ClipShape;
 import me.gorgeousone.tangledmaze.cmdframework.argument.ArgType;
 import me.gorgeousone.tangledmaze.cmdframework.argument.ArgValue;
 import me.gorgeousone.tangledmaze.cmdframework.argument.Argument;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class SwitchTool extends ArgCommand {
 	
@@ -18,26 +20,27 @@ public class SwitchTool extends ArgCommand {
 	
 	public SwitchTool(ToolHandler toolHandler) {
 		super("tool");
-		addArg(new Argument("tool", ArgType.STRING, ToolType.getNames()));
+		addArg(new Argument("tool", ArgType.STRING, "rect", "circle"));
 		this.toolHandler = toolHandler;
 	}
 	
 	@Override
 	protected void executeArgs(CommandSender sender, List<ArgValue> argValues, Set<String> usedFlags) {
-		String toolName = argValues.get(0).get().toUpperCase();
+		String toolName = argValues.get(0).get();
 		Player player = (Player) sender;
-		ToolType tool;
+		UUID playerId = player.getUniqueId();
 		
-		try {
-			tool = ToolType.valueOf(toolName);
-		} catch (IllegalArgumentException e) {
-			sender.sendMessage("invalid tool");
-			return;
-		}
-		boolean switchedTool = toolHandler.setTool(player.getUniqueId(), tool);
-		
-		if (switchedTool) {
-			player.sendMessage("Switched to the most sublime " + tool.getName());
+		switch (toolName) {
+			case "rect":
+			case "rectangle":
+				toolHandler.setClipShape(playerId, ClipShape.RECTANGLE);
+				break;
+			case "circle":
+				toolHandler.setClipShape(playerId, ClipShape.ELLIPSE);
+				break;
+			default:
+				sender.sendMessage("invalid tool");
+				return;
 		}
 	}
 }

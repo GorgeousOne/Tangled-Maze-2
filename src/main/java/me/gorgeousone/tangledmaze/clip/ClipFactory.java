@@ -1,6 +1,9 @@
 package me.gorgeousone.tangledmaze.clip;
 
 import me.gorgeousone.tangledmaze.util.BlockUtil;
+import me.gorgeousone.tangledmaze.util.Direction;
+import me.gorgeousone.tangledmaze.util.Vec2;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
@@ -42,9 +45,9 @@ public class ClipFactory {
 				return createRectClip(clip, vertices.get(0), vertices.get(2),
 				                      Math.max(vertices.get(0).getY(), vertices.get(2).getY()));
 			case ELLIPSE:
-				return null;
+				return createEllipseClip(clip, vertices.get(0), vertices.get(2),
+				                         Math.max(vertices.get(0).getY(), vertices.get(2).getY()));
 			case TRIANGLE:
-				return null;
 			default:
 				return null;
 		}
@@ -53,20 +56,66 @@ public class ClipFactory {
 	public static Clip createRectClip(Clip clip, Block v0, Block v1, int height) {
 		int minX = Math.min(v0.getX(), v1.getX());
 		int maxX = Math.max(v0.getX(), v1.getX());
-		
 		int minZ = Math.min(v0.getZ(), v1.getZ());
 		int maxZ = Math.max(v0.getZ(), v1.getZ());
-		World world = v0.getWorld();
 		
 		for (int x = minX; x <= maxX; ++x) {
 			for (int z = minZ; z <= maxZ; ++z) {
-				Block block = BlockUtil.getSurface(world, x, height, z);
+				Block block = BlockUtil.getSurface(clip.getWorld(), x, height, z);
 				clip.add(block);
+				
 				if (x == minX || x == maxX || z == minZ || z == maxZ) {
 					clip.addBorder(block);
 				}
 			}
 		}
 		return clip;
+	}
+	
+	private static Clip createEllipseClip(Clip clip, Block v0, Block v1, int height) {
+		int minX = Math.min(v0.getX(), v1.getX());
+		int maxX = Math.max(v0.getX(), v1.getX());
+		int minZ = Math.min(v0.getZ(), v1.getZ());
+		int maxZ = Math.max(v0.getZ(), v1.getZ());
+		
+		double centerX = (minX + maxX + 1) / 2d;
+		double centerZ = (minZ + maxZ + 1) / 2d;
+		double radius = (maxX - minX) / 2d + 0.25;
+		double radiusZ = (maxZ - minZ) / 2d + 0.25;
+		double stretchZ = radius / radiusZ;
+
+		for (int x = minX; x <= maxX; ++x) {
+			for (int z = minZ; z <= maxZ; ++z) {
+				double centerDistX = x + 0.5 - centerX;
+				double centerDistZ = z + 0.5 - centerZ;
+				
+				if (!ellipseContains(centerDistX, centerDistZ, stretchZ, radius)) {
+					continue;
+				}
+				Block block = BlockUtil.getSurface(clip.getWorld(), x, height, z);
+				clip.add(block);
+				
+				if (ellipseBorderContains(centerDistX, centerDistZ, stretchZ, radius)) {
+					clip.addBorder(block);
+				}
+			}
+		}
+		return clip;
+	}
+	
+	private static boolean ellipseContains(double x, double z, double stretchZ, double radius) {
+		double circleZ = z * stretchZ;
+		return x * x + circleZ * circleZ <= radius * radius;
+	}
+	
+	private static boolean ellipseBorderContains(double x, double z, double stretchZ, double radius) {
+		for (Direction facing : Direction.values()) {
+			Vec2 faceVec = facing.getVec2();
+			
+			if (!ellipseContains(x + faceVec.getX(), z + faceVec.getZ(), stretchZ, radius)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

@@ -46,7 +46,7 @@ public class BuildHandler {
 	
 	public void buildMaze(UUID playerId, Clip maze, MazeSettings settings, MazePart mazePart) {
 		if (!mazeBackups.containsKey(maze) && mazePart != MazePart.WALLS) {
-			Bukkit.broadcastMessage("sry lad, walls first pls");
+			Bukkit.broadcastMessage("walls first");
 			return;
 		}
 		mazeBackups.computeIfAbsent(maze, backup -> {

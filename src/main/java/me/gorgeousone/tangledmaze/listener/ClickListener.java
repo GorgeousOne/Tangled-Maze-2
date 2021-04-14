@@ -73,9 +73,9 @@ public class ClickListener implements Listener {
 		if (tracedBlock == null) {
 			return;
 		}
-		switch (toolHandler.getTool(playerId)) {
-			case CLIP:
-				ClipTool clipTool = sessionHandler.createClipToolIfAbsent(playerId);
+		switch (toolHandler.createToolIfAbsent(playerId)) {
+			case CLIP_TOOL:
+				ClipTool clipTool = toolHandler.createClipToolIfAbsent(playerId);
 				Clip clip = sessionHandler.getClip(playerId);
 				Clip maze = sessionHandler.getMazeClip(playerId);
 				
@@ -102,7 +102,7 @@ public class ClickListener implements Listener {
 		if (render == null || !render.isVisible()) {
 			return;
 		}
-		ClipTool clipTool = sessionHandler.createClipToolIfAbsent(playerId);
+		ClipTool clipTool = toolHandler.createClipToolIfAbsent(playerId);
 		Clip clip = sessionHandler.getClip(playerId);
 		Clip maze = sessionHandler.getMazeClip(playerId);
 		

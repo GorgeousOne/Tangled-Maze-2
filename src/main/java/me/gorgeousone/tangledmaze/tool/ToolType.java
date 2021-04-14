@@ -1,7 +1,7 @@
 package me.gorgeousone.tangledmaze.tool;
 
 public enum ToolType {
-	CLIP("clip tool"),
+	CLIP_TOOL(""),
 	BRUSH("brush tool");
 	
 	private final String name;
@@ -12,13 +12,5 @@ public enum ToolType {
 	
 	public String getName() {
 		return name;
-	}
-	
-	public static String[] getNames() {
-		String[] names = new String[values().length];
-		for (ToolType value : values()) {
-			names[value.ordinal()] = value.toString().toLowerCase();
-		}
-		return names;
 	}
 }

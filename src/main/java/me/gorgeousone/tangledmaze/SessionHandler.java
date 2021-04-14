@@ -1,10 +1,8 @@
 package me.gorgeousone.tangledmaze;
 
 import me.gorgeousone.tangledmaze.clip.Clip;
-import me.gorgeousone.tangledmaze.clip.ClipShape;
 import me.gorgeousone.tangledmaze.event.ClipDeleteEvent;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
-import me.gorgeousone.tangledmaze.tool.ClipTool;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 
@@ -14,27 +12,23 @@ import java.util.UUID;
 
 public class SessionHandler implements Listener {
 	
-	private final Map<UUID, ClipTool> playerClipTools;
 	private final Map<UUID, Clip> playerClips;
 	private final Map<UUID, Clip> playerMazes;
 	private final HashMap<UUID, MazeSettings> mazeSettings;
 	
 	public SessionHandler() {
-		playerClipTools = new HashMap<>();
 		playerClips = new HashMap<>();
 		playerMazes = new HashMap<>();
 		mazeSettings = new HashMap<>();
 	}
 	
 	public void disable() {
-		playerClipTools.clear();
 		playerClips.clear();
 		playerMazes.clear();
 		mazeSettings.clear();
 	}
 	
 	public void removePlayer(UUID playerId) {
-		playerClipTools.remove(playerId);
 		playerClips.remove(playerId);
 		playerMazes.remove(playerId);
 		mazeSettings.remove(playerId);
@@ -48,18 +42,6 @@ public class SessionHandler implements Listener {
 		return playerMazes;
 	}
 	
-	/**
-	 * Returns existing player clip or creates a new one
-	 */
-	public ClipTool createClipToolIfAbsent(UUID playerId) {
-		playerClipTools.computeIfAbsent(playerId, function -> new ClipTool(playerId, ClipShape.RECTANGLE));
-		return playerClipTools.get(playerId);
-	}
-	
-	public ClipTool getClipTool(UUID playerId) {
-		return playerClipTools.get(playerId);
-	}
-	
 	public Clip getClip(UUID playerId) {
 		return playerClips.get(playerId);
 	}
@@ -70,11 +52,6 @@ public class SessionHandler implements Listener {
 	
 	public void setClip(UUID playerId, Clip clip) {
 		playerClips.put(playerId, clip);
-	}
-	
-	public void removeClipTool(UUID playerId) {
-		playerClipTools.remove(playerId);
-		removeClip(playerId, true);
 	}
 	
 	public void removeClip(UUID playerId, boolean callEvent) {
