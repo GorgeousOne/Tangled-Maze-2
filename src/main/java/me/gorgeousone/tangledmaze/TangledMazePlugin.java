@@ -2,23 +2,26 @@ package me.gorgeousone.tangledmaze;
 
 import me.gorgeousone.tangledmaze.cmdframework.command.ParentCommand;
 import me.gorgeousone.tangledmaze.cmdframework.handler.CommandHandler;
-import me.gorgeousone.tangledmaze.command.AddClip;
-import me.gorgeousone.tangledmaze.command.BuildMaze;
-import me.gorgeousone.tangledmaze.command.CutClip;
-import me.gorgeousone.tangledmaze.command.GetWand;
-import me.gorgeousone.tangledmaze.command.Reload;
+import me.gorgeousone.tangledmaze.command.AddClipCommand;
+import me.gorgeousone.tangledmaze.command.BuildMazeCommand;
+import me.gorgeousone.tangledmaze.command.CutClipCommand;
+import me.gorgeousone.tangledmaze.command.GetWandCommand;
+import me.gorgeousone.tangledmaze.command.HelpCommand;
+import me.gorgeousone.tangledmaze.command.ReloadCommand;
 import me.gorgeousone.tangledmaze.command.SettingsCommand;
-import me.gorgeousone.tangledmaze.command.StartMaze;
-import me.gorgeousone.tangledmaze.command.SwitchTool;
-import me.gorgeousone.tangledmaze.command.UnbuildMaze;
-import me.gorgeousone.tangledmaze.command.Undo;
+import me.gorgeousone.tangledmaze.command.StartMazeCommand;
+import me.gorgeousone.tangledmaze.command.ToolCommand;
+import me.gorgeousone.tangledmaze.command.UnbuildMazeCommand;
+import me.gorgeousone.tangledmaze.command.UndoCommand;
 import me.gorgeousone.tangledmaze.data.ConfigSettings;
+import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
 import me.gorgeousone.tangledmaze.listener.BlockChangeListener;
 import me.gorgeousone.tangledmaze.listener.ClickListener;
 import me.gorgeousone.tangledmaze.listener.PlayerQuitListener;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
+import me.gorgeousone.tangledmaze.util.ConfigUtil;
 import me.gorgeousone.tangledmaze.util.VersionUtil;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import org.bukkit.Bukkit;
@@ -60,6 +63,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 	
 	public void reload() {
 		loadConfigSettings();
+		loadLanguage();
 	}
 	
 	void registerListeners() {
@@ -77,16 +81,17 @@ public final class TangledMazePlugin extends JavaPlugin {
 		mazeCmd.addAlias("maze");
 		mazeCmd.addAlias("tm");
 		
-		mazeCmd.addChild(new GetWand());
-		mazeCmd.addChild(new Reload(this));
-		mazeCmd.addChild(new StartMaze(sessionHandler, toolHandler));
-		mazeCmd.addChild(new SwitchTool(toolHandler));
-		mazeCmd.addChild(new AddClip(sessionHandler, toolHandler));
-		mazeCmd.addChild(new CutClip(sessionHandler, toolHandler));
-		mazeCmd.addChild(new Undo(sessionHandler));
+		mazeCmd.addChild(new HelpCommand());
+		mazeCmd.addChild(new GetWandCommand());
+		mazeCmd.addChild(new ReloadCommand(this));
+		mazeCmd.addChild(new StartMazeCommand(sessionHandler, toolHandler));
+		mazeCmd.addChild(new ToolCommand(toolHandler));
+		mazeCmd.addChild(new AddClipCommand(sessionHandler, toolHandler));
+		mazeCmd.addChild(new CutClipCommand(sessionHandler, toolHandler));
+		mazeCmd.addChild(new UndoCommand(sessionHandler));
 		mazeCmd.addChild(new SettingsCommand(sessionHandler));
-		mazeCmd.addChild(new BuildMaze(sessionHandler, buildHandler, toolHandler));
-		mazeCmd.addChild(new UnbuildMaze(sessionHandler, buildHandler));
+		mazeCmd.addChild(new BuildMazeCommand(sessionHandler, buildHandler, toolHandler));
+		mazeCmd.addChild(new UnbuildMazeCommand(sessionHandler, buildHandler));
 		
 		CommandHandler cmdHandler = new CommandHandler(this);
 		cmdHandler.registerCommand(mazeCmd);
@@ -98,5 +103,9 @@ public final class TangledMazePlugin extends JavaPlugin {
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 		settings.loadSettings(getConfig());
+	}
+	
+	private void loadLanguage() {
+		Message.loadLanguage(ConfigUtil.loadConfig("language", this));
 	}
 }
