@@ -6,3 +6,9 @@ api-version: 1.13
 commands:
     tangledmaze:
         aliases: [maze, tm]
+
+permissions:
+    tangledmaze.build:
+        default: op
+    tabgledmaze.reload:
+        default: op

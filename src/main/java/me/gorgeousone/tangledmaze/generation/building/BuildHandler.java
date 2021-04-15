@@ -1,6 +1,7 @@
 package me.gorgeousone.tangledmaze.generation.building;
 
 import me.gorgeousone.tangledmaze.clip.Clip;
+import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.event.MazeBuildEvent;
 import me.gorgeousone.tangledmaze.generation.GridSegment;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
@@ -12,6 +13,7 @@ import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
+import me.gorgeousone.tangledmaze.util.text.TextException;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -40,8 +42,13 @@ public class BuildHandler {
 	
 	public void disable() {
 		for (Clip maze : mazeBackups.keySet()) {
-			unbuildMaze(null, maze, MazePart.WALLS);
+			try {
+				unbuildMaze(maze, MazePart.WALLS);
+			} catch (TextException e) {
+				e.printStackTrace();
+			}
 		}
+		mazeBackups.clear();
 	}
 	
 	public void buildMaze(UUID playerId, Clip maze, MazeSettings settings, MazePart mazePart) {
@@ -92,9 +99,9 @@ public class BuildHandler {
 		return backupBlocks;
 	}
 	
-	public void unbuildMaze(UUID playerId, Clip maze, MazePart mazePart) {
+	public void unbuildMaze(Clip maze, MazePart mazePart) throws TextException {
 		if (!mazeBackups.containsKey(maze)) {
-			throw new IllegalArgumentException("no built maze");
+			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
 		}
 		MazeBackup backup = mazeBackups.get(maze);
 		
@@ -107,7 +114,7 @@ public class BuildHandler {
 			return;
 		}
 		if (!backup.getBuiltParts().contains(mazePart)) {
-			throw new IllegalArgumentException("didnt build " + mazePart.name());
+			return;
 		}
 		unbuildMazePart(backup.getBlocks(mazePart));
 		backup.removeMazePart(mazePart);
