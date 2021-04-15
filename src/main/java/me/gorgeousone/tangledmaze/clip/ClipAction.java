@@ -13,10 +13,10 @@ import java.util.Set;
 public class ClipAction {
 	
 	private final Clip clip;
-	private final Map<Vec2, Integer> addedFill;
-	private final Map<Vec2, Integer> removedFill;
-	private final Set<Vec2> addedBorder;
-	private final Set<Vec2> removedBorder;
+	private Map<Vec2, Integer> addedFill;
+	private Map<Vec2, Integer> removedFill;
+	private Set<Vec2> addedBorder;
+	private Set<Vec2> removedBorder;
 	private final Set<Vec2> removedExits;
 	
 	public ClipAction(Clip clip) {
@@ -86,5 +86,18 @@ public class ClipAction {
 	 */
 	public boolean clipBorderWillContain(Vec2 loc) {
 		return getAddedBorder().contains(loc) || !getRemovedBorder().contains(loc) && clip.borderContains(loc);
+	}
+	
+	public ClipAction invert() {
+		HashMap<Vec2, Integer> temp = new HashMap<>(addedFill);
+		addedFill = new HashMap<>(removedFill);
+		removedFill = temp;
+		
+		HashSet<Vec2> temp2 = new HashSet<>(addedBorder);
+		addedBorder= new HashSet<>(removedBorder);
+		removedBorder = temp2;
+		
+		removedExits.clear();
+		return this;
 	}
 }

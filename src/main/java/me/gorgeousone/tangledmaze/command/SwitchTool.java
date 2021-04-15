@@ -19,7 +19,7 @@ public class SwitchTool extends ArgCommand {
 	
 	public SwitchTool(ToolHandler toolHandler) {
 		super("tool");
-		addArg(new Argument("tool", ArgType.STRING, "rect", "circle"));
+		addArg(new Argument("tool", ArgType.STRING, "rect", "circle").setDefault("rect"));
 		this.toolHandler = toolHandler;
 	}
 	

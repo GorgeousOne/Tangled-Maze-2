@@ -8,7 +8,7 @@ import me.gorgeousone.tangledmaze.generation.building.BlockPalette;
 import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
 import me.gorgeousone.tangledmaze.maze.MazePart;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
-import me.gorgeousone.tangledmaze.render.RenderHandler;
+import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import me.gorgeousone.tangledmaze.util.MaterialUtil;
 import me.gorgeousone.tangledmaze.util.MathUtil;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
@@ -24,18 +24,17 @@ public class BuildMaze extends ArgCommand {
 	
 	private final SessionHandler sessionHandler;
 	private final BuildHandler buildHandler;
-	private final RenderHandler renderHandler;
+	private final ToolHandler toolHandler;
 	
 	public BuildMaze(SessionHandler sessionHandler,
-	                 BuildHandler buildHandler,
-	                 RenderHandler renderHandler) {
+	                 BuildHandler buildHandler, ToolHandler toolHandler) {
 		super("build");
+		this.toolHandler = toolHandler;
 		addFlag("floor");
 		addFlag("roof");
 		
 		this.sessionHandler = sessionHandler;
 		this.buildHandler = buildHandler;
-		this.renderHandler = renderHandler;
 	}
 	
 	@Override
@@ -72,6 +71,7 @@ public class BuildMaze extends ArgCommand {
 		}
 		
 		maze.setActive(false);
+		toolHandler.resetClipTool(playerId);
 		buildHandler.buildMaze(playerId, maze, settings, mazePart);
 	}
 	
@@ -95,7 +95,7 @@ public class BuildMaze extends ArgCommand {
 				materialString = inputString;
 			}
 			try {
-				BlockType blockType = BlockType.of(materialString);
+				BlockType blockType = BlockType.get(materialString);
 				palette.addBlock(blockType, MathUtil.clamp(count, 1, 1000));
 			} catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException("invalid block: " + materialString);

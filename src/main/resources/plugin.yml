@@ -1,6 +1,6 @@
 name: TangledMaze
 version: ${project.version}
-main: me.gorgeousone.tangledmaze.TangledMaze
+main: me.gorgeousone.tangledmaze.TangledMazePlugin
 api-version: 1.13
 
 commands:

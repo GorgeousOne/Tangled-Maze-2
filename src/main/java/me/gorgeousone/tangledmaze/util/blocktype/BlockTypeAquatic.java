@@ -28,9 +28,6 @@ public class BlockTypeAquatic extends BlockType {
 	private String[] allowedAxes;
 	
 	public BlockTypeAquatic(BlockData data) {
-		if (!data.getMaterial().isBlock()) {
-			throw new IllegalArgumentException("is not a block");
-		}
 		blockData = data.clone();
 		isFreelyDirectional = blockData instanceof Directional && !blockData.getAsString(true).contains("facing");
 		isFreelyOrientable = blockData instanceof Orientable && !blockData.getAsString(true).contains("axis");
@@ -38,7 +35,7 @@ public class BlockTypeAquatic extends BlockType {
 		if (isFreelyDirectional) {
 			allowedFaces = ((Directional) blockData).getFaces().stream().map(face -> face.name().toLowerCase()).toArray(String[]::new);
 		} else if (isFreelyOrientable) {
-			allowedFaces = ((Orientable) blockData).getAxes().stream().map(face -> face.name().toLowerCase()).toArray(String[]::new);
+			allowedAxes = ((Orientable) blockData).getAxes().stream().map(face -> face.name().toLowerCase()).toArray(String[]::new);
 		}
 	}
 	
