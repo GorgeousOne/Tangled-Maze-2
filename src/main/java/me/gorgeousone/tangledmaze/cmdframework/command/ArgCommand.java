@@ -24,10 +24,16 @@ public abstract class ArgCommand extends BaseCommand {
 		flags = new LinkedList<>();
 	}
 	
+	/**
+	 * Adds an optional or mandatory argument that has to be provided for with further string inputs behind this command's name
+	 */
 	public void addArg(Argument argument) {
 		arguments.add(argument);
 	}
 	
+	/**
+	 * Adds an optional flag that can be provided anywhere inbetween when executing this command beginning with "-"
+	 */
 	public void addFlag(String flagName) {
 		flags.add("-" + flagName.toLowerCase());
 	}
@@ -40,7 +46,7 @@ public abstract class ArgCommand extends BaseCommand {
 	 * Converts the passed sting arguments to the into ArgValues according to the beforehand defined Arguments
 	 */
 	@Override
-	public void execute(CommandSender sender, String[] stringArgs) {
+	public void onCommand(CommandSender sender, String[] stringArgs) {
 		int argCount = getArgs().size();
 		int inputCount = stringArgs.length;
 		

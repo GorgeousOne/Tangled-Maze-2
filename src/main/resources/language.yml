@@ -14,20 +14,23 @@ help-pages:
     build-command: Builds your maze. Type in names of blocks to build with, e.g.:\n &e/maze build 5*oak_leaves 2*oak_log[axis=y] glowstone&a \nUse the flags -floor or -roof to build different parts of the maze.
     unbuild-command: Deconstructs your maze. Use the flags -floor or -roof to unbuild different parts of the maze.
 infos:
-    plugin-reloaded: Reloaded Tangled Maze.
-    tool-switched: Switched to %tool%.
-    setting-changed: Set %setting% to %value%.
-    maze-building: Built your maze part with %count% blocks.
-    maze-unbuilding: Deconstructed your maze.
-errors:
-    insufficient-permission: You do not have the permission for this command.
-    clipboard-not-started: No clipboard selected with the maze wand yet. /maze wand
-    maze-not-started: No maze started yet. /maze start
-    no-maze-exit-set: No exits set (click on the maze border).
+    plugin-reload: Reloaded Tangled Maze.
+    maze-wand-usage: Click two blocks. Then use /maze start to continue.
+    tool-switch: Switched to %tool%.
+    setting-change: Set %setting% to %value%.
     maze-not-built: Please build the maze first (without any flags).
+    maue-inaccessible: Cannot perform this action on a constructed maze. /maze unbuild
+    maze-build: Built your maze part with %count% blocks.
+    maze-unbuild: Deconstructed your maze.
     no-maze-to-unbuild: No maze found to remove.
-    invalid-dimension: 'Invalid setting ''%setting%'''
-    invalid-block-name: 'Invalid block name ''%block%'''
+errors:
+    missing-permission: You do not have the permission for this command.
+    clipboard-missing: No clipboard selected with the maze wand. /maze wand
+    maze-missing: No maze started yet. /maze start
+    no-exit-missing: No exits set yet (click on the maze border).
+    invalid-tool: 'Invalid tool ''%tool%''.'
+    invalid-setting: 'Invalid setting ''%setting%''.'
+    invalid-block-name: 'Invalid block name ''%block%''.'
     invalid-block-property: 'Invalid property ''%property%'' for block ''%block%''.'
     invalid-block-property-value: 'Invalid value ''%value%'' for property ''%property%''.'
     missing-block-property-value: 'Missing property value: ''%property%=...''.'

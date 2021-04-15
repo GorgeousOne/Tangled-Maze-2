@@ -14,6 +14,7 @@ import me.gorgeousone.tangledmaze.command.ToolCommand;
 import me.gorgeousone.tangledmaze.command.UnbuildMazeCommand;
 import me.gorgeousone.tangledmaze.command.UndoCommand;
 import me.gorgeousone.tangledmaze.data.ConfigSettings;
+import me.gorgeousone.tangledmaze.data.Constants;
 import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
 import me.gorgeousone.tangledmaze.listener.BlockChangeListener;
@@ -35,8 +36,9 @@ public final class TangledMazePlugin extends JavaPlugin {
 	private ToolHandler toolHandler;
 	private RenderHandler renderHandler;
 	private BuildHandler buildHandler;
-	
 	private ConfigSettings settings;
+	
+	private ParentCommand mazeCmd;
 	
 	@Override
 	public void onEnable() {
@@ -66,6 +68,10 @@ public final class TangledMazePlugin extends JavaPlugin {
 		loadLanguage();
 	}
 	
+	public ParentCommand getMazeCommand() {
+		return mazeCmd;
+	}
+	
 	void registerListeners() {
 		PluginManager manager = Bukkit.getPluginManager();
 		manager.registerEvents(sessionHandler, this);
@@ -77,9 +83,10 @@ public final class TangledMazePlugin extends JavaPlugin {
 	}
 	
 	private void registerCommands() {
-		ParentCommand mazeCmd = new ParentCommand("tangledmaze");
+		mazeCmd = new ParentCommand("tangledmaze");
 		mazeCmd.addAlias("maze");
 		mazeCmd.addAlias("tm");
+		mazeCmd.setPermission(Constants.BUILD_PERM);
 		
 		mazeCmd.addChild(new HelpCommand());
 		mazeCmd.addChild(new GetWandCommand());

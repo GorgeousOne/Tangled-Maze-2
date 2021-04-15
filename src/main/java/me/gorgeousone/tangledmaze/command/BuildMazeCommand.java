@@ -4,6 +4,7 @@ import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.cmdframework.argument.ArgValue;
 import me.gorgeousone.tangledmaze.cmdframework.command.ArgCommand;
+import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.generation.building.BlockPalette;
 import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
 import me.gorgeousone.tangledmaze.maze.MazePart;
@@ -12,6 +13,8 @@ import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import me.gorgeousone.tangledmaze.util.MaterialUtil;
 import me.gorgeousone.tangledmaze.util.MathUtil;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
+import me.gorgeousone.tangledmaze.util.text.Placeholder;
+import me.gorgeousone.tangledmaze.util.text.TextException;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -44,11 +47,11 @@ public class BuildMazeCommand extends ArgCommand {
 		Clip maze = sessionHandler.getMazeClip(playerId);
 		
 		if (maze == null) {
-			sender.sendMessage(ChatColor.GRAY + "no maze");
+			Message.ERROR_MAZE_MISSING.sendTo(sender);
 			return;
 		}
 		if (maze.getExits().isEmpty()) {
-			sender.sendMessage(ChatColor.GRAY + "no exits");
+			Message.ERROR_EXIT_MISSING.sendTo(sender);
 			return;
 		}
 		MazeSettings settings = sessionHandler.getSettings(playerId);
@@ -62,10 +65,9 @@ public class BuildMazeCommand extends ArgCommand {
 		if (argValues.size() != 0) {
 			try {
 				BlockPalette palette = deserializeBlockPalette(argValues);
-				sender.sendMessage("created " + palette.size() + " blocks for " + mazePart.name().toLowerCase());
 				settings.setPalette(palette, mazePart);
-			} catch (Exception e) {
-				sender.sendMessage("Error: " + e.getMessage());
+			} catch (TextException e) {
+				e.sendTextTo(sender);
 				e.printStackTrace();
 			}
 		}
@@ -75,7 +77,7 @@ public class BuildMazeCommand extends ArgCommand {
 		buildHandler.buildMaze(playerId, maze, settings, mazePart);
 	}
 	
-	public BlockPalette deserializeBlockPalette(List<ArgValue> stringArgs) {
+	public BlockPalette deserializeBlockPalette(List<ArgValue> stringArgs) throws TextException {
 		BlockPalette palette = new BlockPalette();
 		
 		for (ArgValue input : stringArgs) {
@@ -98,7 +100,7 @@ public class BuildMazeCommand extends ArgCommand {
 				BlockType blockType = BlockType.get(materialString);
 				palette.addBlock(blockType, MathUtil.clamp(count, 1, 1000));
 			} catch (IllegalArgumentException e) {
-				throw new IllegalArgumentException("invalid block: " + materialString);
+				throw new TextException(Message.ERROR_INVALID_BLOCK_NAME, new Placeholder("block", materialString));
 			}
 		}
 		return palette;

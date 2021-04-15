@@ -1,5 +1,7 @@
 package me.gorgeousone.tangledmaze.cmdframework.argument;
 
+import org.bukkit.ChatColor;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +34,7 @@ public class Argument {
 		} else if (defaultValue != null) {
 			return defaultValue;
 		} else {
-			throw new IllegalArgumentException("Insert Usage");
+			throw new IllegalArgumentException(ChatColor.RED + "Missing argument '" + getName() + "'.");
 		}
 	}
 	
