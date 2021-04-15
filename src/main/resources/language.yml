@@ -1,7 +1,7 @@
 help-pages:
     wand-command: 'Gives you the maze wand. It''s works like the world edit wand only for mazes :P \nClick two blocks and continue with "/maze start"'
     start-command: Converts you clipboard selected with the maze wand into a maze clip (redstone). You can add/remove new clips to it and place exits on it now.
-    tool-command: Switch between rectangular and elliptic clipboards shapes with this command.
+    tool-command: Switch between the rectangle and the circle shape with this command.
     add-cut-command:
     setting-command: 'Change how your maze will be built later:'
     settings:

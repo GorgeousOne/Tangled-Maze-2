@@ -4,6 +4,7 @@ import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.clip.ClipActionFactory;
 import me.gorgeousone.tangledmaze.clip.ClipFactory;
+import me.gorgeousone.tangledmaze.data.ConfigSettings;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.render.RenderSession;
@@ -113,12 +114,9 @@ public class ClickListener implements Listener {
 		}
 	}
 	
-	boolean hoverClickEnabled = true;
-	int hoverRange = 100;
-	
 	private Block traceBlock(Player player, Block clickedBlock) {
-		if (clickedBlock == null && hoverClickEnabled) {
-			BlockIterator iter = new BlockIterator(player, hoverRange);
+		if (clickedBlock == null && ConfigSettings.HOVER_CLICKING_ENABLED) {
+			BlockIterator iter = new BlockIterator(player, ConfigSettings.HOVER_RANGE);
 			
 			while (iter.hasNext()) {
 				Block nextBlock = iter.next();
@@ -197,6 +195,6 @@ public class ClickListener implements Listener {
 	 * Returns if the given ItemStack is a wand for maze creation
 	 */
 	boolean isMazeWand(ItemStack item) {
-		return item != null && item.getType() == Material.GOLDEN_SHOVEL;
+		return item != null && item.getType() == ConfigSettings.WAND_ITEM;
 	}
 }

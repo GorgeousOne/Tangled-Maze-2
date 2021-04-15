@@ -46,6 +46,7 @@ public class ParentCommand extends BaseCommand {
 	public void execute(CommandSender sender, String[] args) {
 		if (args.length == 0) {
 			sendUsage(sender);
+			return;
 		}
 		for (BaseCommand child : children) {
 			if (child.matchesAlias(args[0])) {

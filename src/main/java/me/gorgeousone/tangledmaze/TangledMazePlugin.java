@@ -5,10 +5,14 @@ import me.gorgeousone.tangledmaze.cmdframework.handler.CommandHandler;
 import me.gorgeousone.tangledmaze.command.AddClip;
 import me.gorgeousone.tangledmaze.command.BuildMaze;
 import me.gorgeousone.tangledmaze.command.CutClip;
+import me.gorgeousone.tangledmaze.command.GetWand;
+import me.gorgeousone.tangledmaze.command.Reload;
 import me.gorgeousone.tangledmaze.command.SettingsCommand;
 import me.gorgeousone.tangledmaze.command.StartMaze;
 import me.gorgeousone.tangledmaze.command.SwitchTool;
 import me.gorgeousone.tangledmaze.command.UnbuildMaze;
+import me.gorgeousone.tangledmaze.command.Undo;
+import me.gorgeousone.tangledmaze.data.ConfigSettings;
 import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
 import me.gorgeousone.tangledmaze.listener.BlockChangeListener;
 import me.gorgeousone.tangledmaze.listener.ClickListener;
@@ -22,12 +26,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class TangledMaze extends JavaPlugin {
+public final class TangledMazePlugin extends JavaPlugin {
 	
 	private SessionHandler sessionHandler;
 	private ToolHandler toolHandler;
 	private RenderHandler renderHandler;
 	private BuildHandler buildHandler;
+	
+	private ConfigSettings settings;
 	
 	@Override
 	public void onEnable() {
@@ -38,6 +44,9 @@ public final class TangledMaze extends JavaPlugin {
 		buildHandler = new BuildHandler();
 		registerListeners();
 		registerCommands();
+		
+		settings = new ConfigSettings(this);
+		reload();
 	}
 	
 	@Override
@@ -47,6 +56,10 @@ public final class TangledMaze extends JavaPlugin {
 		buildHandler.disable();
 		toolHandler.disable();
 		Bukkit.broadcastMessage(ChatColor.GOLD + "TODO mazemap setType contains check");
+	}
+	
+	public void reload() {
+		loadConfigSettings();
 	}
 	
 	void registerListeners() {
@@ -64,15 +77,26 @@ public final class TangledMaze extends JavaPlugin {
 		mazeCmd.addAlias("maze");
 		mazeCmd.addAlias("tm");
 		
+		mazeCmd.addChild(new GetWand());
+		mazeCmd.addChild(new Reload(this));
 		mazeCmd.addChild(new StartMaze(sessionHandler, toolHandler));
+		mazeCmd.addChild(new SwitchTool(toolHandler));
 		mazeCmd.addChild(new AddClip(sessionHandler, toolHandler));
 		mazeCmd.addChild(new CutClip(sessionHandler, toolHandler));
-		mazeCmd.addChild(new SwitchTool(toolHandler));
+		mazeCmd.addChild(new Undo(sessionHandler));
 		mazeCmd.addChild(new SettingsCommand(sessionHandler));
-		mazeCmd.addChild(new BuildMaze(sessionHandler, buildHandler, renderHandler));
+		mazeCmd.addChild(new BuildMaze(sessionHandler, buildHandler, toolHandler));
 		mazeCmd.addChild(new UnbuildMaze(sessionHandler, buildHandler));
 		
 		CommandHandler cmdHandler = new CommandHandler(this);
 		cmdHandler.registerCommand(mazeCmd);
+	}
+	
+	private void loadConfigSettings() {
+		reloadConfig();
+		settings.addVersionDefaults(getConfig(), VersionUtil.IS_LEGACY_SERVER);
+		getConfig().options().copyDefaults(true);
+		saveConfig();
+		settings.loadSettings(getConfig());
 	}
 }

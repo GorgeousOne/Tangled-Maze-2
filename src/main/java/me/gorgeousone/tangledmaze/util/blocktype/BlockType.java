@@ -40,7 +40,7 @@ public abstract class BlockType {
 		return isLegacyServer ? new BlockTypeLegacy(state) : new BlockTypeAquatic(state);
 	}
 	
-	public static BlockType of(String serialized) {
+	public static BlockType get(String serialized) {
 		return isLegacyServer ? new BlockTypeLegacy(serialized) : new BlockTypeAquatic(serialized);
 	}
 }
