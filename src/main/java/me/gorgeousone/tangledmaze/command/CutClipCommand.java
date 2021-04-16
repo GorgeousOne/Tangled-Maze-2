@@ -5,33 +5,44 @@ import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.clip.ClipAction;
 import me.gorgeousone.tangledmaze.clip.ClipActionFactory;
 import me.gorgeousone.tangledmaze.cmdframework.command.BaseCommand;
+import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class CutClip extends BaseCommand {
+public class CutClipCommand extends BaseCommand {
 	
 	private final SessionHandler sessionHandler;
 	private final ToolHandler toolHandler;
 	
-	public CutClip(SessionHandler sessionHandler, ToolHandler toolHandler) {
+	public CutClipCommand(SessionHandler sessionHandler, ToolHandler toolHandler) {
 		super("cut");
-		this.toolHandler = toolHandler;
 		addAlias("remove");
+		setPlayerRequired(true);
+		
+		this.toolHandler = toolHandler;
 		this.sessionHandler = sessionHandler;
 	}
 	
 	@Override
-	public void execute(CommandSender sender, String[] args) {
+	public void onCommand(CommandSender sender, String[] args) {
 		Player player = (Player) sender;
 		UUID playerId = player.getUniqueId();
 		Clip clip = sessionHandler.getClip(playerId);
 		Clip maze = sessionHandler.getMazeClip(playerId);
 		
-		if (maze == null || clip == null) {
-			sender.sendMessage("no maze / clip");
+		if (maze == null) {
+			Message.ERROR_MAZE_MISSING.sendTo(sender);
+			return;
+		}
+		if (clip == null) {
+			Message.ERROR_CLIPBOARD_MISSING.sendTo(sender);
+			return;
+		}
+		if (!maze.isActive()) {
+			Message.INFO_MAZE_INACCESSIBLE.sendTo(sender);
 			return;
 		}
 		toolHandler.resetClipTool(playerId);

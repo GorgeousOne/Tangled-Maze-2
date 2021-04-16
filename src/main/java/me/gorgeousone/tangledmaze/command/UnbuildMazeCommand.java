@@ -4,8 +4,10 @@ import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.cmdframework.argument.ArgValue;
 import me.gorgeousone.tangledmaze.cmdframework.command.ArgCommand;
+import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
 import me.gorgeousone.tangledmaze.maze.MazePart;
+import me.gorgeousone.tangledmaze.util.text.TextException;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,13 +16,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class UnbuildMaze extends ArgCommand {
+public class UnbuildMazeCommand extends ArgCommand {
 	
 	private final SessionHandler sessionHandler;
 	private final BuildHandler buildHandler;
 	
-	public UnbuildMaze(SessionHandler sessionHandler,
-	                   BuildHandler buildHandler) {
+	public UnbuildMazeCommand(SessionHandler sessionHandler,
+	                          BuildHandler buildHandler) {
 		super("unbuild");
 		addFlag("floor");
 		addFlag("roof");
@@ -36,7 +38,7 @@ public class UnbuildMaze extends ArgCommand {
 		Clip maze = sessionHandler.getMazeClip(playerId);
 		
 		if (maze == null) {
-			sender.sendMessage(ChatColor.GRAY + "no maze");
+			Message.ERROR_MAZE_MISSING.sendTo(sender);
 			return;
 		}
 		MazePart mazePart = MazePart.WALLS;
@@ -46,11 +48,10 @@ public class UnbuildMaze extends ArgCommand {
 		} else if (usedFlags.contains("roof")) {
 			mazePart = MazePart.ROOF;
 		}
-		
 		try {
-			buildHandler.unbuildMaze(playerId, maze, mazePart);
-		} catch (IllegalArgumentException e) {
-			sender.sendMessage("Error: " + e.getMessage());
+			buildHandler.unbuildMaze(maze, mazePart);
+		} catch (TextException e) {
+			e.sendTextTo(sender);
 		}
 	}
 }

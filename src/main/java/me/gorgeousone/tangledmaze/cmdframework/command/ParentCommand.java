@@ -26,6 +26,9 @@ public class ParentCommand extends BaseCommand {
 		return children;
 	}
 	
+	/**
+	 * Adds a sub command to this command that can be accessed as the first argument behind this command's name
+	 */
 	public void addChild(BaseCommand child) {
 		children.add(child.setParent(this));
 	}
@@ -43,14 +46,14 @@ public class ParentCommand extends BaseCommand {
 	}
 	
 	@Override
-	public void execute(CommandSender sender, String[] args) {
+	public void onCommand(CommandSender sender, String[] args) {
 		if (args.length == 0) {
 			sendUsage(sender);
 			return;
 		}
 		for (BaseCommand child : children) {
 			if (child.matchesAlias(args[0])) {
-				child.execute(sender, Arrays.copyOfRange(args, 1, args.length));
+				child.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
 				return;
 			}
 		}

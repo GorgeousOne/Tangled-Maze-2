@@ -2,22 +2,24 @@ package me.gorgeousone.tangledmaze.command;
 
 import me.gorgeousone.tangledmaze.TangledMazePlugin;
 import me.gorgeousone.tangledmaze.cmdframework.command.BaseCommand;
+import me.gorgeousone.tangledmaze.data.Constants;
+import me.gorgeousone.tangledmaze.data.Message;
 import org.bukkit.command.CommandSender;
 
-public class Reload extends BaseCommand {
+public class ReloadCommand extends BaseCommand {
 	
 	private final TangledMazePlugin tangledMazePlugin;
 	
-	public Reload(TangledMazePlugin tangledMazePlugin) {
+	public ReloadCommand(TangledMazePlugin tangledMazePlugin) {
 		super("reload");
 		addAlias("rl");
-		
+		setPermission(Constants.RELOAD_PERM);
 		this.tangledMazePlugin = tangledMazePlugin;
 	}
 	
 	@Override
-	public void execute(CommandSender sender, String[] args) {
+	public void onCommand(CommandSender sender, String[] args) {
 		tangledMazePlugin.reload();
-		sender.sendMessage("reloaded tangled maze");
+		Message.INFO_PLUGIN_RELOAD.sendTo(sender);
 	}
 }

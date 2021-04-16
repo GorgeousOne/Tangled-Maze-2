@@ -5,8 +5,10 @@ import me.gorgeousone.tangledmaze.cmdframework.argument.ArgType;
 import me.gorgeousone.tangledmaze.cmdframework.argument.ArgValue;
 import me.gorgeousone.tangledmaze.cmdframework.argument.Argument;
 import me.gorgeousone.tangledmaze.cmdframework.command.ArgCommand;
+import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
+import me.gorgeousone.tangledmaze.util.text.Placeholder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -29,14 +31,19 @@ public class SettingsCommand extends ArgCommand {
 	protected void executeArgs(CommandSender sender, List<ArgValue> argValues, Set<String> usedFlags) {
 		Player player = (Player) sender;
 		UUID playerId = player.getUniqueId();
-		MazeProperty property = MazeProperty.match(argValues.get(0).get());
+		String settingName = argValues.get(0).get();
+		MazeProperty property = MazeProperty.match(settingName);
 		
 		if (property == null) {
-			sender.sendMessage("invalid setting");
+			Message.ERROR_INVALID_SETTING.sendTo(sender, new Placeholder("setting", settingName));
 			return;
 		}
 		int inputValue = argValues.get(1).getInt();
 		MazeSettings settings = sessionHandler.getSettings(playerId);
-		sender.sendMessage("Set " + property.textName() + " to " + settings.setValue(property, inputValue) + " blocks(s).");
+		settings.setValue(property, inputValue);
+		
+		Message.INFO_SETTING_CHANGE.sendTo(sender,
+				new Placeholder("setting", property.textName()),
+				new Placeholder("value", inputValue));
 	}
 }
