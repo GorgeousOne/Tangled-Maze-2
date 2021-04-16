@@ -33,7 +33,7 @@ public class HelpCommand extends ArgCommand {
 			sender.sendMessage(ChatColor.GREEN + "List of commands: ");
 			
 			for (int i = 0; i < helpPages.length; ++i) {
-				sender.sendMessage(ChatColor.GREEN + "page " + (i + 1) + " " + helpPages[i].getParagraphs()[0]);
+				sender.sendMessage(ChatColor.GREEN + "page " + (i + 1) + " " + helpPages[i].getParagraphs().get(0));
 			}
 			sender.sendMessage(ChatColor.YELLOW + "Use /maze help <page> to see details");
 			
