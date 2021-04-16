@@ -3,25 +3,34 @@ package me.gorgeousone.tangledmaze.util.text;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Text {
 	
-	private String[] paragraphs;
+	private List<String> paragraphs;
 	
 	public Text(String message) {
 		setText(message);
 	}
 	
 	private void setText(String message) {
-		paragraphs = ChatColor.translateAlternateColorCodes('&', message).split("\\\\n");
+		String[] split = ChatColor.translateAlternateColorCodes('&', message).split("\\\\n");
+		paragraphs = new ArrayList<>(Arrays.asList(split));
 		
-		if (paragraphs.length > 1) {
-			for (int i = 1; i < paragraphs.length; i++) {
-				paragraphs[i] = ChatColor.getLastColors(paragraphs[i - 1]) + paragraphs[i];
+		if (paragraphs.size() > 1) {
+			for (int i = 1; i < paragraphs.size(); i++) {
+				paragraphs.set(i, ChatColor.getLastColors(paragraphs.get(i - 1)) + paragraphs.get(i));
 			}
 		}
 	}
 	
-	public String[] getParagraphs() {
+	public void add(Text other) {
+		paragraphs.addAll(other.paragraphs);
+	}
+	
+	public List<String> getParagraphs() {
 		return paragraphs;
 	}
 	

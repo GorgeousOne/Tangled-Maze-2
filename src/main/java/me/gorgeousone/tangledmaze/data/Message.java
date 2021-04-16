@@ -52,6 +52,12 @@ public class Message {
 		COMMAND_START = createHelpText("/maze start", helps, "start-command");
 		COMMAND_ADD_CUT = createHelpText("/maze add/cut", helps, "add-cut-command");
 		COMMAND_TOOL = createHelpText("/maze tool <tool>", helps, "tool-command");
+		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "wallheight", helps,"settings.wall-height"));
+		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "pathwidth", helps, "settings.path-width"));
+		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "wallwidth", helps, "settings.wall-width"));
+		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "roodwidth", helps, "settings.roof-width"));
+		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "curliness", helps, "settings.curliness"));
+		
 		COMMAND_SETTING = createHelpText("/maze setting <setting> <integer>", helps, "settings-command");
 		COMMAND_UNDO = createHelpText("/maze undo", helps, "undo-command");
 		COMMAND_BUILD = createHelpText("/maze build <blocks>...", helps, "build-command");

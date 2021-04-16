@@ -19,18 +19,17 @@ public class FloorGen {
 		for (int gridX = 0; gridX < pathMap.getWidth(); ++gridX) {
 			for (int gridZ = 0; gridZ < pathMap.getHeight(); ++gridZ) {
 				GridSegment segment = pathMap.getSegment(gridX, gridZ);
-				BlockSegment path = createPath(mazeMap, segment);
+				BlockSegment path = createFloorSegment(mazeMap, segment);
 				
-				if (path == null) {
-					continue;
+				if (path != null) {
+					paths.add(path);
 				}
-				paths.add(path);
 			}
 		}
 		return paths;
 	}
 	
-	private static BlockSegment createPath(MazeMap mazeMap, GridSegment segment) {
+	private static BlockSegment createFloorSegment(MazeMap mazeMap, GridSegment segment) {
 		Vec2 min = segment.getMin();
 		Vec2 max = segment.getMax();
 		Set<Vec2> columns = new HashSet<>();
