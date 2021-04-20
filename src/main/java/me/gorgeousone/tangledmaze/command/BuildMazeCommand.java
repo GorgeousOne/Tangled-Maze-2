@@ -14,6 +14,7 @@ import me.gorgeousone.tangledmaze.util.MaterialUtil;
 import me.gorgeousone.tangledmaze.util.MathUtil;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import me.gorgeousone.tangledmaze.util.text.Placeholder;
+import me.gorgeousone.tangledmaze.util.text.Text;
 import me.gorgeousone.tangledmaze.util.text.TextException;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -74,7 +75,12 @@ public class BuildMazeCommand extends ArgCommand {
 		
 		maze.setActive(false);
 		toolHandler.resetClipTool(playerId);
-		buildHandler.buildMaze(playerId, maze, settings, mazePart);
+		
+		try {
+			buildHandler.buildMaze(playerId, maze, settings, mazePart);
+		}catch (TextException e) {
+			e.sendTextTo(sender);
+		}
 	}
 	
 	public BlockPalette deserializeBlockPalette(List<ArgValue> stringArgs) throws TextException {

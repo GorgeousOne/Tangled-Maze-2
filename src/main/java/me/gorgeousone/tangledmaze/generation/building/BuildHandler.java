@@ -3,12 +3,13 @@ package me.gorgeousone.tangledmaze.generation.building;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.event.MazeBuildEvent;
-import me.gorgeousone.tangledmaze.generation.GridSegment;
+import me.gorgeousone.tangledmaze.generation.GridCell;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.generation.MazeMapFactory;
 import me.gorgeousone.tangledmaze.generation.paving.PathTree;
 import me.gorgeousone.tangledmaze.maze.MazeBackup;
 import me.gorgeousone.tangledmaze.maze.MazePart;
+import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.Vec2;
@@ -51,10 +52,9 @@ public class BuildHandler {
 		mazeBackups.clear();
 	}
 	
-	public void buildMaze(UUID playerId, Clip maze, MazeSettings settings, MazePart mazePart) {
+	public void buildMaze(UUID playerId, Clip maze, MazeSettings settings, MazePart mazePart) throws TextException {
 		if (!mazeBackups.containsKey(maze) && mazePart != MazePart.WALLS) {
-			Bukkit.broadcastMessage("walls first");
-			return;
+			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
 		}
 		mazeBackups.computeIfAbsent(maze, backup -> {
 			MazeMap mazeMap = MazeMapFactory.createMazeMapOf(maze, settings);
@@ -71,8 +71,10 @@ public class BuildHandler {
 			case FLOOR:
 				segments = backup.getOrCompute(MazePart.FLOOR, floor -> FloorGen.genFloor(mazeMap));
 				break;
+			case ROOF:
+				segments = backup.getOrCompute(MazePart.ROOF, floor -> RoofGen.genRoof(mazeMap, settings.getValue(MazeProperty.WALL_HEIGHT)));
+				break;
 			default:
-				Bukkit.broadcastMessage("not implemented");
 				return;
 		}
 		Set<BlockState> backupBlocks = buildSegments(mazeMap.getWorld(), segments, settings.getPalette(mazePart));
@@ -130,10 +132,10 @@ public class BuildHandler {
 		for (PathTree tree : mazeMap.getPathTrees()) {
 			float maxDist = tree.getMaxExitDist();
 			
-			for (GridSegment segment : tree.getSegments()) {
-				Color color = rainbowColor(tree.getExitDist(segment) / maxDist);
-				Vec2 segMin = segment.getMin();
-				Vec2 segMax = segment.getMax();
+			for (GridCell cell : tree.getCells()) {
+				Color color = rainbowColor(tree.getExitDist(cell) / maxDist);
+				Vec2 segMin = cell.getMin();
+				Vec2 segMax = cell.getMax();
 				
 				for (int x = segMin.getX(); x < segMax.getX(); ++x) {
 					for (int z = segMin.getZ(); z < segMax.getZ(); ++z) {

@@ -4,7 +4,6 @@ import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.generation.building.TerrainEditor;
 import me.gorgeousone.tangledmaze.generation.paving.ExitSegment;
 import me.gorgeousone.tangledmaze.generation.paving.PathGen;
-import me.gorgeousone.tangledmaze.generation.paving.PathMap;
 import me.gorgeousone.tangledmaze.generation.paving.PathType;
 import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
@@ -71,8 +70,12 @@ public class MazeMapFactory {
 		}
 	}
 	
+	/**
+	 * Creates a grid map for the maze and generates the paths on it.
+	 * Saves grid map and path trees in maze map.
+	 */
 	public static void createPaths(MazeMap mazeMap, List<Vec2> exits, MazeSettings settings) {
-		PathMap pathMap = new PathMap(
+		GridMap gridMap = new GridMap(
 				mazeMap.getMin(),
 				mazeMap.getMax(),
 				settings.getValue(MazeProperty.PATH_WIDTH),
@@ -82,15 +85,15 @@ public class MazeMapFactory {
 			Vec2 exitLoc = exits.get(i);
 			
 			if (i == 0) {
-				pathMap.setEntrance(exitLoc, getExitFacing(exitLoc, mazeMap));
-				copyMazeOntoPathMap(mazeMap, pathMap);
+				gridMap.setEntrance(exitLoc, getExitFacing(exitLoc, mazeMap));
+				copyMazeOntoGrid(mazeMap, gridMap);
 			} else {
-				pathMap.setExit(exitLoc, getExitFacing(exitLoc, mazeMap));
+				gridMap.setExit(exitLoc, getExitFacing(exitLoc, mazeMap));
 			}
 		}
-		mazeMap.setPathMap(pathMap);
-		mazeMap.setPathTrees(PathGen.genPaths(pathMap, settings.getValue(MazeProperty.CURLINESS)));
-		copyPathsOntoMazeMap(pathMap, mazeMap);
+		mazeMap.setGridMap(gridMap);
+		mazeMap.setPathTrees(PathGen.genPaths(gridMap, settings.getValue(MazeProperty.CURLINESS)));
+		copyPathsOntoMazeMap(gridMap, mazeMap);
 	}
 	
 	private static Direction getExitFacing(Vec2 exit, MazeMap mazeMap) {
@@ -104,41 +107,59 @@ public class MazeMapFactory {
 		throw new IllegalArgumentException("Exit " + exit + " does not touch the maze.");
 	}
 	
-	private static void copyMazeOntoPathMap(MazeMap mazeMap, PathMap pathMap) {
-		for (int gridX = 0; gridX < pathMap.getWidth(); ++gridX) {
-			for (int gridZ = 0; gridZ < pathMap.getHeight(); ++gridZ) {
-				if (!isSegmentFree(pathMap.getSegment(gridX, gridZ), mazeMap)) {
-					pathMap.setSegmentType(gridX, gridZ, PathType.BLOCKED);
+	private static void copyMazeOntoGrid(MazeMap mazeMap, GridMap gridMap) {
+		for (int gridX = 0; gridX < gridMap.getWidth(); ++gridX) {
+			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {
+				
+				GridCell cell = gridMap.getCell(gridX, gridZ);
+				gridMap.setFloorYs(gridX, gridZ, getCellFloorY(cell, mazeMap));
+				
+				if (!isCellFree(gridMap.getCell(gridX, gridZ), mazeMap)) {
+					gridMap.setPathType(gridX, gridZ, PathType.BLOCKED);
 				}
 			}
 		}
 	}
 	
-	private static void copyPathsOntoMazeMap(PathMap pathMap, MazeMap mazeMap) {
-		for (ExitSegment exit : pathMap.getExits()) {
+	private static void copyPathsOntoMazeMap(GridMap gridMap, MazeMap mazeMap) {
+		for (ExitSegment exit : gridMap.getExits()) {
 			mazeMap.setType(exit.getMin(), exit.getMax(), AreaType.EXIT);
 		}
-		for (int gridX = 0; gridX < pathMap.getWidth(); ++gridX) {
-			for (int gridZ = 0; gridZ < pathMap.getHeight(); ++gridZ) {
-				if (pathMap.getSegmentType(gridX, gridZ) == PathType.PAVED) {
-					GridSegment segment = pathMap.getSegment(gridX, gridZ);
-					mazeMap.setType(segment.getMin(), segment.getMax(), AreaType.PATH);
+		for (int gridX = 0; gridX < gridMap.getWidth(); ++gridX) {
+			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {
+				
+				if (gridMap.getPathType(gridX, gridZ) == PathType.PAVED) {
+					GridCell cell = gridMap.getCell(gridX, gridZ);
+					mazeMap.setType(cell.getMin(), cell.getMax(), AreaType.PATH);
 				}
 			}
 		}
 	}
 	
-	private static boolean isSegmentFree(GridSegment segment, MazeMap mazeMap) {
-		Vec2 segMin = segment.getMin();
-		Vec2 segMax = segment.getMax();
+	private static boolean isCellFree(GridCell cell, MazeMap mazeMap) {
+		Vec2 cellMin = cell.getMin();
+		Vec2 cellMax = cell.getMax();
 		
-		for (int x = segMin.getX(); x < segMax.getX(); ++x) {
-			for (int z = segMin.getZ(); z < segMax.getZ(); ++z) {
+		for (int x = cellMin.getX(); x < cellMax.getX(); ++x) {
+			for (int z = cellMin.getZ(); z < cellMax.getZ(); ++z) {
 				if (mazeMap.getType(x, z) != AreaType.FREE) {
 					return false;
 				}
 			}
 		}
 		return true;
+	}
+	
+	private static int getCellFloorY(GridCell cell, MazeMap mazeMap) {
+		Vec2 cellMin = cell.getMin();
+		Vec2 cellMax = cell.getMax();
+		int maxY = -1;
+		
+		for (int x = cellMin.getX(); x < cellMax.getX(); ++x) {
+			for (int z = cellMin.getZ(); z < cellMax.getZ(); ++z) {
+				maxY = Math.max(maxY, mazeMap.getY(x, z));
+			}
+		}
+		return maxY;
 	}
 }

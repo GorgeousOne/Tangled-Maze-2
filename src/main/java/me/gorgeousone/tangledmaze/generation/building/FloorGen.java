@@ -1,9 +1,9 @@
 package me.gorgeousone.tangledmaze.generation.building;
 
 import me.gorgeousone.tangledmaze.generation.AreaType;
-import me.gorgeousone.tangledmaze.generation.GridSegment;
+import me.gorgeousone.tangledmaze.generation.GridCell;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
-import me.gorgeousone.tangledmaze.generation.paving.PathMap;
+import me.gorgeousone.tangledmaze.generation.GridMap;
 import me.gorgeousone.tangledmaze.util.BlockUtil;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
@@ -13,13 +13,13 @@ import java.util.Set;
 public class FloorGen {
 	
 	public static Set<BlockSegment> genFloor(MazeMap mazeMap) {
-		PathMap pathMap = mazeMap.getPathMap();
+		GridMap gridMap = mazeMap.getPathMap();
 		Set<BlockSegment> paths = new HashSet<>();
 		
-		for (int gridX = 0; gridX < pathMap.getWidth(); ++gridX) {
-			for (int gridZ = 0; gridZ < pathMap.getHeight(); ++gridZ) {
-				GridSegment segment = pathMap.getSegment(gridX, gridZ);
-				BlockSegment path = createFloorSegment(mazeMap, segment);
+		for (int gridX = 0; gridX < gridMap.getWidth(); ++gridX) {
+			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {
+				GridCell cell = gridMap.getCell(gridX, gridZ);
+				BlockSegment path = createFloorSegment(mazeMap, cell);
 				
 				if (path != null) {
 					paths.add(path);
@@ -29,9 +29,9 @@ public class FloorGen {
 		return paths;
 	}
 	
-	private static BlockSegment createFloorSegment(MazeMap mazeMap, GridSegment segment) {
-		Vec2 min = segment.getMin();
-		Vec2 max = segment.getMax();
+	private static BlockSegment createFloorSegment(MazeMap mazeMap, GridCell cell) {
+		Vec2 min = cell.getMin();
+		Vec2 max = cell.getMax();
 		Set<Vec2> columns = new HashSet<>();
 		
 		for (int x = min.getX(); x < max.getX(); ++x) {
@@ -48,7 +48,7 @@ public class FloorGen {
 		if (columns.isEmpty()) {
 			return null;
 		}
-		BlockSegment path = new BlockSegment(segment.getMin(), segment.getMax(), segment.getGridPos(), mazeMap.getWorld().getMaxHeight());
+		BlockSegment path = new BlockSegment(cell.getMin(), cell.getMax(), cell.getGridPos(), mazeMap.getWorld().getMaxHeight());
 		
 		for (Vec2 column : columns) {
 			int maxFloorY = mazeMap.getY(column);
