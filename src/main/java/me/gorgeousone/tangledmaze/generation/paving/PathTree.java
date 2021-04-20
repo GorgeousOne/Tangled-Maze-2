@@ -1,6 +1,6 @@
 package me.gorgeousone.tangledmaze.generation.paving;
 
-import me.gorgeousone.tangledmaze.generation.GridSegment;
+import me.gorgeousone.tangledmaze.generation.GridCell;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,9 +11,9 @@ import java.util.Set;
 public class PathTree {
 	
 	private final static Random RANDOM = new Random();
-	private final List<GridSegment> openEnds;
-	private final Set<GridSegment> segments;
-	private final Set<GridSegment> intersections;
+	private final List<GridCell> openEnds;
+	private final Set<GridCell> cells;
+	private final Set<GridCell> intersections;
 	//	private final Map<MazeSegment, Set<MazeSegment>> children;
 	int maxExitDist;
 	private final int index;
@@ -21,7 +21,7 @@ public class PathTree {
 	public PathTree(int index) {
 		this.index = index;
 		this.openEnds = new ArrayList<>();
-		segments = new HashSet<>();
+		cells = new HashSet<>();
 		intersections = new HashSet<>();
 		//		children = new HashMap<>();
 	}
@@ -32,36 +32,32 @@ public class PathTree {
 	}
 	
 	public int size() {
-		return segments.size();
+		return cells.size();
 	}
 	
 	public boolean isComplete() {
 		return openEnds.isEmpty();
 	}
 	
-	public void addSegment(GridSegment segment, GridSegment parent) {
-		segment.setTree(this);
-		segment.setParent(parent);
-		segments.add(segment);
+	public void addSegment(GridCell cell, GridCell parent) {
+		cell.setTree(this);
+		cell.setParent(parent);
+		cells.add(cell);
 		
-		int exitDist = getExitDist(segment);
+		int exitDist = getExitDist(cell);
 		maxExitDist = Math.max(exitDist, maxExitDist);
 		
-		//		if (parent != null) {
-		//			children.computeIfAbsent(parent, set -> new HashSet<>());
-		//			children.get(parent).add(segment);
-		//		}
-		if (segment.gridX() % 2 == 0 && segment.gridZ() % 2 == 0) {
-			intersections.add(segment);
-			openEnds.add(0, segment);
+		if (cell.gridX() % 2 == 0 && cell.gridZ() % 2 == 0) {
+			intersections.add(cell);
+			openEnds.add(0, cell);
 		}
 	}
 	
-	public Set<GridSegment> getSegments() {
-		return segments;
+	public Set<GridCell> getCells() {
+		return cells;
 	}
 	
-	public Set<GridSegment> getIntersections() {
+	public Set<GridCell> getIntersections() {
 		return intersections;
 	}
 	
@@ -69,32 +65,32 @@ public class PathTree {
 		return maxExitDist;
 	}
 	
-	public int getExitDist(GridSegment segment) {
+	public int getExitDist(GridCell cell) {
 		int dist = 0;
-		while (segment.hasParent()) {
+		while (cell.hasParent()) {
 			++dist;
-			segment = segment.getParent();
+			cell = cell.getParent();
 		}
 		return dist;
 	}
 	
-	public GridSegment getLastEnd() {
+	public GridCell getLastEnd() {
 		return openEnds.get(0);
 	}
 	
-	public GridSegment getRndEnd() {
+	public GridCell getRndEnd() {
 		return openEnds.get(RANDOM.nextInt(openEnds.size()));
 	}
 	
-	public void removeEnd(GridSegment pathEnd) {
+	public void removeEnd(GridCell pathEnd) {
 		openEnds.remove(pathEnd);
 	}
 	
-	public void mergeTree(PathTree other, GridSegment ownSegment, GridSegment otherSegment, GridSegment linkSegment) {
-		for (GridSegment segment : other.segments) {
-			segment.setTree(this);
+	public void mergeTree(PathTree other, GridCell ownSegment, GridCell otherSegment, GridCell linkSegment) {
+		for (GridCell cell : other.cells) {
+			cell.setTree(this);
 		}
-		segments.addAll(other.segments);
+		cells.addAll(other.cells);
 		intersections.addAll(other.intersections);
 		//		children.putAll(other.children);
 		
@@ -102,18 +98,18 @@ public class PathTree {
 		balanceTree(linkSegment, otherSegment);
 	}
 	
-	private void balanceTree(GridSegment seg1, GridSegment seg2) {
+	private void balanceTree(GridCell seg1, GridCell seg2) {
 		int exitDist1 = getExitDist(seg1);
 		int exitDist2 = getExitDist(seg2);
 		int distDiff = Math.abs(exitDist2 - exitDist1);
 		maxExitDist = Math.max(maxExitDist, (exitDist2 + exitDist1) / 2);
 		
-		GridSegment furtherSeg = exitDist1 > exitDist2 ? seg1 : seg2;
-		GridSegment closerSeg = exitDist1 <= exitDist2 ? seg1 : seg2;
+		GridCell furtherSeg = exitDist1 > exitDist2 ? seg1 : seg2;
+		GridCell closerSeg = exitDist1 <= exitDist2 ? seg1 : seg2;
 		
 		
 		for (int i = 0; i < distDiff / 2; i++) {
-			GridSegment oldParent = furtherSeg.getParent();
+			GridCell oldParent = furtherSeg.getParent();
 			furtherSeg.setParent(closerSeg);
 			
 			closerSeg = furtherSeg;
