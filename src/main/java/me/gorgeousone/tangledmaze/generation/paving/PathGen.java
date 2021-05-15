@@ -186,8 +186,6 @@ public class PathGen {
 			PathTree keyTree = keySegment.getTree();
 			PathTree valueTree = valueSegment.getTree();
 			
-			Bukkit.broadcastMessage("Join " + valueTree + ", " + linkSegment.getMin());
-			
 			keyTree.mergeTree(valueTree, keySegment, valueSegment, linkSegment);
 			pathTrees.remove(valueTree);
 		}

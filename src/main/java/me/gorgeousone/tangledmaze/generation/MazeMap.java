@@ -114,7 +114,6 @@ public class MazeMap {
 				AreaType type = areaMap[x][z];
 				
 				if (type == null) {
-//					areaMap[x][z] = AreaType.NOT_MAZE;
 					continue;
 				}
 				switch (type) {

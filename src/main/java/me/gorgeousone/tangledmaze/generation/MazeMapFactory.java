@@ -86,7 +86,7 @@ public class MazeMapFactory {
 			
 			if (i == 0) {
 				gridMap.setEntrance(exitLoc, getExitFacing(exitLoc, mazeMap));
-				copyMazeOntoGrid(mazeMap, gridMap);
+				copyMazeOntoGrid(mazeMap, gridMap, settings.getValue(MazeProperty.WALL_HEIGHT));
 			} else {
 				gridMap.setExit(exitLoc, getExitFacing(exitLoc, mazeMap));
 			}
@@ -107,12 +107,15 @@ public class MazeMapFactory {
 		throw new IllegalArgumentException("Exit " + exit + " does not touch the maze.");
 	}
 	
-	private static void copyMazeOntoGrid(MazeMap mazeMap, GridMap gridMap) {
+	private static void copyMazeOntoGrid(MazeMap mazeMap, GridMap gridMap, int wallHeight) {
 		for (int gridX = 0; gridX < gridMap.getWidth(); ++gridX) {
 			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {
 				
 				GridCell cell = gridMap.getCell(gridX, gridZ);
-				gridMap.setFloorYs(gridX, gridZ, getCellFloorY(cell, mazeMap));
+				int floorY = getCellFloorY(cell, mazeMap);
+				
+				gridMap.setFloorY(gridX, gridZ, floorY);
+				gridMap.setWallY(gridX, gridZ, floorY + wallHeight);
 				
 				if (!isCellFree(gridMap.getCell(gridX, gridZ), mazeMap)) {
 					gridMap.setPathType(gridX, gridZ, PathType.BLOCKED);
@@ -123,7 +126,7 @@ public class MazeMapFactory {
 	
 	private static void copyPathsOntoMazeMap(GridMap gridMap, MazeMap mazeMap) {
 		for (ExitSegment exit : gridMap.getExits()) {
-			mazeMap.setType(exit.getMin(), exit.getMax(), AreaType.EXIT);
+			mazeMap.setType(exit.getMin(), exit.getMax(), AreaType.PATH);
 		}
 		for (int gridX = 0; gridX < gridMap.getWidth(); ++gridX) {
 			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {
