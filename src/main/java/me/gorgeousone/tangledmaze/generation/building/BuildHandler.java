@@ -13,18 +13,17 @@ import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.Vec2;
-import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import me.gorgeousone.tangledmaze.util.text.TextException;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.EulerAngle;
 
 import java.util.HashMap;
@@ -35,9 +34,11 @@ import java.util.UUID;
 
 public class BuildHandler {
 	
+	private final JavaPlugin plugin;
 	private final HashMap<Clip, MazeBackup> mazeBackups;
 	
-	public BuildHandler() {
+	public BuildHandler(JavaPlugin plugin) {
+		this.plugin = plugin;
 		this.mazeBackups = new HashMap<>();
 	}
 	
@@ -77,28 +78,24 @@ public class BuildHandler {
 			default:
 				return;
 		}
-		Set<BlockState> backupBlocks = buildSegments(mazeMap.getWorld(), segments, settings.getPalette(mazePart));
-		backup.setSegments(mazePart, segments);
-		boolean isFirstBuild = backup.setBlocks(mazePart, backupBlocks);
 		
-		if (mazePart == MazePart.WALLS && isFirstBuild) {
-			Bukkit.getPluginManager().callEvent(new MazeBuildEvent(maze, playerId));
-		}
+		new BlockPlacer(mazeMap.getWorld(), collectBlocks(segments), settings.getPalette(mazePart), -1, backupBlocks -> {
+			boolean isFirstBuild = backup.hasBlocks(mazePart);
+			backup.setBlocks(mazePart, backupBlocks);
+			
+			if (mazePart == MazePart.WALLS && isFirstBuild) {
+				Bukkit.getPluginManager().callEvent(new MazeBuildEvent(maze, playerId));
+			}
+		}).runTaskTimer(plugin, 0, 1);
 	}
 	
-	Random random = new Random();
-	
-	private Set<BlockState> buildSegments(World world, Set<BlockSegment> segments, BlockPalette palette) {
-		Set<BlockState> backupBlocks = new HashSet<>();
+	private Set<BlockVec> collectBlocks(Set<BlockSegment> segments) {
+		Set<BlockVec> blocks = new HashSet<>();
 		
 		for (BlockSegment segment : segments) {
-			for (BlockVec blockVec : segment.getBlocks()) {
-				Block block = world.getBlockAt(blockVec.getX(), blockVec.getY(), blockVec.getZ());
-				BlockType type = palette.getBlock(random.nextInt(palette.size()));
-				backupBlocks.add(type.updateBlock(block, false));
-			}
+			blocks.addAll(segment.getBlocks());
 		}
-		return backupBlocks;
+		return blocks;
 	}
 	
 	public void unbuildMaze(Clip maze, MazePart mazePart) throws TextException {

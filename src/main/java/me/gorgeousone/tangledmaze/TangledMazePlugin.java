@@ -46,7 +46,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 		sessionHandler = new SessionHandler();
 		toolHandler = new ToolHandler(sessionHandler);
 		renderHandler = new RenderHandler(this, sessionHandler);
-		buildHandler = new BuildHandler();
+		buildHandler = new BuildHandler(this);
 		registerListeners();
 		registerCommands();
 		

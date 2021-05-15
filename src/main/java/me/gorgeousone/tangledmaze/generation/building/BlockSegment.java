@@ -44,9 +44,11 @@ public class BlockSegment {
 	}
 	
 	void addBlock(int x, int y, int z) {
-		blocks[x - min.getX()][y][z - min.getZ()] = true;
-		minY = Math.min(minY, y);
-		maxY = Math.max(maxY, y);
+		if (contains(x, z) && y >= 0 && y < worldHeight) {
+			blocks[x - min.getX()][y][z - min.getZ()] = true;
+			minY = Math.min(minY, y);
+			maxY = Math.max(maxY, y);
+		}
 	}
 	
 	public void removeBlock(BlockVec block) {
