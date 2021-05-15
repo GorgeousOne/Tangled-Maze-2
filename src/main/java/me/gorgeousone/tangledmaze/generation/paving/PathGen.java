@@ -1,6 +1,7 @@
 package me.gorgeousone.tangledmaze.generation.paving;
 
-import me.gorgeousone.tangledmaze.generation.GridSegment;
+import me.gorgeousone.tangledmaze.generation.GridCell;
+import me.gorgeousone.tangledmaze.generation.GridMap;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.Bukkit;
@@ -20,8 +21,8 @@ public class PathGen {
 	private static final Random RANDOM = new Random();
 	private static final int maxLinkedSegmentCount = 4;
 	
-	public static List<PathTree> genPaths(PathMap pathMap, int curliness) {
-		List<PathTree> pathTrees = createPathTrees(pathMap.getPathStarts());
+	public static List<PathTree> genPaths(GridMap gridMap, int curliness) {
+		List<PathTree> pathTrees = createPathTrees(gridMap.getPathStarts());
 		List<PathTree> openPathTrees = new ArrayList<>(pathTrees);
 		
 		PathTree currentTree = openPathTrees.get(0);
@@ -29,7 +30,7 @@ public class PathGen {
 		boolean lastSegmentWasExtended = false;
 		
 		while (!openPathTrees.isEmpty()) {
-			GridSegment currentPathEnd;
+			GridCell currentPathEnd;
 			//continue last end or choose random after n connected ones
 			if (linkedSegmentCount <= maxLinkedSegmentCount) {
 				currentPathEnd = currentTree.getLastEnd();
@@ -39,7 +40,7 @@ public class PathGen {
 				currentPathEnd = currentTree.getRndEnd();
 				linkedSegmentCount = 1;
 			}
-			List<Direction> availableDirs = getAvailableDirs(currentPathEnd, pathMap);
+			List<Direction> availableDirs = getAvailableDirs(currentPathEnd, gridMap);
 			
 			if (availableDirs.size() < 2) {
 				currentTree.removeEnd(currentPathEnd);
@@ -55,22 +56,22 @@ public class PathGen {
 			}
 			//choose one random available direction and create new path towards that
 			Direction rndFacing = availableDirs.get(RANDOM.nextInt(availableDirs.size()));
-			GridSegment newPathEnd = pavePath(currentPathEnd, rndFacing, pathMap);
+			GridCell newPathEnd = pavePath(currentPathEnd, rndFacing, gridMap);
 			//to make longer straight segments which will look more fancy
 			if (!lastSegmentWasExtended) {
-				lastSegmentWasExtended = extendPath(newPathEnd, rndFacing, RANDOM.nextInt(curliness - 1) + 1, pathMap);
+				lastSegmentWasExtended = extendPath(newPathEnd, rndFacing, RANDOM.nextInt(curliness - 1) + 1, gridMap);
 			} else {
 				lastSegmentWasExtended = false;
 			}
 		}
-		linkPathTrees2(pathMap, pathTrees);
+		linkPathTrees2(gridMap, pathTrees);
 		return pathTrees;
 	}
 	
-	private static List<PathTree> createPathTrees(List<GridSegment> pathStarts) {
+	private static List<PathTree> createPathTrees(List<GridCell> pathStarts) {
 		List<PathTree> pathTrees = new ArrayList<>();
 		
-		for (GridSegment pathStart : pathStarts) {
+		for (GridCell pathStart : pathStarts) {
 			PathTree tree = new PathTree(pathStarts.indexOf(pathStart));
 			tree.addSegment(pathStart, null);
 			pathTrees.add(tree);
@@ -96,7 +97,7 @@ public class PathGen {
 	 *
 	 * @return a list of available directions
 	 */
-	private static List<Direction> getAvailableDirs(GridSegment pathEnd, PathMap pathMap) {
+	private static List<Direction> getAvailableDirs(GridCell pathEnd, GridMap gridMap) {
 		List<Direction> branches = new ArrayList<>();
 		
 		for (Direction facing : Direction.fourCardinals()) {
@@ -104,25 +105,29 @@ public class PathGen {
 			Vec2 newSeg1 = pathEnd.getGridPos().add(facingVec);
 			Vec2 newSeg2 = newSeg1.clone().add(facingVec);
 			
-			if (pathMap.getSegmentType(newSeg1) == PathType.FREE &&
-			    pathMap.getSegmentType(newSeg2) == PathType.FREE) {
+			if (gridMap.getPathType(newSeg1) == PathType.FREE &&
+			    gridMap.getPathType(newSeg2) == PathType.FREE) {
 				branches.add(facing);
 			}
 		}
 		return branches;
 	}
 	
-	private static GridSegment pavePath(GridSegment pathEnd, Direction facing, PathMap pathMap) {
+	/**
+	 * Sets the path type of the next 2 grid cells to PAVED in the given direction
+	 * @return the latter new path segment
+	 */
+	private static GridCell pavePath(GridCell pathEnd, Direction facing, GridMap gridMap) {
 		Vec2 facingVec = facing.getVec2();
 		Vec2 newPath1 = pathEnd.getGridPos().add(facingVec);
 		Vec2 newPath2 = newPath1.clone().add(facingVec);
 		
-		pathMap.setSegmentType(newPath1, PathType.PAVED);
-		pathMap.setSegmentType(newPath2, PathType.PAVED);
+		gridMap.setPathType(newPath1, PathType.PAVED);
+		gridMap.setPathType(newPath2, PathType.PAVED);
 		
 		PathTree tree = pathEnd.getTree();
-		GridSegment newSegment1 = pathMap.getSegment(newPath1);
-		GridSegment newSegment2 = pathMap.getSegment(newPath2);
+		GridCell newSegment1 = gridMap.getCell(newPath1);
+		GridCell newSegment2 = gridMap.getCell(newPath2);
 		tree.addSegment(newSegment1, pathEnd);
 		tree.addSegment(newSegment2, newSegment1);
 		return newSegment2;
@@ -135,16 +140,16 @@ public class PathGen {
 	 * @param facing        direction to extend towards
 	 * @param maxExtensions maximum times to extend the path
 	 */
-	private static boolean extendPath(GridSegment pathEnd, Direction facing, int maxExtensions, PathMap pathMap) {
+	private static boolean extendPath(GridCell pathEnd, Direction facing, int maxExtensions, GridMap gridMap) {
 		Vec2 facingVec = facing.getVec2();
 		
 		for (int i = 0; i < maxExtensions; ++i) {
 			Vec2 extension1 = pathEnd.getGridPos().add(facingVec);
 			Vec2 extension2 = extension1.clone().add(facingVec);
 			
-			if (pathMap.getSegmentType(extension1) == PathType.FREE &&
-			    pathMap.getSegmentType(extension2) == PathType.FREE) {
-				pathEnd = pavePath(pathEnd, facing, pathMap);
+			if (gridMap.getPathType(extension1) == PathType.FREE &&
+			    gridMap.getPathType(extension2) == PathType.FREE) {
+				pathEnd = pavePath(pathEnd, facing, gridMap);
 			} else {
 				return i != 0;
 			}
@@ -156,32 +161,30 @@ public class PathGen {
 	 * Connects the paths of the given path trees to each other trying to always find the longest path
 	 * between the exit of one tree to the exit of the other one.
 	 *
-	 * @param pathMap   to look up maze segments on
+	 * @param gridMap   to look up maze segments on
 	 * @param pathTrees to connect to each other
 	 */
-	private static void linkPathTrees2(PathMap pathMap, List<PathTree> pathTrees) {
+	private static void linkPathTrees2(GridMap gridMap, List<PathTree> pathTrees) {
 		while (true) {
-			Set<Map.Entry<GridSegment, GridSegment>> treeLinks = new HashSet<>();
+			Set<Map.Entry<GridCell, GridCell>> treeLinks = new HashSet<>();
 			
 			for (PathTree tree : pathTrees) {
-				addTreeLinks(pathMap, tree.getIntersections(), treeLinks);
+				addTreeLinks(gridMap, tree.getIntersections(), treeLinks);
 			}
-			Map.Entry<GridSegment, GridSegment> maxLengthLink = getMaxLengthLink(treeLinks);
+			Map.Entry<GridCell, GridCell> maxLengthLink = getMaxLengthLink(treeLinks);
 			
 			if (maxLengthLink == null) {
 				break;
 			}
-			GridSegment keySegment = maxLengthLink.getKey();
-			GridSegment valueSegment = maxLengthLink.getValue();
+			GridCell keySegment = maxLengthLink.getKey();
+			GridCell valueSegment = maxLengthLink.getValue();
 			
 			Vec2 linkingGridPos = keySegment.getGridPos().add(valueSegment.getGridPos()).floorDiv(2);
-			GridSegment linkSegment = pathMap.getSegment(linkingGridPos);
-			pathMap.setSegmentType(linkSegment.getGridPos(), PathType.PAVED);
+			GridCell linkSegment = gridMap.getCell(linkingGridPos);
+			gridMap.setPathType(linkSegment.getGridPos(), PathType.PAVED);
 			
 			PathTree keyTree = keySegment.getTree();
 			PathTree valueTree = valueSegment.getTree();
-			
-			Bukkit.broadcastMessage("Join " + valueTree + ", " + linkSegment.getMin());
 			
 			keyTree.mergeTree(valueTree, keySegment, valueSegment, linkSegment);
 			pathTrees.remove(valueTree);
@@ -191,23 +194,23 @@ public class PathGen {
 	/**
 	 * Finds pairs of maze segments next to each other where one segment is from one path tree and the other segment from a different one.
 	 *
-	 * @param pathMap   to look up maze segments on
-	 * @param segments  all possible keys for pairs
+	 * @param gridMap   to look up maze segments on
+	 * @param cells  all possible keys for pairs
 	 * @param treeLinks collection to add the pairs to
 	 */
 	private static void addTreeLinks(
-			PathMap pathMap,
-			Set<GridSegment> segments,
-			Set<Map.Entry<GridSegment, GridSegment>> treeLinks) {
+			GridMap gridMap,
+			Set<GridCell> cells,
+			Set<Map.Entry<GridCell, GridCell>> treeLinks) {
 		
 		Set<Vec2> facings = Arrays.stream(Direction.fourCardinals()).map(facing -> facing.getVec2().mult(2)).collect(Collectors.toSet());
 		
-		for (GridSegment segment : segments) {
+		for (GridCell cell : cells) {
 			for (Vec2 facing : facings) {
-				GridSegment neighbor = pathMap.getSegment(segment.getGridPos().add(facing));
+				GridCell neighbor = gridMap.getCell(cell.getGridPos().add(facing));
 				
-				if (neighbor != null && neighbor.getTree() != null && neighbor.getTree() != segment.getTree()) {
-					treeLinks.add(new AbstractMap.SimpleEntry<>(segment, neighbor));
+				if (neighbor != null && neighbor.getTree() != null && neighbor.getTree() != cell.getTree()) {
+					treeLinks.add(new AbstractMap.SimpleEntry<>(cell, neighbor));
 				}
 			}
 		}
@@ -218,13 +221,13 @@ public class PathGen {
 	 *
 	 * @param treeLinks pairs of segments to look up in
 	 */
-	private static Map.Entry<GridSegment, GridSegment> getMaxLengthLink(Set<Map.Entry<GridSegment, GridSegment>> treeLinks) {
+	private static Map.Entry<GridCell, GridCell> getMaxLengthLink(Set<Map.Entry<GridCell, GridCell>> treeLinks) {
 		int maxDist = -1;
-		Map.Entry<GridSegment, GridSegment> maxEntry = null;
+		Map.Entry<GridCell, GridCell> maxEntry = null;
 		
-		for (Map.Entry<GridSegment, GridSegment> entry : treeLinks) {
-			GridSegment seg1 = entry.getKey();
-			GridSegment seg2 = entry.getValue();
+		for (Map.Entry<GridCell, GridCell> entry : treeLinks) {
+			GridCell seg1 = entry.getKey();
+			GridCell seg2 = entry.getValue();
 			int dist = seg1.getTree().getExitDist(seg1) + seg2.getTree().getExitDist(seg2);
 			
 			if (dist > maxDist) {

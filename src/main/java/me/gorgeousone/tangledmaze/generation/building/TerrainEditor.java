@@ -26,7 +26,7 @@ public class TerrainEditor {
 		
 		for (int x = min.getX(); x < max.getX(); ++x) {
 			for (int z = min.getZ(); z < max.getZ(); ++z) {
-				if (mazeMap.getType(x, z) == AreaType.NOT_MAZE) {
+				if (mazeMap.getType(x, z) == null) {
 					continue;
 				}
 				int floorY = mazeMap.getY(x, z);
@@ -55,8 +55,7 @@ public class TerrainEditor {
 	}
 	
 	/**
-	 * Lowers the feet of walls (is that how you say it?) down to level of any path next to it.
-	 * So the wall looks consistent till 1 under the floor.
+	 * Lowers the feet of walls (is that how you say it?) down to level of any path next to it so the wall looks consistent everywhere.
 	 */
 	private static void cleanWallEdges(MazeMap mazeMap) {
 		Vec2 min = mazeMap.getMin();
