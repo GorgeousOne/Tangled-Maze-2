@@ -71,13 +71,11 @@ public class BuildMazeCommand extends ArgCommand {
 				e.printStackTrace();
 			}
 		}
-		
 		maze.setActive(false);
 		toolHandler.resetClipTool(playerId);
 		
 		try {
 			buildHandler.buildMaze(playerId, maze, settings, mazePart);
-			buildHandler.buildMaze(playerId, maze, settings, MazePart.ROOF);
 		}catch (TextException e) {
 			e.sendTextTo(sender);
 		}
