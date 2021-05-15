@@ -24,6 +24,7 @@ public class UnbuildMazeCommand extends ArgCommand {
 	public UnbuildMazeCommand(SessionHandler sessionHandler,
 	                          BuildHandler buildHandler) {
 		super("unbuild");
+		addAlias("u");
 		addFlag("floor");
 		addFlag("roof");
 		

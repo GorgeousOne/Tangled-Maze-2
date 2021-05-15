@@ -61,6 +61,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 		buildHandler.disable();
 		toolHandler.disable();
 		Bukkit.broadcastMessage(ChatColor.GOLD + "TODO mazemap setType contains check");
+		Bukkit.broadcastMessage(ChatColor.GOLD + "stop auto removal");
 	}
 	
 	public void reload() {

@@ -1,6 +1,5 @@
 package me.gorgeousone.tangledmaze.generation;
 
-import me.gorgeousone.tangledmaze.generation.paving.PathMap;
 import me.gorgeousone.tangledmaze.generation.paving.PathTree;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.World;
@@ -89,16 +88,16 @@ public class MazeMap {
 		terrainMap[x - mapMin.getX()][z - mapMin.getZ()] = y;
 	}
 	
-	private PathMap pathMap;
+	private GridMap gridMap;
 	
 	private List<PathTree> pathTrees;
 	
-	public PathMap getPathMap() {
-		return pathMap;
+	public GridMap getPathMap() {
+		return gridMap;
 	}
 	
-	public void setPathMap(PathMap pathMap) {
-		this.pathMap = pathMap;
+	public void setGridMap(GridMap gridMap) {
+		this.gridMap = gridMap;
 	}
 	
 	public List<PathTree> getPathTrees() {
@@ -115,7 +114,6 @@ public class MazeMap {
 				AreaType type = areaMap[x][z];
 				
 				if (type == null) {
-					areaMap[x][z] = AreaType.NOT_MAZE;
 					continue;
 				}
 				switch (type) {
