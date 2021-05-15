@@ -72,7 +72,7 @@ public class BuildHandler {
 				segments = backup.getOrCompute(MazePart.FLOOR, floor -> FloorGen.genFloor(mazeMap));
 				break;
 			case ROOF:
-				segments = backup.getOrCompute(MazePart.ROOF, floor -> RoofGen.genRoof(mazeMap, settings.getValue(MazeProperty.WALL_HEIGHT)));
+				segments = backup.getOrCompute(MazePart.ROOF, roof -> RoofGen.genRoof(mazeMap, settings.getValue(MazeProperty.WALL_HEIGHT)));
 				break;
 			default:
 				return;

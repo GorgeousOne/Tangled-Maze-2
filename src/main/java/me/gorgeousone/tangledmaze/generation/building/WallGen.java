@@ -15,7 +15,7 @@ import me.gorgeousone.tangledmaze.util.Vec2;
 import java.util.HashSet;
 import java.util.Set;
 
-public class WallGen {
+public class WallGen extends Gen{
 	
 	public static Set<BlockSegment> genWalls(MazeMap mazeMap, MazeSettings settings) {
 		GridMap gridMap = mazeMap.getPathMap();
@@ -52,26 +52,17 @@ public class WallGen {
 	 */
 	//gettin a bit of a noodle code here aint we?
 	private static BlockSegment createWall(MazeMap mazeMap, GridMap gridMap, GridCell cell, int height) {
-		Vec2 min = cell.getMin();
-		Vec2 max = cell.getMax();
-		Set<Vec2> columns = new HashSet<>();
+		Set<Vec2> columns = getColumns(cell, mazeMap, AreaType.WALL);
 		
-		for (int x = min.getX(); x < max.getX(); ++x) {
-			for (int z = min.getZ(); z < max.getZ(); ++z) {
-				if (mazeMap.getType(x, z) == AreaType.WALL) {
-					columns.add(new Vec2(x, z));
-				}
-			}
-		}
 		if (columns.isEmpty()) {
 			return null;
 		}
-		
 		Vec2 gridPos = cell.getGridPos();
 		int maxFloorY = gridMap.getFloorY(gridPos);
 		
 		for (Direction facing : Direction.fourCardinals()) {
-			maxFloorY = Math.max(maxFloorY, gridMap.getFloorY(gridPos.clone().add(facing.getVec2())));
+			Vec2 neighborCell = gridPos.clone().add(facing.getVec2());
+			maxFloorY = Math.max(maxFloorY, gridMap.getFloorY(neighborCell));
 		}
 		BlockSegment wall = new BlockSegment(cell.getMin(), cell.getMax(), cell.getGridPos(), mazeMap.getWorld().getMaxHeight());
 		

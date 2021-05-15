@@ -8,6 +8,9 @@ import me.gorgeousone.tangledmaze.util.Vec2;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A class that devides the area of a maze map into a grid of cells where path and wall segments can be identified and generated more easily.
+ */
 public class GridMap {
 	
 	private final Vec2 mapMin;
@@ -23,7 +26,6 @@ public class GridMap {
 	private PathType[][] pathTypes;
 	private int[][] floorYs;
 	private int[][] wallYs;
-	private int[][] roofYs;
 	
 	private final List<ExitSegment> exits;
 	private final List<GridCell> pathStarts;
@@ -57,6 +59,9 @@ public class GridMap {
 		return pathStarts;
 	}
 	
+	/**
+	 * Returns the grid coordinates of the grid cell that is located at this world location
+	 */
 	public Vec2 getGridPos(Vec2 loc) {
 		Vec2 gridPos = loc.clone().sub(gridMin).floorDiv(gridMeshSize).mult(2);
 		gridPos.add(loc.clone().sub(gridMin).floorMod(gridMeshSize).floorDiv(pathWidth));
@@ -103,7 +108,7 @@ public class GridMap {
 		return floorYs[gridX][gridZ];
 	}
 	
-	public void setFloorYs(int gridX, int gridZ, int y) {
+	public void setFloorY(int gridX, int gridZ, int y) {
 		floorYs[gridX][gridZ] = y;
 	}
 	
@@ -111,8 +116,22 @@ public class GridMap {
 		return getWallY(gridPos.getX(), gridPos.getZ());
 	}
 	
+	public int getWallY(Vec2 gridPos, int wallHeight) {
+		return getWallY(gridPos.getX(), gridPos.getZ(), wallHeight);
+	}
 	/**
-	 * Returns the y height of a wall segment in the grid
+	 * Returns the y height of a wall segment in the grid. Returns floorY + wallHeight if not set
+	 */
+	public int getWallY(int gridX, int gridZ, int wallHeight) {
+		int wallY = getWallY(gridX, gridZ);
+		if (wallY == 0) {
+			wallY = getFloorY(gridX, gridZ) + wallHeight;
+		}
+		return wallY;
+	}
+	
+	/**
+	 * Returns the y height of a wall segment in the grid. Returns 0 if not set
 	 */
 	public int getWallY(int gridX, int gridZ) {
 		if (!contains(gridX, gridZ)) {
@@ -134,6 +153,9 @@ public class GridMap {
 		       gridZ >= 0 && gridZ < getHeight();
 	}
 	
+	/**
+	 * Sets the entrance segment of the grid map and calculates all the grid properties based on that
+	 */
 	public void setEntrance(Vec2 entranceLoc, Direction facing) {
 		Vec2 entranceStart = calculateExitStart(entranceLoc, facing, pathWidth);
 		ExitSegment entrance = new ExitSegment(entranceStart, facing, pathWidth);

@@ -14,9 +14,7 @@ import me.gorgeousone.tangledmaze.util.MaterialUtil;
 import me.gorgeousone.tangledmaze.util.MathUtil;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import me.gorgeousone.tangledmaze.util.text.Placeholder;
-import me.gorgeousone.tangledmaze.util.text.Text;
 import me.gorgeousone.tangledmaze.util.text.TextException;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -33,10 +31,11 @@ public class BuildMazeCommand extends ArgCommand {
 	public BuildMazeCommand(SessionHandler sessionHandler,
 	                        BuildHandler buildHandler, ToolHandler toolHandler) {
 		super("build");
-		this.toolHandler = toolHandler;
+		addAlias("b");
 		addFlag("floor");
 		addFlag("roof");
 		
+		this.toolHandler = toolHandler;
 		this.sessionHandler = sessionHandler;
 		this.buildHandler = buildHandler;
 	}
@@ -78,6 +77,7 @@ public class BuildMazeCommand extends ArgCommand {
 		
 		try {
 			buildHandler.buildMaze(playerId, maze, settings, mazePart);
+			buildHandler.buildMaze(playerId, maze, settings, MazePart.ROOF);
 		}catch (TextException e) {
 			e.sendTextTo(sender);
 		}
