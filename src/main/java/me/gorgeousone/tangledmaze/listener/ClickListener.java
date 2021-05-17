@@ -12,7 +12,6 @@ import me.gorgeousone.tangledmaze.tool.ClipTool;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -167,6 +166,7 @@ public class ClickListener implements Listener {
 		
 		switch (event.getCause()) {
 			case COMPLETE:
+			case RESIZE_FINISH:
 				sessionHandler.setClip(playerId, ClipFactory.createClip(playerId, tool.getVertices(), tool.getShape()));
 				break;
 			case RESTART:

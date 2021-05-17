@@ -123,7 +123,7 @@ public class ClipActionFactory {
 				deletion.addBorder(clipBorder);
 			}
 		}
-//		remove every part of the new added border not sealing the maze anyway
+		//		remove every part of the new added border not sealing the maze anyway
 		Iterator<Vec2> iter = deletion.getAddedBorder().iterator();
 		
 		while (iter.hasNext()) {

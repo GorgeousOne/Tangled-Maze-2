@@ -20,7 +20,8 @@ public final class ConfigUtil {
 		if (!configFile.exists()) {
 			try {
 				defConfig.save(configFile);
-			} catch (IOException ignored) {}
+			} catch (IOException ignored) {
+			}
 		}
 		
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);

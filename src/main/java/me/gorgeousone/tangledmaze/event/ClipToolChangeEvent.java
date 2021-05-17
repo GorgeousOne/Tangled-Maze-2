@@ -9,7 +9,7 @@ import java.util.UUID;
 public class ClipToolChangeEvent extends Event {
 	
 	public enum Cause {
-		COMPLETE, RESTART, PROGRESS
+		PROGRESS, COMPLETE, RESTART, RESIZE_START, RESIZE_FINISH
 	}
 	
 	private static final HandlerList HANDLERS = new HandlerList();

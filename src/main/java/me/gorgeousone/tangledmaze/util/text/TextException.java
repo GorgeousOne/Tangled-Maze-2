@@ -4,8 +4,8 @@ import org.bukkit.command.CommandSender;
 
 public class TextException extends Exception {
 	
-	private Text text;
-	private Placeholder[] placeholders;
+	private final Text text;
+	private final Placeholder[] placeholders;
 	
 	public TextException(Text message, Placeholder... placeholders) {
 		

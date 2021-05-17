@@ -76,7 +76,7 @@ public class BuildMazeCommand extends ArgCommand {
 		
 		try {
 			buildHandler.buildMaze(playerId, maze, settings, mazePart);
-		}catch (TextException e) {
+		} catch (TextException e) {
 			e.sendTextTo(sender);
 		}
 	}

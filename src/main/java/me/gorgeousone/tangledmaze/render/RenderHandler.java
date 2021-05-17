@@ -35,12 +35,14 @@ public class RenderHandler implements Listener {
 	private final static int MAZE_MAIN_EXIT_LAYER = 30;
 	private final static int CLIP_BORDER_LAYER = 40;
 	private final static int CLIP_VERTEX_LAYER = 50;
+	private final static int CLIP_RESIZE_LAYER = 60;
 	
 	private final BlockType MAZE_BORDER_MAT = BlockType.get(Material.REDSTONE_BLOCK);
 	private final BlockType MAZE_MAIN_EXIT_MAT = BlockType.get(Material.DIAMOND_BLOCK);
 	private final BlockType MAZE_EXIT_MAT = BlockType.get(Material.EMERALD_BLOCK);
 	private final BlockType CLIP_BORDER_MAT = BlockType.get(Material.GOLD_BLOCK);
 	private final BlockType CLIP_VERTEX_MAT = BlockType.get(Material.LAPIS_BLOCK);
+	private final BlockType CLIP_RESIZE_MAT = BlockType.get(Material.LAPIS_ORE);
 	
 	private final JavaPlugin plugin;
 	private final SessionHandler sessionHandler;
@@ -86,13 +88,20 @@ public class RenderHandler implements Listener {
 		ClipTool tool = event.getTool();
 		ClipToolChangeEvent.Cause cause = event.getCause();
 		RenderSession session = createRenderIfAbsent(event.getPlayerId());
+		Clip clip = sessionHandler.getClip(tool.getPlayerId());
 		
 		new BukkitRunnable() {
 			@Override
 			public void run() {
 				switch (cause) {
+					case RESIZE_START:
+						session.addLayer(CLIP_RESIZE_LAYER, tool.getVertices().subList(tool.getVertexToRelocate(), tool.getVertexToRelocate() + 1), CLIP_RESIZE_MAT);
+						break;
+					case RESIZE_FINISH:
+						session.removeLayer(CLIP_RESIZE_LAYER, false);
+						session.removeLayer(CLIP_BORDER_LAYER, true);
+						session.removeLayer(CLIP_VERTEX_LAYER, true);
 					case COMPLETE:
-						Clip clip = sessionHandler.getClip(tool.getPlayerId());
 						session.addLayer(CLIP_VERTEX_LAYER, tool.getVertices(), CLIP_VERTEX_MAT);
 						session.addLayer(CLIP_BORDER_LAYER, clip.getBlocks(clip.getBorder()), CLIP_BORDER_MAT);
 						break;
@@ -117,11 +126,10 @@ public class RenderHandler implements Listener {
 		Clip maze = event.getMaze();
 		RenderSession session = createRenderIfAbsent(maze.getPlayerId());
 		
-		session.removeLayer(CLIP_BORDER_LAYER, false);
+		//that block should theoretically be on top of a vertex, yet I get an exception if I don't us updateFakeBLocks=true ...
 		session.removeLayer(MAZE_EXIT_LAYER, false);
 		session.removeLayer(MAZE_MAIN_EXIT_LAYER, false);
 		session.removeLayer(MAZE_BORDER_LAYER, true);
-		session.removeLayer(CLIP_VERTEX_LAYER, true);
 		displayMaze(session, maze);
 	}
 	
@@ -131,6 +139,7 @@ public class RenderHandler implements Listener {
 	@EventHandler
 	public void onClipDelete(ClipDeleteEvent event) {
 		RenderSession session = createRenderIfAbsent(event.getClip().getPlayerId());
+		session.removeLayer(CLIP_RESIZE_LAYER, false);
 		session.removeLayer(CLIP_BORDER_LAYER, true);
 		session.removeLayer(CLIP_VERTEX_LAYER, true);
 	}

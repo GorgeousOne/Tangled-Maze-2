@@ -43,7 +43,7 @@ public class SettingsCommand extends ArgCommand {
 		settings.setValue(property, inputValue);
 		
 		Message.INFO_SETTING_CHANGE.sendTo(sender,
-				new Placeholder("setting", property.textName()),
-				new Placeholder("value", inputValue));
+		                                   new Placeholder("setting", property.textName()),
+		                                   new Placeholder("value", inputValue));
 	}
 }

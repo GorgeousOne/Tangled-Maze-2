@@ -94,7 +94,7 @@ public class ClipAction {
 		removedFill = temp;
 		
 		HashSet<Vec2> temp2 = new HashSet<>(addedBorder);
-		addedBorder= new HashSet<>(removedBorder);
+		addedBorder = new HashSet<>(removedBorder);
 		removedBorder = temp2;
 		
 		removedExits.clear();

@@ -119,6 +119,7 @@ public class GridMap {
 	public int getWallY(Vec2 gridPos, int wallHeight) {
 		return getWallY(gridPos.getX(), gridPos.getZ(), wallHeight);
 	}
+	
 	/**
 	 * Returns the y height of a wall segment in the grid. Returns floorY + wallHeight if not set
 	 */

@@ -1,16 +1,16 @@
 package me.gorgeousone.tangledmaze.generation.generator;
 
+import me.gorgeousone.tangledmaze.generation.BlockSegment;
 import me.gorgeousone.tangledmaze.generation.GridCell;
 import me.gorgeousone.tangledmaze.generation.GridMap;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
-import me.gorgeousone.tangledmaze.generation.BlockSegment;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class RoofGen extends Gen{
+public class RoofGen extends Gen {
 	
 	public static Set<BlockSegment> genRoof(MazeMap mazeMap, int wallHeight) {
 		GridMap gridMap = mazeMap.getPathMap();

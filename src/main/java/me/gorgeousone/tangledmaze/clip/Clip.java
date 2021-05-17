@@ -9,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
-import javax.swing.text.rtf.RTFEditorKit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

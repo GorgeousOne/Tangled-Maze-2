@@ -4,7 +4,6 @@ import me.gorgeousone.tangledmaze.generation.GridCell;
 import me.gorgeousone.tangledmaze.generation.GridMap;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
-import org.bukkit.Bukkit;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -115,6 +114,7 @@ public class PathGen {
 	
 	/**
 	 * Sets the path type of the next 2 grid cells to PAVED in the given direction
+	 *
 	 * @return the latter new path segment
 	 */
 	private static GridCell pavePath(GridCell pathEnd, Direction facing, GridMap gridMap) {
@@ -195,7 +195,7 @@ public class PathGen {
 	 * Finds pairs of maze segments next to each other where one segment is from one path tree and the other segment from a different one.
 	 *
 	 * @param gridMap   to look up maze segments on
-	 * @param cells  all possible keys for pairs
+	 * @param cells     all possible keys for pairs
 	 * @param treeLinks collection to add the pairs to
 	 */
 	private static void addTreeLinks(

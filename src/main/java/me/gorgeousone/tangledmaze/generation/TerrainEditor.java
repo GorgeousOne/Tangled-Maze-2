@@ -1,7 +1,5 @@
 package me.gorgeousone.tangledmaze.generation;
 
-import me.gorgeousone.tangledmaze.generation.AreaType;
-import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.util.BlockUtil;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
