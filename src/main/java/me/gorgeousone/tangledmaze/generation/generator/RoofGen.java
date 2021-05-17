@@ -1,11 +1,11 @@
-package me.gorgeousone.tangledmaze.generation.building;
+package me.gorgeousone.tangledmaze.generation.generator;
 
 import me.gorgeousone.tangledmaze.generation.GridCell;
 import me.gorgeousone.tangledmaze.generation.GridMap;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
+import me.gorgeousone.tangledmaze.generation.BlockSegment;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
-import org.bukkit.Bukkit;
 
 import java.util.HashSet;
 import java.util.Set;
