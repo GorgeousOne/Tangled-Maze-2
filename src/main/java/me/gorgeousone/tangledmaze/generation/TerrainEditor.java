@@ -1,4 +1,4 @@
-package me.gorgeousone.tangledmaze.generation.building;
+package me.gorgeousone.tangledmaze.generation;
 
 import me.gorgeousone.tangledmaze.generation.AreaType;
 import me.gorgeousone.tangledmaze.generation.MazeMap;

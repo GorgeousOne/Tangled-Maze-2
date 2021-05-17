@@ -31,7 +31,7 @@ public class PathGen {
 		
 		while (!openPathTrees.isEmpty()) {
 			GridCell currentPathEnd;
-			//continue last end or choose random after n connected ones
+			//continue last path end or pick random after n connected paths
 			if (linkedSegmentCount <= maxLinkedSegmentCount) {
 				currentPathEnd = currentTree.getLastEnd();
 				linkedSegmentCount++;

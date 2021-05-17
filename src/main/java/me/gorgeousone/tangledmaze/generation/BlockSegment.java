@@ -1,4 +1,4 @@
-package me.gorgeousone.tangledmaze.generation.building;
+package me.gorgeousone.tangledmaze.generation;
 
 import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.Direction;
@@ -43,7 +43,7 @@ public class BlockSegment {
 		addBlock(block.getX(), block.getY(), block.getZ());
 	}
 	
-	void addBlock(int x, int y, int z) {
+	public void addBlock(int x, int y, int z) {
 		if (contains(x, z) && y >= 0 && y < worldHeight) {
 			blocks[x - min.getX()][y][z - min.getZ()] = true;
 			minY = Math.min(minY, y);
@@ -86,7 +86,7 @@ public class BlockSegment {
 		return blockVecs;
 	}
 	
-	Set<Direction> getWallFacings(int x, int z) {
+	public Set<Direction> getWallFacings(int x, int z) {
 		Set<Direction> facings = new HashSet<>();
 		if (x == min.getX()) {
 			facings.add(Direction.WEST);
