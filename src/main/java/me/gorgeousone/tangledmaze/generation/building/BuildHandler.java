@@ -3,9 +3,13 @@ package me.gorgeousone.tangledmaze.generation.building;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.event.MazeBuildEvent;
+import me.gorgeousone.tangledmaze.generation.BlockSegment;
 import me.gorgeousone.tangledmaze.generation.GridCell;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.generation.MazeMapFactory;
+import me.gorgeousone.tangledmaze.generation.generator.FloorGen;
+import me.gorgeousone.tangledmaze.generation.generator.RoofGen;
+import me.gorgeousone.tangledmaze.generation.generator.WallGen;
 import me.gorgeousone.tangledmaze.generation.paving.PathTree;
 import me.gorgeousone.tangledmaze.maze.MazeBackup;
 import me.gorgeousone.tangledmaze.maze.MazePart;
@@ -28,7 +32,6 @@ import org.bukkit.util.EulerAngle;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -120,9 +123,10 @@ public class BuildHandler {
 	}
 	
 	private void unbuildMazePart(Set<BlockState> backupBlocks) {
-		for (BlockState block : backupBlocks) {
-			block.update(true, false);
-		}
+		new BlockResetter(backupBlocks, -1, null).runTaskTimer(plugin, 0, 1);
+//		for (BlockState block : backupBlocks) {
+//			block.update(true, false);
+//		}
 	}
 	
 	private void displayPaths(Clip maze, MazeMap mazeMap) {

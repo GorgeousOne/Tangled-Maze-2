@@ -35,7 +35,6 @@ public final class BlockPlacer extends BukkitRunnable {
 	
 	@Override
 	public void run() {
-
 		long startTime = System.currentTimeMillis();
 		int placedBlocks = 0;
 		
