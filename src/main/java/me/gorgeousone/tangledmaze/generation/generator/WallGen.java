@@ -1,10 +1,10 @@
 package me.gorgeousone.tangledmaze.generation.generator;
 
 import me.gorgeousone.tangledmaze.generation.AreaType;
-import me.gorgeousone.tangledmaze.generation.GridCell;
-import me.gorgeousone.tangledmaze.generation.MazeMap;
-import me.gorgeousone.tangledmaze.generation.GridMap;
 import me.gorgeousone.tangledmaze.generation.BlockSegment;
+import me.gorgeousone.tangledmaze.generation.GridCell;
+import me.gorgeousone.tangledmaze.generation.GridMap;
+import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.generation.paving.PathType;
 import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
@@ -16,7 +16,7 @@ import me.gorgeousone.tangledmaze.util.Vec2;
 import java.util.HashSet;
 import java.util.Set;
 
-public class WallGen extends Gen{
+public class WallGen extends Gen {
 	
 	public static Set<BlockSegment> genWalls(MazeMap mazeMap, MazeSettings settings) {
 		GridMap gridMap = mazeMap.getPathMap();
@@ -48,7 +48,7 @@ public class WallGen extends Gen{
 	 * dependent on the highest piece of path nearby all the columns
 	 *
 	 * @param mazeMap for looking for wall coordinates
-	 * @param cell segment to build the wall in
+	 * @param cell    segment to build the wall in
 	 * @param height  height of the wall
 	 */
 	//gettin a bit of a noodle code here aint we?

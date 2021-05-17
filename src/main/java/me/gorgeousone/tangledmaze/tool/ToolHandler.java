@@ -1,13 +1,9 @@
 package me.gorgeousone.tangledmaze.tool;
 
 import me.gorgeousone.tangledmaze.SessionHandler;
-import me.gorgeousone.tangledmaze.clip.Clip;
-import me.gorgeousone.tangledmaze.clip.ClipFactory;
 import me.gorgeousone.tangledmaze.clip.ClipShape;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
-import me.gorgeousone.tangledmaze.event.MazeBuildEvent;
 import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import java.util.HashMap;
@@ -43,6 +39,7 @@ public class ToolHandler implements Listener {
 		playerClipTools.computeIfAbsent(playerId, function -> new ClipTool(playerId, ClipShape.RECTANGLE));
 		return playerClipTools.get(playerId);
 	}
+	
 	public void resetClipTool(UUID playerId) {
 		playerClipTools.get(playerId).reset();
 		sessionHandler.removeClip(playerId, true);
@@ -63,26 +60,26 @@ public class ToolHandler implements Listener {
 		return false;
 	}
 	
-//	public boolean setTool(UUID playerId, ToolType toolType) {
-//		ToolType oldTool = playerTools.put(playerId, toolType);
-//		boolean switchedTool = oldTool != toolType;
-//
-//		if (switchedTool) {
-//			Clip clip = sessionHandler.getClip(playerId);
-//
-//			if (clip != null) {
-//				ClipTool tool = sessionHandler.getClipTool(playerId);
-//				tool.setShape();
-//				sessionHandler.removeClip(playerId, true);
-//				Bukkit.getPluginManager().callEvent(new ClipToolChangeEvent(tool, ClipToolChangeEvent.Cause.COMPLETE));
-//			}
-//		}
-//		return switchedTool;
-//	}
+	//	public boolean setTool(UUID playerId, ToolType toolType) {
+	//		ToolType oldTool = playerTools.put(playerId, toolType);
+	//		boolean switchedTool = oldTool != toolType;
+	//
+	//		if (switchedTool) {
+	//			Clip clip = sessionHandler.getClip(playerId);
+	//
+	//			if (clip != null) {
+	//				ClipTool tool = sessionHandler.getClipTool(playerId);
+	//				tool.setShape();
+	//				sessionHandler.removeClip(playerId, true);
+	//				Bukkit.getPluginManager().callEvent(new ClipToolChangeEvent(tool, ClipToolChangeEvent.Cause.COMPLETE));
+	//			}
+	//		}
+	//		return switchedTool;
+	//	}
 	
-//	@EventHandler
-//	public void onMazeBuild(MazeBuildEvent event) {
-//		UUID playerId = event.getPlayerId();
-//		playerTools.put(playerId, ToolType.CLIP);
-//	}
+	//	@EventHandler
+	//	public void onMazeBuild(MazeBuildEvent event) {
+	//		UUID playerId = event.getPlayerId();
+	//		playerTools.put(playerId, ToolType.CLIP);
+	//	}
 }

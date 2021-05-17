@@ -29,7 +29,7 @@ public class ConfigSettings {
 	public void addVersionDefaults(FileConfiguration config, boolean isLegacyServer) {
 		if (isLegacyServer) {
 			config.addDefault("wand-item", "gold_spade");
-		}else {
+		} else {
 			config.addDefault("wand-item", "golden_shovel");
 		}
 	}
@@ -37,7 +37,7 @@ public class ConfigSettings {
 	private Material deserializeMaterial(FileConfiguration config, String configPath) {
 		String configValue = config.getString(configPath);
 		String defaultValue = config.getDefaults().getString(configPath);
-
+		
 		try {
 			return Material.valueOf(configValue.toUpperCase());
 		} catch (Exception e) {

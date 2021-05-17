@@ -124,9 +124,9 @@ public class BuildHandler {
 	
 	private void unbuildMazePart(Set<BlockState> backupBlocks) {
 		new BlockResetter(backupBlocks, -1, null).runTaskTimer(plugin, 0, 1);
-//		for (BlockState block : backupBlocks) {
-//			block.update(true, false);
-//		}
+		//		for (BlockState block : backupBlocks) {
+		//			block.update(true, false);
+		//		}
 	}
 	
 	private void displayPaths(Clip maze, MazeMap mazeMap) {

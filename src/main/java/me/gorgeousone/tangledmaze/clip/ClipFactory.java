@@ -3,7 +3,6 @@ package me.gorgeousone.tangledmaze.clip;
 import me.gorgeousone.tangledmaze.util.BlockUtil;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
@@ -14,7 +13,14 @@ import java.util.UUID;
 
 public class ClipFactory {
 	
-	public static ArrayList<Block> createVertices(ArrayList<Block> vertices, ClipShape shape) {
+	/**
+	 * Computes all vertices for a clip tool based on the list of minimum vertices required to create the shape
+	 *
+	 * @param vertices
+	 * @param shape
+	 * @return
+	 */
+	public static List<Block> createVertices(List<Block> vertices, ClipShape shape) {
 		switch (shape) {
 			case RECTANGLE:
 			case ELLIPSE:
@@ -26,7 +32,26 @@ public class ClipFactory {
 		}
 	}
 	
-	public static ArrayList<Block> createRectVertices(ArrayList<Block> vertices) {
+	public static List<Block> relocateVertices(List<Block> vertices, ClipShape shape, int relocatedVertex) {
+		switch (shape) {
+			case RECTANGLE:
+			case ELLIPSE:
+				if (relocatedVertex == 0 || relocatedVertex == 2) {
+					vertices.remove(3);
+					vertices.remove(1);
+				} else {
+					vertices.remove(2);
+					vertices.remove(0);
+				}
+				return createRectVertices(vertices);
+			case TRIANGLE:
+				return new ArrayList<>(vertices);
+			default:
+				return null;
+		}
+	}
+	
+	public static List<Block> createRectVertices(List<Block> vertices) {
 		Block v0 = vertices.get(0);
 		Block v2 = vertices.get(1);
 		
@@ -83,7 +108,7 @@ public class ClipFactory {
 		double radius = (maxX - minX) / 2d + 0.25;
 		double radiusZ = (maxZ - minZ) / 2d + 0.25;
 		double stretchZ = radius / radiusZ;
-
+		
 		for (int x = minX; x <= maxX; ++x) {
 			for (int z = minZ; z <= maxZ; ++z) {
 				double centerDistX = x + 0.5 - centerX;

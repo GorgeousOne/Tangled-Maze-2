@@ -1,7 +1,7 @@
 package me.gorgeousone.tangledmaze.maze;
 
-import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.generation.BlockSegment;
+import me.gorgeousone.tangledmaze.generation.MazeMap;
 import org.bukkit.block.BlockState;
 
 import java.util.HashMap;
