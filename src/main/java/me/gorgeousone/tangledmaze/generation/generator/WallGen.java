@@ -1,9 +1,10 @@
-package me.gorgeousone.tangledmaze.generation.building;
+package me.gorgeousone.tangledmaze.generation.generator;
 
 import me.gorgeousone.tangledmaze.generation.AreaType;
 import me.gorgeousone.tangledmaze.generation.GridCell;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.generation.GridMap;
+import me.gorgeousone.tangledmaze.generation.BlockSegment;
 import me.gorgeousone.tangledmaze.generation.paving.PathType;
 import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
