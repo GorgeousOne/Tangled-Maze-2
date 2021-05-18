@@ -11,6 +11,7 @@ import org.bukkit.block.Block;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -97,19 +98,23 @@ public class Clip {
 	}
 	
 	public void addBorder(Block borderBlock) {
-		border.add(new Vec2(borderBlock));
+		addBorder(new Vec2(borderBlock));
+	}
+	
+	public void addBorder(Vec2 loc) {
+		border.add(loc);
 	}
 	
 	public void addBorder(Set<Vec2> borderLocs) {
 		border.addAll(borderLocs);
 	}
 	
-	public void removeFill(Set<Vec2> locs) {
+	public void removeFill(Collection<Vec2> locs) {
 		fill.keySet().removeAll(locs);
 		removeBorder(locs);
 	}
 	
-	public void removeBorder(Set<Vec2> locs) {
+	public void removeBorder(Collection<Vec2> locs) {
 		border.removeAll(locs);
 	}
 	

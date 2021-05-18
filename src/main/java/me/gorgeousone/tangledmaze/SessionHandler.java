@@ -58,7 +58,7 @@ public class SessionHandler implements Listener {
 		Clip clip = playerClips.remove(playerId);
 		
 		if (clip != null && callEvent) {
-			Bukkit.getPluginManager().callEvent(new ClipDeleteEvent(clip));
+			Bukkit.getPluginManager().callEvent(new ClipDeleteEvent(playerId, clip));
 		}
 	}
 	

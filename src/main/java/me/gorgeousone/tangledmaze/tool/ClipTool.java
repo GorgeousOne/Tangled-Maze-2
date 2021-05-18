@@ -1,7 +1,7 @@
 package me.gorgeousone.tangledmaze.tool;
 
 import me.gorgeousone.tangledmaze.clip.ClipFactory;
-import me.gorgeousone.tangledmaze.clip.ClipShape;
+import me.gorgeousone.tangledmaze.clip.ClipType;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
 import me.gorgeousone.tangledmaze.util.BlockUtil;
 import org.bukkit.Bukkit;
@@ -15,18 +15,19 @@ public class ClipTool {
 	
 	private final UUID playerId;
 	private final ArrayList<Block> vertices;
-	private ClipShape shape;
+	private ClipType type;
 	private int vertexToRelocate = -1;
 	
-	public ClipTool(UUID playerId, ClipShape shape) {
+	public ClipTool(UUID playerId, ClipType type) {
 		this.playerId = playerId;
 		vertices = new ArrayList<>();
-		this.shape = shape;
+		this.type = type;
 	}
 	
 	public void reset() {
 		vertices.clear();
 		vertexToRelocate = -1;
+		Bukkit.getPluginManager().callEvent(new ClipToolChangeEvent(this, ClipToolChangeEvent.Cause.RESTART));
 	}
 	
 	public UUID getPlayerId() {
@@ -46,25 +47,25 @@ public class ClipTool {
 		return vertexToRelocate;
 	}
 	
-	public ClipShape getShape() {
-		return shape;
+	public ClipType getShape() {
+		return type;
 	}
 	
-	public void setShape(ClipShape shape) {
-		this.shape = shape;
+	public void setType(ClipType type) {
+		this.type = type;
 	}
 	
 	public void addVertex(Block clickedBlock) {
 		Block newVertex = BlockUtil.getSurface(clickedBlock);
 		int vertexCount = vertices.size();
-		int requiredVertexCount = shape.getVertexCount();
+		int requiredVertexCount = type.getVertexCount();
 		ClipToolChangeEvent.Cause changeType;
 		
 		//clip is already complete
 		if (vertexCount >= requiredVertexCount) {
 			if (vertexToRelocate != -1) {
 				vertices.set(vertexToRelocate, newVertex);
-				setVertices(ClipFactory.relocateVertices(getVertices(), shape, vertexToRelocate));
+				setVertices(ClipFactory.relocateVertices(getVertices(), type, vertexToRelocate));
 				Bukkit.getPluginManager().callEvent(new ClipToolChangeEvent(this, ClipToolChangeEvent.Cause.RESIZE_FINISH));
 				vertexToRelocate = -1;
 				return;
@@ -73,13 +74,12 @@ public class ClipTool {
 				changeType = ClipToolChangeEvent.Cause.RESIZE_START;
 			} else {
 				reset();
-				Bukkit.getPluginManager().callEvent(new ClipToolChangeEvent(this, ClipToolChangeEvent.Cause.RESTART));
 				vertices.add(newVertex);
-				return;
+				changeType = ClipToolChangeEvent.Cause.PROGRESS;
 			}
 		} else if (vertexCount == requiredVertexCount - 1) {
 			vertices.add(newVertex);
-			setVertices(ClipFactory.createVertices(getVertices(), shape));
+			setVertices(ClipFactory.createVertices(getVertices(), type));
 			changeType = ClipToolChangeEvent.Cause.COMPLETE;
 		} else {
 			vertices.add(newVertex);
@@ -89,6 +89,6 @@ public class ClipTool {
 	}
 	
 	public boolean isComplete() {
-		return vertices.size() >= shape.getVertexCount();
+		return vertices.size() >= type.getVertexCount();
 	}
 }

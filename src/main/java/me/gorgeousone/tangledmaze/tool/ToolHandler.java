@@ -1,7 +1,7 @@
 package me.gorgeousone.tangledmaze.tool;
 
 import me.gorgeousone.tangledmaze.SessionHandler;
-import me.gorgeousone.tangledmaze.clip.ClipShape;
+import me.gorgeousone.tangledmaze.clip.ClipType;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -15,11 +15,13 @@ public class ToolHandler implements Listener {
 	private final SessionHandler sessionHandler;
 	private final Map<UUID, ToolType> playerTools;
 	private final Map<UUID, ClipTool> playerClipTools;
+	private final Map<UUID, ClipType> playerClipTypes;
 	
 	public ToolHandler(SessionHandler sessionHandler) {
 		this.sessionHandler = sessionHandler;
 		playerTools = new HashMap<>();
 		playerClipTools = new HashMap<>();
+		playerClipTypes = new HashMap<>();
 	}
 	
 	public void disable() {
@@ -36,7 +38,7 @@ public class ToolHandler implements Listener {
 	 * Returns existing player clip or creates a new one
 	 */
 	public ClipTool createClipToolIfAbsent(UUID playerId) {
-		playerClipTools.computeIfAbsent(playerId, function -> new ClipTool(playerId, ClipShape.RECTANGLE));
+		playerClipTools.computeIfAbsent(playerId, function -> new ClipTool(playerId, ClipType.RECTANGLE));
 		return playerClipTools.get(playerId);
 	}
 	
@@ -45,19 +47,45 @@ public class ToolHandler implements Listener {
 		sessionHandler.removeClip(playerId, true);
 	}
 	
-	public boolean setClipShape(UUID playerId, ClipShape newShape) {
+	public boolean setClipType(UUID playerId, ClipType newClipType) {
+		ClipType oldClipType = createClipTypeIfAbsent(playerId);
+		
+		if (oldClipType == newClipType) {
+			return false;
+		}
+		playerClipTypes.put(playerId, newClipType);
 		ClipTool clipTool = createClipToolIfAbsent(playerId);
 		
-		if (clipTool.getShape() != newShape) {
-			clipTool.setShape(newShape);
+		if (areShapesCompatible(oldClipType, newClipType)) {
+			clipTool.setType(newClipType);
 			
-			if (sessionHandler.getClip(playerId) != null) {
+			if (clipTool.isComplete()) {
 				sessionHandler.removeClip(playerId, true);
 				Bukkit.getPluginManager().callEvent(new ClipToolChangeEvent(clipTool, ClipToolChangeEvent.Cause.COMPLETE));
 			}
-			return true;
+		} else if (!clipTool.isComplete() && clipTool.getVertices().size() < newClipType.getVertexCount()) {
+			clipTool.setType(newClipType);
+		} else {
+			resetClipTool(playerId);
 		}
-		return false;
+		return true;
+	}
+	
+	public boolean areShapesCompatible(ClipType type0, ClipType type1) {
+		switch (type0) {
+			case RECTANGLE:
+				return type1 == ClipType.ELLIPSE;
+			case ELLIPSE:
+				return type1 == ClipType.RECTANGLE;
+			case TRIANGLE:
+			default:
+				return false;
+		}
+	}
+	
+	public ClipType createClipTypeIfAbsent(UUID playerId) {
+		playerClipTypes.putIfAbsent(playerId, ClipType.RECTANGLE);
+		return playerClipTypes.get(playerId);
 	}
 	
 	//	public boolean setTool(UUID playerId, ToolType toolType) {

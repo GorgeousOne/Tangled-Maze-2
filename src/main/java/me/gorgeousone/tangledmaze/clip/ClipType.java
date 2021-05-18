@@ -1,11 +1,11 @@
 package me.gorgeousone.tangledmaze.clip;
 
-public enum ClipShape {
+public enum ClipType {
 	RECTANGLE(2), ELLIPSE(2), TRIANGLE(3);
 	
 	final int vertexCount;
 	
-	ClipShape(int vertexCount) {
+	ClipType(int vertexCount) {
 		this.vertexCount = vertexCount;
 	}
 	
