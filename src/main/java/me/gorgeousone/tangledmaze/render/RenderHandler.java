@@ -13,6 +13,7 @@ import me.gorgeousone.tangledmaze.event.MazeStateChangeEvent;
 import me.gorgeousone.tangledmaze.tool.ClipTool;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -85,10 +86,10 @@ public class RenderHandler implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onClipToolChange(ClipToolChangeEvent event) {
+		
 		ClipTool tool = event.getTool();
 		ClipToolChangeEvent.Cause cause = event.getCause();
 		RenderSession session = createRenderIfAbsent(event.getPlayerId());
-		Clip clip = sessionHandler.getClip(tool.getPlayerId());
 		
 		new BukkitRunnable() {
 			@Override
@@ -102,6 +103,7 @@ public class RenderHandler implements Listener {
 						session.removeLayer(CLIP_BORDER_LAYER, true);
 						session.removeLayer(CLIP_VERTEX_LAYER, true);
 					case COMPLETE:
+						Clip clip = sessionHandler.getClip(tool.getPlayerId());
 						session.addLayer(CLIP_VERTEX_LAYER, tool.getVertices(), CLIP_VERTEX_MAT);
 						session.addLayer(CLIP_BORDER_LAYER, clip.getBlocks(clip.getBorder()), CLIP_BORDER_MAT);
 						break;
@@ -126,7 +128,6 @@ public class RenderHandler implements Listener {
 		Clip maze = event.getMaze();
 		RenderSession session = createRenderIfAbsent(maze.getPlayerId());
 		
-		//that block should theoretically be on top of a vertex, yet I get an exception if I don't us updateFakeBLocks=true ...
 		session.removeLayer(MAZE_EXIT_LAYER, false);
 		session.removeLayer(MAZE_MAIN_EXIT_LAYER, false);
 		session.removeLayer(MAZE_BORDER_LAYER, true);
@@ -138,7 +139,7 @@ public class RenderHandler implements Listener {
 	 */
 	@EventHandler
 	public void onClipDelete(ClipDeleteEvent event) {
-		RenderSession session = createRenderIfAbsent(event.getClip().getPlayerId());
+		RenderSession session = createRenderIfAbsent(event.getPlayerId());
 		session.removeLayer(CLIP_RESIZE_LAYER, false);
 		session.removeLayer(CLIP_BORDER_LAYER, true);
 		session.removeLayer(CLIP_VERTEX_LAYER, true);

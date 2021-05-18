@@ -1,6 +1,6 @@
 package me.gorgeousone.tangledmaze.command;
 
-import me.gorgeousone.tangledmaze.clip.ClipShape;
+import me.gorgeousone.tangledmaze.clip.ClipType;
 import me.gorgeousone.tangledmaze.cmdframework.argument.ArgType;
 import me.gorgeousone.tangledmaze.cmdframework.argument.ArgValue;
 import me.gorgeousone.tangledmaze.cmdframework.argument.Argument;
@@ -21,7 +21,7 @@ public class ToolCommand extends ArgCommand {
 	
 	public ToolCommand(ToolHandler toolHandler) {
 		super("tool");
-		addArg(new Argument("tool", ArgType.STRING, "rect", "circle").setDefault("rect"));
+		addArg(new Argument("tool", ArgType.STRING, "rect", "circle", "triangle").setDefault("rect"));
 		setPlayerRequired(true);
 		
 		this.toolHandler = toolHandler;
@@ -29,25 +29,34 @@ public class ToolCommand extends ArgCommand {
 	
 	@Override
 	protected void executeArgs(CommandSender sender, List<ArgValue> argValues, Set<String> usedFlags) {
-		String toolName = argValues.get(0).get();
+		String toolArgument = argValues.get(0).get();
 		Player player = (Player) sender;
 		UUID playerId = player.getUniqueId();
 		
-		switch (toolName) {
+		ClipType clipType;
+		String toolName;
+		
+		switch (toolArgument) {
 			case "rect":
 			case "rectangle":
-				if (toolHandler.setClipShape(playerId, ClipShape.RECTANGLE)) {
-					Message.INFO_TOOL_SWITCH.sendTo(sender, new Placeholder("tool", "rectangle"));
-				}
+				clipType = ClipType.RECTANGLE;
+				toolName = "rectangle";
 				break;
+			case "ellipse":
 			case "circle":
-				if (toolHandler.setClipShape(playerId, ClipShape.ELLIPSE)) {
-					Message.INFO_TOOL_SWITCH.sendTo(sender, new Placeholder("tool", "circle"));
-				}
+				clipType = ClipType.ELLIPSE;
+				toolName = "circle";
+				break;
+			case "triangle":
+				clipType = ClipType.TRIANGLE;
+				toolName = "triangle";
 				break;
 			default:
-				Message.ERROR_INVALID_TOOL.sendTo(sender);
-				break;
+				Message.ERROR_INVALID_TOOL.sendTo(sender, new Placeholder("tool", toolArgument));
+				return;
+		}
+		if (toolHandler.setClipType(playerId, clipType)) {
+			Message.INFO_TOOL_SWITCH.sendTo(sender, new Placeholder("tool", toolName));
 		}
 	}
 }

@@ -4,6 +4,7 @@ import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.clip.ClipActionFactory;
 import me.gorgeousone.tangledmaze.clip.ClipFactory;
+import me.gorgeousone.tangledmaze.clip.ClipType;
 import me.gorgeousone.tangledmaze.data.ConfigSettings;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
@@ -73,28 +74,38 @@ public class ClickListener implements Listener {
 		if (tracedBlock == null) {
 			return;
 		}
+		handleWandClick(playerId, tracedBlock);
+		if (event.getClickedBlock() != null) {
+			updateClickedBlocks(player, event.getClickedBlock());
+		}
+	}
+	
+	private void handleWandClick(UUID playerId, Block clickedBlock) {
 		switch (toolHandler.createToolIfAbsent(playerId)) {
 			case CLIP_TOOL:
 				ClipTool clipTool = toolHandler.createClipToolIfAbsent(playerId);
 				Clip clip = sessionHandler.getClip(playerId);
 				Clip maze = sessionHandler.getMazeClip(playerId);
 				
-				if (isOnlyMazeBorderClicked(clipTool, clip, maze, tracedBlock)) {
-					if (ClipActionFactory.canBeExit(maze, new Vec2(tracedBlock))) {
-						maze.toggleExit(tracedBlock);
+				if (isOnlyMazeBorderClicked(clipTool, clip, maze, clickedBlock)) {
+					if (ClipActionFactory.canBeExit(maze, new Vec2(clickedBlock))) {
+						maze.toggleExit(clickedBlock);
 					}
-				} else {
-					clipTool.addVertex(tracedBlock);
+					break;
 				}
+				ClipType clipType = toolHandler.createClipTypeIfAbsent(playerId);
+				
+				if (clipTool.getShape() != clipType) {
+					sessionHandler.removeClip(playerId, true);
+					toolHandler.resetClipTool(playerId);
+					clipTool.setType(clipType);
+				}
+				clipTool.addVertex(clickedBlock);
 				break;
 			case BRUSH:
 				break;
 		}
-		if (event.getClickedBlock() != null) {
-			updateClickedBlocks(player, event.getClickedBlock());
-		}
 	}
-	
 	private void hideClipsOnClick(Player player, Block clickedBlock) {
 		UUID playerId = player.getUniqueId();
 		RenderSession render = renderHandler.getPlayerRender(playerId);
