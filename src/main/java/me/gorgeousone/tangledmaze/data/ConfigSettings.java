@@ -10,6 +10,7 @@ public class ConfigSettings {
 	public static Material WAND_ITEM;
 	public static boolean HOVER_CLICKING_ENABLED;
 	public static int HOVER_RANGE;
+	public static int BLOCKS_PER_TICK;
 	
 	private final JavaPlugin plugin;
 	
@@ -21,6 +22,7 @@ public class ConfigSettings {
 		WAND_ITEM = deserializeMaterial(config, "wand-item");
 		HOVER_CLICKING_ENABLED = config.getBoolean("hover-clicking.enabled");
 		HOVER_RANGE = MathUtil.clamp(config.getInt("hover-clicking.range"), 1, 128);
+		BLOCKS_PER_TICK = Math.max(config.getInt("blocks-per-tick"), -1);
 	}
 	
 	/**

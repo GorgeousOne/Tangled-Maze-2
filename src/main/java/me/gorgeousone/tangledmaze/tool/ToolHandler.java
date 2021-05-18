@@ -63,10 +63,12 @@ public class ToolHandler implements Listener {
 				sessionHandler.removeClip(playerId, true);
 				Bukkit.getPluginManager().callEvent(new ClipToolChangeEvent(clipTool, ClipToolChangeEvent.Cause.COMPLETE));
 			}
-		} else if (!clipTool.isComplete() && clipTool.getVertices().size() < newClipType.getVertexCount()) {
-			clipTool.setType(newClipType);
-		} else {
-			resetClipTool(playerId);
+		} else if (!clipTool.isComplete()) {
+			if (clipTool.getVertices().size() < newClipType.getVertexCount()) {
+				clipTool.setType(newClipType);
+			}else {
+				clipTool.reset();
+			}
 		}
 		return true;
 	}
