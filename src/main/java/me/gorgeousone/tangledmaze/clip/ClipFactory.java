@@ -101,16 +101,16 @@ public class ClipFactory {
 		int minZ = Math.min(v0.getZ(), v1.getZ());
 		int maxZ = Math.max(v0.getZ(), v1.getZ());
 		
-		double centerX = (minX + maxX + 1) / 2d;
-		double centerZ = (minZ + maxZ + 1) / 2d;
+		double centerX = (minX + maxX) / 2d;
+		double centerZ = (minZ + maxZ) / 2d;
 		double radius = (maxX - minX) / 2d + 0.25;
 		double radiusZ = (maxZ - minZ) / 2d + 0.25;
 		double stretchZ = radius / radiusZ;
 		
 		for (int x = minX; x <= maxX; ++x) {
 			for (int z = minZ; z <= maxZ; ++z) {
-				double centerDistX = x + 0.5 - centerX;
-				double centerDistZ = z + 0.5 - centerZ;
+				double centerDistX = x - centerX;
+				double centerDistZ = z - centerZ;
 				
 				if (!ellipseContains(centerDistX, centerDistZ, stretchZ, radius)) {
 					continue;
@@ -153,8 +153,8 @@ public class ClipFactory {
 		Vec2 v1 = new Vec2(b1);
 		Vec2 v2 = new Vec2(b2);
 		
-		for(int x = minX; x <= maxX; ++x) {
-			for(int z = minZ; z < maxZ; ++z) {
+		for (int x = minX; x <= maxX; ++x) {
+			for (int z = minZ; z <= maxZ; ++z) {
 				Vec2 loc = new Vec2(x, z);
 				
 				if (!triangleContains(loc, v0, v1, v2)) {
@@ -168,7 +168,7 @@ public class ClipFactory {
 		return clip;
 	}
 	
-	private static void addBorder (Vec2 loc, Vec2 v0, Vec2 v1, Vec2 v2, Clip clip) {
+	private static void addBorder(Vec2 loc, Vec2 v0, Vec2 v1, Vec2 v2, Clip clip) {
 		boolean isBorder = false;
 		boolean isAlone = true;
 		
@@ -176,7 +176,7 @@ public class ClipFactory {
 			boolean neighborIn = triangleContains(loc.clone().add(facing.getVec2()), v0, v1, v2);
 			if (!neighborIn) {
 				isBorder = true;
-			}else if (facing.isCollinearX() || facing.isCollinearZ()){
+			} else if (facing.isCollinearX() || facing.isCollinearZ()) {
 				isAlone = false;
 			}
 			if (isBorder && !isAlone) {
@@ -185,13 +185,13 @@ public class ClipFactory {
 		}
 		if (isAlone) {
 			clip.removeFill(Collections.singletonList(loc));
-		}else if (isBorder) {
+		} else if (isBorder) {
 			clip.addBorder(loc);
 		}
 	}
 	
 	//some confusing baryzentric stuff
-	public static boolean triangleContains (Vec2 p, Vec2 v0, Vec2 v1, Vec2 v2) {
+	public static boolean triangleContains(Vec2 p, Vec2 v0, Vec2 v1, Vec2 v2) {
 		float d1 = sign(p, v0, v1);
 		float d2 = sign(p, v1, v2);
 		float d3 = sign(p, v2, v0);
@@ -200,7 +200,7 @@ public class ClipFactory {
 		return !(hasNegative && hasPositive);
 	}
 	
-	private static float sign (Vec2 p0, Vec2 p1, Vec2 p2) {
+	private static float sign(Vec2 p0, Vec2 p1, Vec2 p2) {
 		return (p0.getX() - p2.getX()) * (p1.getZ() - p2.getZ()) - (p1.getX() - p2.getX()) * (p0.getZ() - p2.getZ());
 	}
 	

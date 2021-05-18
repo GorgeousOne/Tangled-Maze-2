@@ -13,7 +13,6 @@ import me.gorgeousone.tangledmaze.event.MazeStateChangeEvent;
 import me.gorgeousone.tangledmaze.tool.ClipTool;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

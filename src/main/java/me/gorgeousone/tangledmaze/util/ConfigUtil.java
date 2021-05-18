@@ -10,8 +10,7 @@ import java.io.InputStreamReader;
 
 public final class ConfigUtil {
 	
-	private ConfigUtil() {
-	}
+	private ConfigUtil() {}
 	
 	public static YamlConfiguration loadConfig(String configName, JavaPlugin plugin) {
 		File configFile = new File(plugin.getDataFolder() + File.separator + configName + ".yml");

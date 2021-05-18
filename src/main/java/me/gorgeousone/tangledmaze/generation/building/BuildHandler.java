@@ -1,6 +1,7 @@
 package me.gorgeousone.tangledmaze.generation.building;
 
 import me.gorgeousone.tangledmaze.clip.Clip;
+import me.gorgeousone.tangledmaze.data.ConfigSettings;
 import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.event.MazeBuildEvent;
 import me.gorgeousone.tangledmaze.generation.BlockSegment;
@@ -82,7 +83,7 @@ public class BuildHandler {
 				return;
 		}
 		
-		new BlockPlacer(mazeMap.getWorld(), collectBlocks(segments), settings.getPalette(mazePart), -1, backupBlocks -> {
+		new BlockPlacer(mazeMap.getWorld(), collectBlocks(segments), settings.getPalette(mazePart), ConfigSettings.BLOCKS_PER_TICK, backupBlocks -> {
 			boolean isFirstBuild = backup.hasBlocks(mazePart);
 			backup.setBlocks(mazePart, backupBlocks);
 			
@@ -123,10 +124,7 @@ public class BuildHandler {
 	}
 	
 	private void unbuildMazePart(Set<BlockState> backupBlocks) {
-		new BlockResetter(backupBlocks, -1, null).runTaskTimer(plugin, 0, 1);
-		//		for (BlockState block : backupBlocks) {
-		//			block.update(true, false);
-		//		}
+		new BlockResetter(backupBlocks, ConfigSettings.BLOCKS_PER_TICK, null).runTaskTimer(plugin, 0, 1);
 	}
 	
 	private void displayPaths(Clip maze, MazeMap mazeMap) {

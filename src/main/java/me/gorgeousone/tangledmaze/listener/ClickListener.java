@@ -106,6 +106,7 @@ public class ClickListener implements Listener {
 				break;
 		}
 	}
+	
 	private void hideClipsOnClick(Player player, Block clickedBlock) {
 		UUID playerId = player.getUniqueId();
 		RenderSession render = renderHandler.getPlayerRender(playerId);
