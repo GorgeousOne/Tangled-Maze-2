@@ -66,7 +66,7 @@ public class ToolHandler implements Listener {
 		} else if (!clipTool.isComplete()) {
 			if (clipTool.getVertices().size() < newClipType.getVertexCount()) {
 				clipTool.setType(newClipType);
-			}else {
+			} else {
 				clipTool.reset();
 			}
 		}

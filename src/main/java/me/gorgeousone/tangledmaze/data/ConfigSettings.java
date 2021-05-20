@@ -25,6 +25,7 @@ public class ConfigSettings {
 		BLOCKS_PER_TICK = Math.max(config.getInt("blocks-per-tick"), -1);
 	}
 	
+	
 	/**
 	 * Configures config defaults depending on server type (
 	 */
