@@ -30,7 +30,8 @@ public class BlockUtil {
 	
 	public static Block getSurface(Block block) {
 		block.getRelative(BlockFace.DOWN);
-		if (block.getType().isSolid()) {
+		
+		if (MaterialUtil.isSolidFloor(block.getType())) {
 			Block surfaceBlock = block;
 			Location nextBlockLoc = block.getLocation();
 			
@@ -38,7 +39,7 @@ public class BlockUtil {
 				nextBlockLoc.add(0, 1, 0);
 				Block nextBlock = nextBlockLoc.getBlock();
 				
-				if (nextBlock.getType().isSolid()) {
+				if (MaterialUtil.isSolidFloor(nextBlock.getType())) {
 					surfaceBlock = nextBlock;
 				} else {
 					return surfaceBlock;
@@ -52,7 +53,7 @@ public class BlockUtil {
 				nextBlockLoc.add(0, -1, 0);
 				Block nextBlock = nextBlockLoc.getBlock();
 				
-				if (nextBlock.getType().isSolid()) {
+				if (MaterialUtil.isSolidFloor(nextBlock.getType())) {
 					return nextBlock;
 				}
 			}

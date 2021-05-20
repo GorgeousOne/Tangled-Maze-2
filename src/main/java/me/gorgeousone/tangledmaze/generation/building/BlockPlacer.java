@@ -1,6 +1,7 @@
 package me.gorgeousone.tangledmaze.generation.building;
 
 import me.gorgeousone.tangledmaze.util.BlockVec;
+import me.gorgeousone.tangledmaze.util.MaterialUtil;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -54,8 +55,11 @@ public final class BlockPlacer extends BukkitRunnable {
 	
 	void placeBlock(BlockVec blockVec) {
 		Block block = world.getBlockAt(blockVec.getX(), blockVec.getY(), blockVec.getZ());
-		BlockType type = palette.getBlock(random.nextInt(palette.size()));
-		backupBlocks.add(type.updateBlock(block, false));
+		
+		if (MaterialUtil.canBeReplaced(block.getType())) {
+			BlockType type = palette.getBlock(random.nextInt(palette.size()));
+			backupBlocks.add(type.updateBlock(block, false));
+		}
 	}
 	
 	boolean blockLimitReached(int placedBlocks, int bpt, long startTime) {

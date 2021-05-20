@@ -1,5 +1,6 @@
 package me.gorgeousone.tangledmaze.util;
 
+import me.gorgeousone.tangledmaze.data.Constants;
 import org.bukkit.Material;
 
 import java.util.LinkedList;
@@ -21,5 +22,13 @@ public final class MaterialUtil {
 	
 	public static List<String> getBlockNames() {
 		return BLOCK_NAMES;
+	}
+	
+	public static boolean isSolidFloor(Material material) {
+		return material.isSolid() && (material.isOccluding() || Constants.TRANSPARENT_SOLIDS.contains(material));
+	}
+	
+	public static boolean canBeReplaced(Material material) {
+		return !material.isSolid() || !Constants.NOT_REPLACEABLES.contains(material);
 	}
 }
