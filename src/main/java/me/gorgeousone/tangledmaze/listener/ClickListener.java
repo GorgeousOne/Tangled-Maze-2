@@ -54,11 +54,20 @@ public class ClickListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerClick(PlayerInteractEvent event) {
-		if (event.getHand() != EquipmentSlot.HAND) {
-			return;
+		try {
+			if (event.getHand() != EquipmentSlot.HAND) {
+				return;
+			}
+		} catch (NoSuchMethodError ignored) {
 		}
 		Player player = event.getPlayer();
-		ItemStack heldItem = player.getInventory().getItemInMainHand();
+		ItemStack heldItem;
+		
+		try {
+			heldItem = player.getInventory().getItemInMainHand();
+		} catch (NoSuchMethodError error) {
+			heldItem = player.getItemInHand();
+		}
 		Block clickedBlock = event.getClickedBlock();
 		
 		if (!isMazeWand(heldItem)) {
