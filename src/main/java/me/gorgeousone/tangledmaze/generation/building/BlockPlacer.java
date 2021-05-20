@@ -53,6 +53,7 @@ public final class BlockPlacer extends BukkitRunnable {
 	}
 	
 	void placeBlock(BlockVec blockVec) {
+		if ()
 		Block block = world.getBlockAt(blockVec.getX(), blockVec.getY(), blockVec.getZ());
 		BlockType type = palette.getBlock(random.nextInt(palette.size()));
 		backupBlocks.add(type.updateBlock(block, false));

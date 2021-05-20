@@ -3,7 +3,11 @@ package me.gorgeousone.tangledmaze.data;
 import me.gorgeousone.tangledmaze.util.MathUtil;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
+import java.util.TreeSet;
 
 public class ConfigSettings {
 	
@@ -24,6 +28,7 @@ public class ConfigSettings {
 		HOVER_RANGE = MathUtil.clamp(config.getInt("hover-clicking.range"), 1, 128);
 		BLOCKS_PER_TICK = Math.max(config.getInt("blocks-per-tick"), -1);
 	}
+
 	
 	/**
 	 * Configures config defaults depending on server type (
