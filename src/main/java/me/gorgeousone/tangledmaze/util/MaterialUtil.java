@@ -29,6 +29,6 @@ public final class MaterialUtil {
 	}
 	
 	public static boolean canBeReplaced(Material material) {
-		return material.isSolid() && (material.isOccluding() || Constants.TRANSPARENT_NOT_REPLACEABLES.contains(material));
+		return !material.isSolid() || !Constants.NOT_REPLACEABLES.contains(material);
 	}
 }

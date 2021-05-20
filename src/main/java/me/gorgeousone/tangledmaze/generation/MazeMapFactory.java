@@ -20,9 +20,10 @@ public class MazeMapFactory {
 		MazeMap map = new MazeMap(maze.getWorld(), clipBounds.getKey(), clipBounds.getValue());
 		copyMazeOntoMazeMap(maze, map);
 		
+		TerrainEditor.levelOffSpikes(map);
 		MazeMapFactory.createPaths(map, maze.getExits(), settings);
 		map.flip();
-		TerrainEditor.improveTerrain(map);
+		TerrainEditor.cleanWallEdges(map);
 		return map;
 	}
 	

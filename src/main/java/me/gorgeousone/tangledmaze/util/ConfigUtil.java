@@ -1,7 +1,5 @@
 package me.gorgeousone.tangledmaze.util;
 
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -21,7 +19,8 @@ public final class ConfigUtil {
 		if (!configFile.exists()) {
 			try {
 				defConfig.save(configFile);
-			} catch (IOException ignored) {}
+			} catch (IOException ignored) {
+			}
 		}
 		
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);

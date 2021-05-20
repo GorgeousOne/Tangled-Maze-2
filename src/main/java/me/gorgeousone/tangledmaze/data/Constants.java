@@ -20,20 +20,20 @@ public class Constants {
 			ChatColor.YELLOW;
 	
 	public static final TreeSet<Material> TRANSPARENT_SOLIDS = new TreeSet<>();
-	public static final TreeSet<Material> TRANSPARENT_NOT_REPLACEABLES = new TreeSet<>();
+	public static final TreeSet<Material> NOT_REPLACEABLES = new TreeSet<>();
 	
 	public static void loadMaterials(FileConfiguration materialLists) {
 		TRANSPARENT_SOLIDS.clear();
-		TRANSPARENT_NOT_REPLACEABLES.clear();
+		NOT_REPLACEABLES.clear();
 		
 		for (String materialName : (List<String>) materialLists.getList("transparent-solids")) {
 			try {
 				TRANSPARENT_SOLIDS.add(Material.valueOf(materialName));
 			} catch (IllegalArgumentException ignored) {}
 		}
-		for (String materialName : (List<String>) materialLists.getList("transparent-not-replaceables")) {
+		for (String materialName : (List<String>) materialLists.getList("not-replaceables")) {
 			try {
-				TRANSPARENT_NOT_REPLACEABLES.add(Material.valueOf(materialName));
+				NOT_REPLACEABLES.add(Material.valueOf(materialName));
 			} catch (IllegalArgumentException ignored) {}
 		}
 	}

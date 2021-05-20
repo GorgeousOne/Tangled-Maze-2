@@ -113,7 +113,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 		settings.loadSettings(getConfig());
 		
 		String versionString = VersionUtil.IS_LEGACY_SERVER ? "legacy" : "aquatic";
-		Constants.loadMaterials(ConfigUtil.loadConfig("materials_" + versionString, this));
+		Constants.loadMaterials(ConfigUtil.loadConfig("materials-" + versionString, this));
 	}
 	
 	private void loadLanguage() {
