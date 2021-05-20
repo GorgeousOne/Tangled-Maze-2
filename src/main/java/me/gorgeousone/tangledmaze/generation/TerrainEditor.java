@@ -9,16 +9,11 @@ import java.util.List;
 
 public class TerrainEditor {
 	
-	public static void improveTerrain(MazeMap mazeMap) {
-		levelOffSpikes(mazeMap);
-		cleanWallEdges(mazeMap);
-	}
-	
 	/**
 	 * Lowers the y coordinates of the terrain map at locations where smaller block peeks like trees disturb
 	 * an otherwise even area.
 	 */
-	private static void levelOffSpikes(MazeMap mazeMap) {
+	public static void levelOffSpikes(MazeMap mazeMap) {
 		Vec2 min = mazeMap.getMin();
 		Vec2 max = mazeMap.getMax();
 		
@@ -55,7 +50,7 @@ public class TerrainEditor {
 	/**
 	 * Lowers the feet of walls (is that how you say it?) down to level of any path next to it so the wall looks consistent everywhere.
 	 */
-	private static void cleanWallEdges(MazeMap mazeMap) {
+	public static void cleanWallEdges(MazeMap mazeMap) {
 		Vec2 min = mazeMap.getMin();
 		Vec2 max = mazeMap.getMax();
 		

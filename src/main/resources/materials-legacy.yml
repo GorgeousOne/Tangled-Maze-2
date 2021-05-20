@@ -1,6 +1,5 @@
 transparent-solids:
     - GLASS
-    - BED_BLOCK
     - TNT
     - SOIL
     - ICE
@@ -10,34 +9,33 @@ transparent-solids:
     - SEA_LANTERN
     - GRASS_PATH
     - OBSERVER
-transparent-not-replaceables:
-    - GLASS
-    - BED_BLOCK
+not-replaceables:
+    - BEDROCK
+    - DISPENSER
     - PISTON_STICKY_BASE
     - PISTON_BASE
     - PISTON_EXTENSION
     - PISTON_MOVING_PIECE
-    - TNT
+    - MOB_SPAWNER
     - CHEST
-    - SOIL
+    - FURNACE
+    - BURNING_FURNACE
     - SIGN_POST
     - WALL_SIGN
-    - ICE
-    - GLOWSTONE
-    - STAINED_GLASS
     - ENCHANTMENT_TABLE
     - BREWING_STAND
     - CAULDRON
     - ENDER_PORTAL_FRAME
     - DRAGON_EGG
     - ENDER_CHEST
+    - COMMAND
     - BEACON
     - ANVIL
     - TRAPPED_CHEST
-    - REDSTONE_BLOCK
     - HOPPER
-    - SEA_LANTERN
-    - GRASS_PATH
+    - DROPPER
+    - COMMAND_REPEATING
+    - COMMAND_CHAIN
     - OBSERVER
     - WHITE_SHULKER_BOX
     - ORANGE_SHULKER_BOX
@@ -55,3 +53,4 @@ transparent-not-replaceables:
     - GREEN_SHULKER_BOX
     - RED_SHULKER_BOX
     - BLACK_SHULKER_BOX
+    - STRUCTURE_BLOCK
