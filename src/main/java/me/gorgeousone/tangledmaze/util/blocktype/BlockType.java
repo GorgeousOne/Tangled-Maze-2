@@ -41,6 +41,10 @@ public abstract class BlockType {
 	}
 	
 	public static BlockType get(String serialized) {
-		return isLegacyServer ? new BlockTypeLegacy(serialized) : new BlockTypeAquatic(serialized);
+		return get(serialized, false);
+	}
+	
+	public static BlockType get(String serialized, boolean randomizeFacing) {
+		return isLegacyServer ? new BlockTypeLegacy(serialized) : new BlockTypeAquatic(serialized, randomizeFacing);
 	}
 }

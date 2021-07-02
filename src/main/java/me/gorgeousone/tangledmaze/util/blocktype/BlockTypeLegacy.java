@@ -92,6 +92,6 @@ public class BlockTypeLegacy extends BlockType {
 	
 	@Override
 	public String toString() {
-		return "LegacyBlock{" + materialData.toString() + '}';
+		return materialData.getItemType() + ":" + materialData.getData();
 	}
 }

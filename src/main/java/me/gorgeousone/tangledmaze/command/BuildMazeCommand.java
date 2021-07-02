@@ -101,7 +101,7 @@ public class BuildMazeCommand extends ArgCommand {
 				materialString = inputString;
 			}
 			try {
-				BlockType blockType = BlockType.get(materialString);
+				BlockType blockType = BlockType.get(materialString, true);
 				palette.addBlock(blockType, MathUtil.clamp(count, 1, 1000));
 			} catch (IllegalArgumentException e) {
 				throw new TextException(Message.ERROR_INVALID_BLOCK_NAME, new Placeholder("block", materialString));

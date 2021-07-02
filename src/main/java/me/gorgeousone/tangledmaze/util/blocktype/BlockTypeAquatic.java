@@ -31,12 +31,6 @@ public class BlockTypeAquatic extends BlockType {
 		blockData = data.clone();
 		isFreelyDirectional = blockData instanceof Directional && !blockData.getAsString(true).contains("facing");
 		isFreelyOrientable = blockData instanceof Orientable && !blockData.getAsString(true).contains("axis");
-		
-		if (isFreelyDirectional) {
-			allowedFaces = ((Directional) blockData).getFaces().stream().map(face -> face.name().toLowerCase()).toArray(String[]::new);
-		} else if (isFreelyOrientable) {
-			allowedAxes = ((Orientable) blockData).getAxes().stream().map(face -> face.name().toLowerCase()).toArray(String[]::new);
-		}
 	}
 	
 	public BlockTypeAquatic(Material material) {
@@ -52,7 +46,20 @@ public class BlockTypeAquatic extends BlockType {
 	}
 	
 	public BlockTypeAquatic(String serialized) {
+		this(serialized, false);
+	}
+	
+	public BlockTypeAquatic(String serialized, boolean randomizeFacing) {
 		this(deserialize(serialized));
+		
+		if (!randomizeFacing) {
+			return;
+		}
+		if (isFreelyDirectional) {
+			allowedFaces = ((Directional) blockData).getFaces().stream().map(face -> face.name().toLowerCase()).toArray(String[]::new);
+		} else if (isFreelyOrientable) {
+			allowedAxes = ((Orientable) blockData).getAxes().stream().map(face -> face.name().toLowerCase()).toArray(String[]::new);
+		}
 	}
 	
 	public static BlockData deserialize(String serialized) {
@@ -114,6 +121,6 @@ public class BlockTypeAquatic extends BlockType {
 	
 	@Override
 	public String toString() {
-		return "AquaBlock{" + blockData.getAsString() + '}';
+		return blockData.getAsString(true);
 	}
 }

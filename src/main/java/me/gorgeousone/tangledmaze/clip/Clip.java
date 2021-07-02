@@ -32,7 +32,7 @@ public class Clip {
 	private final TreeMap<Vec2, Integer> fill;
 	private final TreeSet<Vec2> border;
 	private final List<Vec2> exits;
-	private final Stack<ClipAction> actionHistory;
+	private final transient Stack<ClipAction> actionHistory;
 	private boolean isActive;
 	
 	public Clip(UUID playerId, World world) {
@@ -53,6 +53,9 @@ public class Clip {
 		return world;
 	}
 	
+	/**
+	 * Returns true if the clip is editable and no built as maze right now
+	 */
 	public boolean isActive() {
 		return isActive;
 	}
