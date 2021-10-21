@@ -34,3 +34,5 @@ errors:
     invalid-block-property: 'Invalid property ''%property%'' for block ''%block%''.'
     invalid-block-property-value: 'Invalid value ''%value%'' for property ''%property%''.'
     missing-block-property-value: 'Missing property value: ''%property%=...''.'
+plus:
+    backup-file-already-exists: 'File ''%file-name%'' already exists. Use /maze backup <file-name> true to override it.'

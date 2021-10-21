@@ -90,6 +90,10 @@ public class ToolHandler implements Listener {
 		return playerClipTypes.get(playerId);
 	}
 	
+	public void removePlayer(UUID playerId) {
+		playerClipTypes.remove(playerId);
+	}
+	
 	//	public boolean setTool(UUID playerId, ToolType toolType) {
 	//		ToolType oldTool = playerTools.put(playerId, toolType);
 	//		boolean switchedTool = oldTool != toolType;

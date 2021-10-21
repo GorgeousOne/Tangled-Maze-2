@@ -45,7 +45,7 @@ public class WallGen extends Gen {
 	
 	/**
 	 * Creates a piece of wall on the given grid segment. The height of each wall column is the same,
-	 * dependent on the highest piece of path nearby all the columns
+	 * dependent on the highest piece of path surrounding all columns together
 	 *
 	 * @param mazeMap for looking for wall coordinates
 	 * @param cell    segment to build the wall in
@@ -65,7 +65,7 @@ public class WallGen extends Gen {
 			Vec2 neighborCell = gridPos.clone().add(facing.getVec2());
 			maxFloorY = Math.max(maxFloorY, gridMap.getFloorY(neighborCell));
 		}
-		BlockSegment wall = new BlockSegment(cell.getMin(), cell.getMax(), cell.getGridPos(), mazeMap.getWorld().getMaxHeight());
+		BlockSegment wall = new BlockSegment(cell.getMin(), cell.getMax(), mazeMap.getWorld().getMaxHeight());
 		
 		for (Vec2 column : columns) {
 			int floorY = mazeMap.getY(column);

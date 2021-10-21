@@ -79,7 +79,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 		manager.registerEvents(toolHandler, this);
 		manager.registerEvents(renderHandler, this);
 		manager.registerEvents(new ClickListener(this, sessionHandler, toolHandler, renderHandler), this);
-		manager.registerEvents(new PlayerQuitListener(sessionHandler, renderHandler), this);
+		manager.registerEvents(new PlayerQuitListener(sessionHandler, renderHandler, toolHandler), this);
 		manager.registerEvents(new BlockChangeListener(this, sessionHandler), this);
 	}
 	

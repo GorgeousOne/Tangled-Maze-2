@@ -35,7 +35,7 @@ public class RoofGen extends Gen {
 		if (columns.isEmpty()) {
 			return null;
 		}
-		BlockSegment roof = new BlockSegment(cell.getMin(), cell.getMax(), cell.getGridPos(), mazeMap.getWorld().getMaxHeight());
+		BlockSegment roof = new BlockSegment(cell.getMin(), cell.getMax(), mazeMap.getWorld().getMaxHeight());
 		Vec2 gridPos = cell.getGridPos();
 		int roofY = gridMap.getWallY(gridPos, wallHeight) + 1;
 		

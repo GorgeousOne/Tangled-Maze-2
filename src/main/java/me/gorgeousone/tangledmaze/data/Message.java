@@ -84,15 +84,15 @@ public class Message {
 		ERROR_INVALID_BLOCK_PROPERTY = createError("invalid-block-property", errors);
 	}
 	
-	private static Text createHelpText(String header, ConfigurationSection section, String path) {
+	public static Text createHelpText(String header, ConfigurationSection section, String path) {
 		return new Text(ChatColor.DARK_GREEN + header + "\\n" + ChatColor.GREEN + section.get(path));
 	}
 	
-	private static Text createInfo(String path, ConfigurationSection section) {
+	public static Text createInfo(String path, ConfigurationSection section) {
 		return new Text(Constants.prefix + section.getString(path));
 	}
 	
-	private static Text createError(String path, ConfigurationSection section) {
+	public static Text createError(String path, ConfigurationSection section) {
 		return new Text(ChatColor.RED + section.getString(path));
 	}
 }
