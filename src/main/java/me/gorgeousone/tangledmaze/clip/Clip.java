@@ -29,8 +29,8 @@ public class Clip {
 	
 	private final UUID playerId;
 	private final World world;
-	private final TreeMap<Vec2, Integer> fill;
-	private final TreeSet<Vec2> border;
+	private final Map<Vec2, Integer> fill;
+	private final Set<Vec2> border;
 	private final List<Vec2> exits;
 	private final transient Stack<ClipAction> actionHistory;
 	private boolean isActive;
@@ -71,11 +71,11 @@ public class Clip {
 		return actionHistory;
 	}
 	
-	public TreeMap<Vec2, Integer> getFill() {
+	public Map<Vec2, Integer> getFill() {
 		return fill;
 	}
 	
-	public TreeSet<Vec2> getBorder() {
+	public Set<Vec2> getBorder() {
 		return border;
 	}
 	
@@ -206,5 +206,4 @@ public class Clip {
 			Bukkit.getPluginManager().callEvent(new ClipUpdateEvent(this, loc, newY));
 		}
 	}
-	
 }

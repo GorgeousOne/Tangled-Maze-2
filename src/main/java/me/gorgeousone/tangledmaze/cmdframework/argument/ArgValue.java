@@ -9,7 +9,7 @@ public class ArgValue {
 	private int intVal;
 	private double decimalVal;
 	private String stringVal;
-	private boolean booleanVal;
+	private boolean boolVal;
 	
 	public ArgValue(String stringValue) {
 		this(stringValue, ArgType.STRING);
@@ -31,8 +31,8 @@ public class ArgValue {
 		return decimalVal;
 	}
 	
-	public boolean getBoolean() {
-		return booleanVal;
+	public boolean getBool() {
+		return boolVal;
 	}
 	
 	protected void setValue(String value, ArgType type) {
@@ -46,7 +46,8 @@ public class ArgValue {
 					stringVal = value;
 					break;
 				case BOOLEAN:
-					booleanVal = Boolean.parseBoolean(value);
+					boolVal = Boolean.parseBoolean(value);
+					stringVal = Boolean.toString(boolVal);
 					break;
 			}
 		} catch (Exception e) {
@@ -57,7 +58,7 @@ public class ArgValue {
 	@Override
 	public String toString() {
 		return "ArgValue{" +
-		       "stringVal='" + stringVal + '\'' +
+		       "stringVal:'" + stringVal + '\'' +
 		       '}';
 	}
 }

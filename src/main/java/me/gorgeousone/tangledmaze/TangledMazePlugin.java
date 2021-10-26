@@ -20,6 +20,7 @@ import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
 import me.gorgeousone.tangledmaze.listener.BlockChangeListener;
 import me.gorgeousone.tangledmaze.listener.ClickListener;
 import me.gorgeousone.tangledmaze.listener.PlayerQuitListener;
+import me.gorgeousone.tangledmaze.plus.PremiumHandler;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import me.gorgeousone.tangledmaze.util.ConfigUtil;
@@ -46,9 +47,12 @@ public final class TangledMazePlugin extends JavaPlugin {
 		sessionHandler = new SessionHandler();
 		toolHandler = new ToolHandler(sessionHandler);
 		renderHandler = new RenderHandler(this, sessionHandler);
-		buildHandler = new BuildHandler(this);
+		buildHandler = new BuildHandler(this, sessionHandler);
+		
 		registerListeners();
 		registerCommands();
+		
+		new PremiumHandler(this);
 		
 		settings = new ConfigSettings(this);
 		reload();
@@ -67,6 +71,10 @@ public final class TangledMazePlugin extends JavaPlugin {
 	public void reload() {
 		loadConfigSettings();
 		loadLanguage();
+	}
+	
+	public SessionHandler getSessionHandler() {
+		return sessionHandler;
 	}
 	
 	public ParentCommand getMazeCommand() {

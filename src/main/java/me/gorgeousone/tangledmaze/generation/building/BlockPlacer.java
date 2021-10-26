@@ -43,7 +43,7 @@ public final class BlockPlacer extends BukkitRunnable {
 			placeBlock(blockIter.next());
 			++placedBlocks;
 			
-			if (blockLimitReached(placedBlocks, blocksPerTick, startTime)) {
+			if (blockLimitReached(placedBlocks, startTime)) {
 				return;
 			}
 		}
@@ -62,9 +62,9 @@ public final class BlockPlacer extends BukkitRunnable {
 		}
 	}
 	
-	boolean blockLimitReached(int placedBlocks, int bpt, long startTime) {
-		if (bpt > -1) {
-			if (placedBlocks >= bpt) {
+	boolean blockLimitReached(int placedBlocks, long startTime) {
+		if (blocksPerTick > -1) {
+			if (placedBlocks >= blocksPerTick) {
 				return true;
 			}
 		}

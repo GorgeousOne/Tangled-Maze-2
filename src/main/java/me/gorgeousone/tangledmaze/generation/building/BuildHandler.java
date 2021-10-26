@@ -1,5 +1,6 @@
 package me.gorgeousone.tangledmaze.generation.building;
 
+import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.data.ConfigSettings;
 import me.gorgeousone.tangledmaze.data.Message;
@@ -7,7 +8,6 @@ import me.gorgeousone.tangledmaze.event.MazeBuildEvent;
 import me.gorgeousone.tangledmaze.generation.BlockSegment;
 import me.gorgeousone.tangledmaze.generation.GridCell;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
-import me.gorgeousone.tangledmaze.generation.MazeMapFactory;
 import me.gorgeousone.tangledmaze.generation.generator.FloorGen;
 import me.gorgeousone.tangledmaze.generation.generator.RoofGen;
 import me.gorgeousone.tangledmaze.generation.generator.WallGen;
@@ -31,7 +31,6 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.EulerAngle;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -39,58 +38,57 @@ import java.util.UUID;
 public class BuildHandler {
 	
 	private final JavaPlugin plugin;
-	private final HashMap<Clip, MazeBackup> mazeBackups;
+	private final SessionHandler sessionHandler;
 	
-	public BuildHandler(JavaPlugin plugin) {
+	public BuildHandler(JavaPlugin plugin, SessionHandler sessionHandler) {
 		this.plugin = plugin;
-		this.mazeBackups = new HashMap<>();
+		this.sessionHandler = sessionHandler;
 	}
 	
 	public void disable() {
-		for (Clip maze : mazeBackups.keySet()) {
+		for (Clip maze : sessionHandler.getAllBackupedClips()) {
 			try {
 				unbuildMaze(maze, MazePart.WALLS);
 			} catch (TextException e) {
 				e.printStackTrace();
 			}
 		}
-		mazeBackups.clear();
 	}
 	
 	public void buildMaze(UUID playerId, Clip maze, MazeSettings settings, MazePart mazePart) throws TextException {
-		if (!mazeBackups.containsKey(maze) && mazePart != MazePart.WALLS) {
+		if (mazePart != MazePart.WALLS && !sessionHandler.hasBackup(maze)) {
 			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
 		}
-		mazeBackups.computeIfAbsent(maze, backup -> {
-			MazeMap mazeMap = MazeMapFactory.createMazeMapOf(maze, settings);
-			return new MazeBackup(mazeMap);
-		});
-		MazeBackup backup = mazeBackups.get(maze);
+		sessionHandler.backupMaze(maze);
+		MazeBackup backup = sessionHandler.getBackup(maze);
+		backup.createMazeMapIfAbsent(settings);
 		MazeMap mazeMap = backup.getMazeMap();
-		Set<BlockSegment> segments;
 		
-		switch (mazePart) {
-			case WALLS:
-				segments = backup.getOrCompute(MazePart.WALLS, walls -> WallGen.genWalls(mazeMap, settings));
-				break;
-			case FLOOR:
-				segments = backup.getOrCompute(MazePart.FLOOR, floor -> FloorGen.genFloor(mazeMap));
-				break;
-			case ROOF:
-				segments = backup.getOrCompute(MazePart.ROOF, roof -> RoofGen.genRoof(mazeMap, settings.getValue(MazeProperty.WALL_HEIGHT)));
-				break;
-			default:
-				return;
-		}
+		createBlockSegments(backup, mazePart, mazeMap, settings);
+		Set<BlockSegment> segments = backup.getSegments(mazePart);
 		
 		new BlockPlacer(mazeMap.getWorld(), collectBlocks(segments), settings.getPalette(mazePart), ConfigSettings.BLOCKS_PER_TICK, backupBlocks -> {
 			boolean isFirstBuild = backup.hasBlocks(mazePart);
-			backup.setBlocks(mazePart, backupBlocks);
+			backup.setBlocksIfAbsent(mazePart, backupBlocks);
 			
 			if (mazePart == MazePart.WALLS && isFirstBuild) {
 				Bukkit.getPluginManager().callEvent(new MazeBuildEvent(maze, playerId));
 			}
 		}).runTaskTimer(plugin, 0, 1);
+	}
+	
+	private void createBlockSegments(MazeBackup backup, MazePart mazePart, MazeMap mazeMap, MazeSettings settings) {
+		switch (mazePart) {
+			case WALLS:
+				backup.computeSegmentsIfAbsent(MazePart.WALLS, walls -> WallGen.genWalls(mazeMap, settings));
+				break;
+			case FLOOR:
+				backup.computeSegmentsIfAbsent(MazePart.FLOOR, floor -> FloorGen.genFloor(mazeMap));
+				break;
+			case ROOF:
+				backup.computeSegmentsIfAbsent(MazePart.ROOF, roof -> RoofGen.genRoof(mazeMap, settings.getValue(MazeProperty.WALL_HEIGHT)));
+				break;
+		}
 	}
 	
 	private Set<BlockVec> collectBlocks(Set<BlockSegment> segments) {
@@ -103,16 +101,16 @@ public class BuildHandler {
 	}
 	
 	public void unbuildMaze(Clip maze, MazePart mazePart) throws TextException {
-		if (!mazeBackups.containsKey(maze)) {
+		if (!sessionHandler.hasBackup(maze)) {
 			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
 		}
-		MazeBackup backup = mazeBackups.get(maze);
+		MazeBackup backup = sessionHandler.getBackup(maze);
 		
 		if (mazePart == MazePart.WALLS) {
 			for (MazePart builtPart : backup.getBuiltParts()) {
 				unbuildMazePart(backup.getBlocks(builtPart));
 			}
-			mazeBackups.remove(maze);
+			sessionHandler.removeBackup(maze);
 			maze.setActive(true);
 			return;
 		}

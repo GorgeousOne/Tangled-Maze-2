@@ -1,7 +1,9 @@
 package me.gorgeousone.tangledmaze.maze;
 
+import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.generation.BlockSegment;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
+import me.gorgeousone.tangledmaze.generation.MazeMapFactory;
 import org.bukkit.block.BlockState;
 
 import java.util.HashMap;
@@ -11,14 +13,24 @@ import java.util.function.Function;
 
 public class MazeBackup {
 	
-	private final MazeMap mazeMap;
-	private final Map<MazePart, Set<BlockSegment>> partSegments;
-	private final Map<MazePart, Set<BlockState>> partBlocks;
+	private Clip maze;
+	private transient MazeMap mazeMap;
+	private final transient Map<MazePart, Set<BlockSegment>> partSegments;
+	private final transient Map<MazePart, Set<BlockState>> partBlocks;
 	
-	public MazeBackup(MazeMap mazeMap) {
-		this.mazeMap = mazeMap;
+	public MazeBackup(Clip maze) {
+		this.maze = maze;
 		partSegments = new HashMap<>();
 		partBlocks = new HashMap<>();
+	}
+	
+	public Clip getMaze() {
+		return maze;
+	}
+	
+	public void createMazeMapIfAbsent(MazeSettings settings) {
+		this.mazeMap = MazeMapFactory.createMazeMapOf(maze, settings);
+		
 	}
 	
 	public MazeMap getMazeMap() {
@@ -33,9 +45,8 @@ public class MazeBackup {
 		return partSegments.get(mazePart);
 	}
 	
-	public Set<BlockSegment> getOrCompute(MazePart mazePart, Function<MazePart, Set<BlockSegment>> mappingFunction) {
+	public void computeSegmentsIfAbsent(MazePart mazePart, Function<MazePart, Set<BlockSegment>> mappingFunction) {
 		partSegments.computeIfAbsent(mazePart, mappingFunction);
-		return partSegments.get(mazePart);
 	}
 	
 	public Set<BlockState> getBlocks(MazePart mazePart) {
@@ -48,9 +59,9 @@ public class MazeBackup {
 	
 	/**
 	 * Saves the previous block states of the block changed for this maze part, if none have been saved before.
-	 * Returns true if this maze part didn't already have backup blocks.
+	 * Returns true if this maze part didn't yet have backup blocks.
 	 */
-	public void setBlocks(MazePart mazePart, Set<BlockState> backupBlocks) {
+	public void setBlocksIfAbsent(MazePart mazePart, Set<BlockState> backupBlocks) {
 		partBlocks.putIfAbsent(mazePart, backupBlocks);
 	}
 	
