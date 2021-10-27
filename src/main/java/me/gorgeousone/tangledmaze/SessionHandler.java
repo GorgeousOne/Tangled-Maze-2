@@ -100,4 +100,8 @@ public class SessionHandler implements Listener {
 	public void removeBackup(Clip maze) {
 		mazeBackups.remove(maze);
 	}
+	
+	public void setMazeBackup(Clip maze, MazeBackup backup) {
+		mazeBackups.put(maze, backup);
+	}
 }

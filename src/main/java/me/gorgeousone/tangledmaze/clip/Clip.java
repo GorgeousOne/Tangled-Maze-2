@@ -32,7 +32,7 @@ public class Clip {
 	private final Map<Vec2, Integer> fill;
 	private final Set<Vec2> border;
 	private final List<Vec2> exits;
-	private final transient Stack<ClipAction> actionHistory;
+	private final Stack<ClipAction> actionHistory;
 	private boolean isActive;
 	
 	public Clip(UUID playerId, World world) {

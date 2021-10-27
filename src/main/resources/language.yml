@@ -35,4 +35,9 @@ errors:
     invalid-block-property-value: 'Invalid value ''%value%'' for property ''%property%''.'
     missing-block-property-value: 'Missing property value: ''%property%=...''.'
 plus:
-    backup-file-already-exists: 'File ''%file-name%'' already exists. Use /maze backup <file-name> true to override it.'
+    backup-saved: 'Saved maze to file &a''%file%''&e.'
+    backup-file-already-exists: 'File ''%file%'' already exists. Use /maze backup <file-name> true to override it.'
+    backup-save-error: 'An error occurred while saving. &7(%error%)'
+    backup-loaded: 'Loaded file &a''%file%''&e.'
+    backup-file-not-found: 'Could not find file ''%file%''.'
+    backup-load-error: 'Unable to load file ''%file%''. Maybe it is damaged? &7(%error%)'
