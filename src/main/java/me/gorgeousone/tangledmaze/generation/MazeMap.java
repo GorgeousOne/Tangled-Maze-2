@@ -1,10 +1,7 @@
 package me.gorgeousone.tangledmaze.generation;
 
-import me.gorgeousone.tangledmaze.generation.paving.PathTree;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.World;
-
-import java.util.List;
 
 public class MazeMap {
 	
@@ -13,6 +10,8 @@ public class MazeMap {
 	private final Vec2 mapMax;
 	private transient final AreaType[][] areaTypeMap;
 	private transient final int[][] terrainMap;
+	private GridMap gridMap;
+	//	private List<PathTree> pathTrees;
 	
 	public MazeMap(World world, Vec2 min, Vec2 max) {
 		this.world = world;
@@ -88,10 +87,6 @@ public class MazeMap {
 		terrainMap[x - mapMin.getX()][z - mapMin.getZ()] = y;
 	}
 	
-	private GridMap gridMap;
-	
-	private List<PathTree> pathTrees;
-	
 	public GridMap getPathMap() {
 		return gridMap;
 	}
@@ -100,13 +95,13 @@ public class MazeMap {
 		this.gridMap = gridMap;
 	}
 	
-	public List<PathTree> getPathTrees() {
-		return pathTrees;
-	}
+	//	public List<PathTree> getPathTrees() {
+	//		return pathTrees;
+	//	}
 	
-	public void setPathTrees(List<PathTree> pathTrees) {
-		this.pathTrees = pathTrees;
-	}
+	//	public void setPathTrees(List<PathTree> pathTrees) {
+	//		this.pathTrees = pathTrees;
+	//	}
 	
 	public void flip() {
 		for (int x = 0; x < terrainMap.length; ++x) {

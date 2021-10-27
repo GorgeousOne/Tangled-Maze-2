@@ -38,8 +38,8 @@ public final class TangledMazePlugin extends JavaPlugin {
 	private RenderHandler renderHandler;
 	private BuildHandler buildHandler;
 	private ConfigSettings settings;
-	
 	private ParentCommand mazeCmd;
+	private PremiumHandler premiumHandler;
 	
 	@Override
 	public void onEnable() {
@@ -52,9 +52,8 @@ public final class TangledMazePlugin extends JavaPlugin {
 		registerListeners();
 		registerCommands();
 		
-		new PremiumHandler(this);
-		
 		settings = new ConfigSettings(this);
+		premiumHandler = new PremiumHandler(this);
 		reload();
 	}
 	
@@ -71,6 +70,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 	public void reload() {
 		loadConfigSettings();
 		loadLanguage();
+		premiumHandler.reload();
 	}
 	
 	public SessionHandler getSessionHandler() {

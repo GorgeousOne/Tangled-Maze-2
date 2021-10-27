@@ -8,27 +8,22 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+/**
+ * Class to keep track of connections of maze paths
+ */
 public class PathTree {
 	
 	private final static Random RANDOM = new Random();
 	private final List<GridCell> openEnds;
 	private final Set<GridCell> cells;
 	private final Set<GridCell> intersections;
-	//	private final Map<MazeSegment, Set<MazeSegment>> children;
-	int maxExitDist;
-	private final int index;
+	
+	private int maxExitDist;
 	
 	public PathTree(int index) {
-		this.index = index;
-		this.openEnds = new ArrayList<>();
+		openEnds = new ArrayList<>();
 		cells = new HashSet<>();
 		intersections = new HashSet<>();
-		//		children = new HashMap<>();
-	}
-	
-	@Override
-	public String toString() {
-		return "Tree " + index;
 	}
 	
 	public int size() {
@@ -92,12 +87,15 @@ public class PathTree {
 		}
 		cells.addAll(other.cells);
 		intersections.addAll(other.intersections);
-		//		children.putAll(other.children);
-		
 		addSegment(linkSegment, ownSegment);
 		balanceTree(linkSegment, otherSegment);
 	}
 	
+	/**
+	 *
+	 * @param seg1
+	 * @param seg2
+	 */
 	private void balanceTree(GridCell seg1, GridCell seg2) {
 		int exitDist1 = getExitDist(seg1);
 		int exitDist2 = getExitDist(seg2);
@@ -106,7 +104,6 @@ public class PathTree {
 		
 		GridCell furtherSeg = exitDist1 > exitDist2 ? seg1 : seg2;
 		GridCell closerSeg = exitDist1 <= exitDist2 ? seg1 : seg2;
-		
 		
 		for (int i = 0; i < distDiff / 2; i++) {
 			GridCell oldParent = furtherSeg.getParent();

@@ -54,13 +54,13 @@ public class BlockTypeLegacy extends BlockType {
 	}
 	
 	@Override
-	public BlockState updateBlock(Block block, boolean physics) {
+	public BlockType updateBlock(Block block, boolean applyPhysics) {
 		BlockState oldState = block.getState();
 		BlockState newState = block.getState();
 		newState.setType(materialData.getItemType());
 		newState.setRawData(materialData.getData());
-		newState.update(true, physics);
-		return oldState;
+		newState.update(true, applyPhysics);
+		return BlockType.get(oldState);
 	}
 	
 	@Override

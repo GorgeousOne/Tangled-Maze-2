@@ -77,7 +77,7 @@ public class BlockTypeAquatic extends BlockType {
 	}
 	
 	@Override
-	public BlockState updateBlock(Block block, boolean physics) {
+	public BlockType updateBlock(Block block, boolean applyPhysics) {
 		BlockState oldState = block.getState();
 		BlockState newState = block.getState();
 		BlockData copy = blockData.clone();
@@ -88,8 +88,8 @@ public class BlockTypeAquatic extends BlockType {
 			copy = copy.merge(copy.getMaterial().createBlockData("[facing=" + allowedFaces[RANDOM.nextInt(allowedFaces.length)] + "]"));
 		}
 		newState.setBlockData(copy);
-		newState.update(true, physics);
-		return oldState;
+		newState.update(true, applyPhysics);
+		return BlockType.get(oldState);
 	}
 	
 	@Override

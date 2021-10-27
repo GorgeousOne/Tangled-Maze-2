@@ -4,7 +4,7 @@ import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.generation.BlockSegment;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.generation.MazeMapFactory;
-import org.bukkit.block.BlockState;
+import me.gorgeousone.tangledmaze.util.blocktype.BlockLocType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,9 +14,9 @@ import java.util.function.Function;
 public class MazeBackup {
 	
 	private Clip maze;
-	private transient MazeMap mazeMap;
-	private final transient Map<MazePart, Set<BlockSegment>> partSegments;
-	private final transient Map<MazePart, Set<BlockState>> partBlocks;
+	private MazeMap mazeMap;
+	private final Map<MazePart, Set<BlockSegment>> partSegments;
+	private final Map<MazePart, Set<BlockLocType>> partBlocks;
 	
 	public MazeBackup(Clip maze) {
 		this.maze = maze;
@@ -49,7 +49,7 @@ public class MazeBackup {
 		partSegments.computeIfAbsent(mazePart, mappingFunction);
 	}
 	
-	public Set<BlockState> getBlocks(MazePart mazePart) {
+	public Set<BlockLocType> getBlocks(MazePart mazePart) {
 		return partBlocks.get(mazePart);
 	}
 	
@@ -61,7 +61,7 @@ public class MazeBackup {
 	 * Saves the previous block states of the block changed for this maze part, if none have been saved before.
 	 * Returns true if this maze part didn't yet have backup blocks.
 	 */
-	public void setBlocksIfAbsent(MazePart mazePart, Set<BlockState> backupBlocks) {
+	public void setBlocksIfAbsent(MazePart mazePart, Set<BlockLocType> backupBlocks) {
 		partBlocks.putIfAbsent(mazePart, backupBlocks);
 	}
 	
