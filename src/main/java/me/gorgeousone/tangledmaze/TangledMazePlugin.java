@@ -23,6 +23,7 @@ import me.gorgeousone.tangledmaze.listener.PlayerQuitListener;
 import me.gorgeousone.tangledmaze.plus.PremiumHandler;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
+import me.gorgeousone.tangledmaze.updatecheck.UpdateCheck;
 import me.gorgeousone.tangledmaze.util.ConfigUtil;
 import me.gorgeousone.tangledmaze.util.VersionUtil;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
@@ -32,6 +33,10 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TangledMazePlugin extends JavaPlugin {
+	
+	private static final int resourceId = 59284;
+	private static final String resourceName = "tangled-maze-maze-generator-1-13";
+	private static final String updateInfoUrl = "https://pastebin.com/raw/piNNmtcP";
 	
 	private SessionHandler sessionHandler;
 	private ToolHandler toolHandler;
@@ -61,16 +66,14 @@ public final class TangledMazePlugin extends JavaPlugin {
 	public void onDisable() {
 		renderHandler.disable();
 		sessionHandler.disable();
-		buildHandler.disable();
 		toolHandler.disable();
-		Bukkit.broadcastMessage(ChatColor.GOLD + "TODO mazemap setType contains check");
-		Bukkit.broadcastMessage(ChatColor.GOLD + "stop auto removal");
 	}
 	
 	public void reload() {
 		loadConfigSettings();
 		loadLanguage();
 		premiumHandler.reload();
+		checkForUpdates();
 	}
 	
 	public SessionHandler getSessionHandler() {
@@ -126,5 +129,9 @@ public final class TangledMazePlugin extends JavaPlugin {
 	
 	private void loadLanguage() {
 		Message.loadLanguage(ConfigUtil.loadConfig("language", this));
+	}
+	
+	private void checkForUpdates() {
+		new UpdateCheck(this, resourceId, resourceName, updateInfoUrl).run();
 	}
 }

@@ -33,16 +33,6 @@ public class BuildHandler {
 		this.sessionHandler = sessionHandler;
 	}
 	
-	public void disable() {
-		for (Clip maze : sessionHandler.getAllBackupedClips()) {
-			try {
-				unbuildMaze(maze, MazePart.WALLS);
-			} catch (TextException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
 	public void buildMaze(UUID playerId, Clip maze, MazeSettings settings, MazePart mazePart) throws TextException {
 		if (mazePart != MazePart.WALLS && !sessionHandler.hasBackup(maze)) {
 			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
