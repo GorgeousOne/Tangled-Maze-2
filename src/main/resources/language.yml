@@ -18,7 +18,7 @@ infos:
     maze-wand-usage: Click two blocks. Then use /maze start to continue.
     tool-switch: Switched to %tool%.
     setting-change: Set %setting% to %value%.
-    maze-not-built: Please build the maze first (without any flags).
+    maze-not-built: Please build the maze first (without -roof or -floor flag).
     maue-inaccessible: Cannot perform this action on a constructed maze. /maze unbuild
     maze-build: Built your maze part with %count% blocks.
     maze-unbuild: Deconstructed your maze.

@@ -42,6 +42,9 @@ public class ToolHandler implements Listener {
 		return playerClipTools.get(playerId);
 	}
 	
+	/**
+	 * Removes any clip (gold blocks) started by the player
+	 */
 	public void resetClipTool(UUID playerId) {
 		playerClipTools.get(playerId).reset();
 		sessionHandler.removeClip(playerId, true);

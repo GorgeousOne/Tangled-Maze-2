@@ -60,11 +60,16 @@ public class Clip {
 		return isActive;
 	}
 	
+	/**
+	 * Calls an event to signal a toggle of being editable
+	 */
 	public void setActive(boolean active) {
-		if (isActive != active) {
+		boolean oldState = isActive;
+		isActive = active;
+
+		if (oldState != active) {
 			Bukkit.getPluginManager().callEvent(new MazeStateChangeEvent(this, active));
 		}
-		isActive = active;
 	}
 	
 	public Stack<ClipAction> getActionHistory() {

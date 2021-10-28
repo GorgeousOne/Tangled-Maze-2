@@ -24,6 +24,9 @@ public class ClipTool {
 		this.type = type;
 	}
 	
+	/**
+	 * Clears all vertices placed with the tool
+	 */
 	public void reset() {
 		vertices.clear();
 		vertexToRelocate = -1;

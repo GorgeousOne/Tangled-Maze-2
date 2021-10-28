@@ -68,17 +68,16 @@ public class BuildMazeCommand extends ArgCommand {
 				settings.setPalette(palette, mazePart);
 			} catch (TextException e) {
 				e.sendTextTo(sender);
-				e.printStackTrace();
 			}
 		}
-		maze.setActive(false);
-		toolHandler.resetClipTool(playerId);
-		
 		try {
 			buildHandler.buildMaze(playerId, maze, settings, mazePart);
 		} catch (TextException e) {
 			e.sendTextTo(sender);
+			return;
 		}
+		maze.setActive(false);
+		toolHandler.resetClipTool(playerId);
 	}
 	
 	public BlockPalette deserializeBlockPalette(List<ArgValue> stringArgs) throws TextException {

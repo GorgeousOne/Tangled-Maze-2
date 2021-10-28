@@ -28,7 +28,6 @@ import me.gorgeousone.tangledmaze.util.ConfigUtil;
 import me.gorgeousone.tangledmaze.util.VersionUtil;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 

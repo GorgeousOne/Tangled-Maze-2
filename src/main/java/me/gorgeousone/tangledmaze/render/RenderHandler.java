@@ -192,6 +192,9 @@ public class RenderHandler implements Listener {
 	}
 	
 	private void displayMaze(RenderSession render, Clip maze) {
+		if (!maze.isActive()) {
+			return;
+		}
 		render.addLayer(MAZE_BORDER_LAYER, maze.getBlocks(maze.getBorder()), MAZE_BORDER_MAT);
 		List<Vec2> exits = maze.getExits();
 		
