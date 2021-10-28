@@ -30,8 +30,7 @@ public class ToolCommand extends ArgCommand {
 	@Override
 	protected void executeArgs(CommandSender sender, List<ArgValue> argValues, Set<String> usedFlags) {
 		String toolArgument = argValues.get(0).get();
-		Player player = (Player) sender;
-		UUID playerId = player.getUniqueId();
+		UUID playerId = getSenderId(sender);
 		
 		ClipType clipType;
 		String toolName;

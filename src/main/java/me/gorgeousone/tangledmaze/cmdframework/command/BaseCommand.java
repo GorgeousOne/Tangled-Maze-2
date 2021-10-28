@@ -9,11 +9,14 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * A command with no defined way of execution (not arguments or sub commands)
  */
 public abstract class BaseCommand {
+	
+	public static final UUID CONSOLE_ID = UUID.randomUUID();
 	
 	private final String name;
 	private final Set<String> aliases;
@@ -119,5 +122,12 @@ public abstract class BaseCommand {
 	
 	public List<String> getTabList(String[] arguments) {
 		return new LinkedList<>();
+	}
+	
+	/**
+	 * @return player's UUID if sender is a player, pre-generated UUID for console commands and command blocks
+	 */
+	protected UUID getSenderId(CommandSender sender) {
+		return sender instanceof Player ? ((Player) sender).getUniqueId() : CONSOLE_ID;
 	}
 }

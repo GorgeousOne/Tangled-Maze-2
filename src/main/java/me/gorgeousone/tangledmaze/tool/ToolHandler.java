@@ -43,9 +43,12 @@ public class ToolHandler implements Listener {
 	}
 	
 	/**
-	 * Removes any clip (gold blocks) started by the player
+	 * Removes any (not maze) clip started by the player
 	 */
 	public void resetClipTool(UUID playerId) {
+		if (null == Bukkit.getPlayer(playerId)) {
+			return;
+		}
 		playerClipTools.get(playerId).reset();
 		sessionHandler.removeClip(playerId, true);
 	}

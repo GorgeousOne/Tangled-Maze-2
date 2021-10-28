@@ -28,16 +28,15 @@ public class CutClipCommand extends BaseCommand {
 	
 	@Override
 	public void onCommand(CommandSender sender, String[] args) {
-		Player player = (Player) sender;
-		UUID playerId = player.getUniqueId();
+		UUID playerId = getSenderId(sender);
 		Clip clip = sessionHandler.getClip(playerId);
 		Clip maze = sessionHandler.getMazeClip(playerId);
 		
-		if (maze == null) {
+		if (null == maze) {
 			Message.ERROR_MAZE_MISSING.sendTo(sender);
 			return;
 		}
-		if (clip == null) {
+		if (null == clip) {
 			Message.ERROR_CLIPBOARD_MISSING.sendTo(sender);
 			return;
 		}

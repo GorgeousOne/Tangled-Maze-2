@@ -29,12 +29,11 @@ public class SettingsCommand extends ArgCommand {
 	
 	@Override
 	protected void executeArgs(CommandSender sender, List<ArgValue> argValues, Set<String> usedFlags) {
-		Player player = (Player) sender;
-		UUID playerId = player.getUniqueId();
+		UUID playerId = getSenderId(sender);
 		String settingName = argValues.get(0).get();
 		MazeProperty property = MazeProperty.match(settingName);
 		
-		if (property == null) {
+		if (null == property) {
 			Message.ERROR_INVALID_SETTING.sendTo(sender, new Placeholder("setting", settingName));
 			return;
 		}

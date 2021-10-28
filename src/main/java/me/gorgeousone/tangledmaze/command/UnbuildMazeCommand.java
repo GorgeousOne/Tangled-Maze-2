@@ -33,11 +33,10 @@ public class UnbuildMazeCommand extends ArgCommand {
 	
 	@Override
 	protected void executeArgs(CommandSender sender, List<ArgValue> argValues, Set<String> usedFlags) {
-		Player player = (Player) sender;
-		UUID playerId = player.getUniqueId();
+		UUID playerId = getSenderId(sender);
 		Clip maze = sessionHandler.getMazeClip(playerId);
 		
-		if (maze == null) {
+		if (null == maze) {
 			Message.ERROR_MAZE_MISSING.sendTo(sender);
 			return;
 		}

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public class Clip {
 	
-	private final UUID playerId;
+	private UUID ownerId;
 	private final World world;
 	private final Map<Vec2, Integer> fill;
 	private final Set<Vec2> border;
@@ -36,7 +36,7 @@ public class Clip {
 	private boolean isActive;
 	
 	public Clip(UUID playerId, World world) {
-		this.playerId = playerId;
+		this.ownerId = playerId;
 		this.world = world;
 		fill = new TreeMap<>();
 		border = new TreeSet<>();
@@ -45,8 +45,12 @@ public class Clip {
 		isActive = true;
 	}
 	
-	public UUID getPlayerId() {
-		return playerId;
+	public UUID getOwnerId() {
+		return ownerId;
+	}
+	
+	public void setOwnerId(UUID ownerId) {
+		this.ownerId = ownerId;
 	}
 	
 	public World getWorld() {

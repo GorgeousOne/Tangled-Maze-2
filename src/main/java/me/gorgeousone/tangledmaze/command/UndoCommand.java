@@ -22,11 +22,10 @@ public class UndoCommand extends BaseCommand {
 	
 	@Override
 	public void onCommand(CommandSender sender, String[] args) {
-		Player player = (Player) sender;
-		UUID playerId = player.getUniqueId();
+		UUID playerId = getSenderId(sender);
 		Clip maze = sessionHandler.getMazeClip(playerId);
 		
-		if (maze == null) {
+		if (null == maze) {
 			Message.ERROR_MAZE_MISSING.sendTo(sender);
 			return;
 		}
