@@ -10,8 +10,8 @@ public class GridCell {
 	private final Vec2 max;
 	private final Vec2 gridPos;
 	
-	private PathTree tree;
-	private GridCell parent;
+	private transient PathTree tree;
+	private transient GridCell parent;
 	
 	public GridCell(Vec2 min, Vec2 size, Vec2 gridPos) {
 		this.min = min;

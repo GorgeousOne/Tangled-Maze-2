@@ -1,9 +1,10 @@
 package me.gorgeousone.tangledmaze.generation.building;
 
-import org.bukkit.block.BlockState;
+
+import me.gorgeousone.tangledmaze.util.blocktype.BlockLocType;
 
 import java.util.Set;
 
 public interface BuildCallBack {
-	void onBuildFinish(Set<BlockState> backupBlocks);
+	void onBuildFinish(Set<BlockLocType> backupBlocks);
 }

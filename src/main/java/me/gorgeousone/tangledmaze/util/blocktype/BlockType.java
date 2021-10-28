@@ -15,7 +15,13 @@ public abstract class BlockType {
 	
 	public abstract Material getType();
 	
-	public abstract BlockState updateBlock(Block block, boolean physics);
+	/**
+	 * Updates the state of this block with the information of the BlockType.
+	 * @param block
+	 * @param applyPhysics
+	 * @return the previous type of the block
+	 */
+	public abstract BlockType updateBlock(Block block, boolean applyPhysics);
 	
 	public abstract void sendBlockChange(Player player, Location location);
 	
@@ -41,6 +47,10 @@ public abstract class BlockType {
 	}
 	
 	public static BlockType get(String serialized) {
-		return isLegacyServer ? new BlockTypeLegacy(serialized) : new BlockTypeAquatic(serialized);
+		return get(serialized, false);
+	}
+	
+	public static BlockType get(String serialized, boolean randomizeFacing) {
+		return isLegacyServer ? new BlockTypeLegacy(serialized) : new BlockTypeAquatic(serialized, randomizeFacing);
 	}
 }

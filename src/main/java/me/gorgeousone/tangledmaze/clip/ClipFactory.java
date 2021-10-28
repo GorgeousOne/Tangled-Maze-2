@@ -190,7 +190,7 @@ public class ClipFactory {
 		}
 	}
 	
-	//some confusing baryzentric stuff
+	//some confusing barycentric stuff
 	public static boolean triangleContains(Vec2 p, Vec2 v0, Vec2 v1, Vec2 v2) {
 		float d1 = sign(p, v0, v1);
 		float d2 = sign(p, v1, v2);

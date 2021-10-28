@@ -45,11 +45,10 @@ public class FloorGen {
 				columns.add(new Vec2(x, z));
 			}
 		}
-		
 		if (columns.isEmpty()) {
 			return null;
 		}
-		BlockSegment path = new BlockSegment(cell.getMin(), cell.getMax(), cell.getGridPos(), mazeMap.getWorld().getMaxHeight());
+		BlockSegment path = new BlockSegment(cell.getMin(), cell.getMax(), mazeMap.getWorld().getMaxHeight());
 		
 		for (Vec2 column : columns) {
 			int maxFloorY = mazeMap.getY(column);

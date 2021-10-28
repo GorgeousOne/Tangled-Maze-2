@@ -1,6 +1,6 @@
 package me.gorgeousone.tangledmaze.generation.building;
 
-import org.bukkit.block.BlockState;
+import me.gorgeousone.tangledmaze.util.blocktype.BlockLocType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.awt.event.ActionListener;
@@ -14,9 +14,9 @@ public class BlockResetter extends BukkitRunnable {
 	
 	private final ActionListener callback;
 	private final int blocksPerTick;
-	private final Iterator<BlockState> blockIter;
+	private final Iterator<BlockLocType> blockIter;
 	
-	public BlockResetter(Set<BlockState> blocks, int blocksPerTick, ActionListener callback) {
+	public BlockResetter(Set<BlockLocType> blocks, int blocksPerTick, ActionListener callback) {
 		this.callback = callback;
 		this.blocksPerTick = blocksPerTick;
 		this.blockIter = blocks.iterator();
@@ -28,7 +28,7 @@ public class BlockResetter extends BukkitRunnable {
 		int placedBlocks = 0;
 		
 		while (blockIter.hasNext()) {
-			blockIter.next().update(true, false);
+			blockIter.next().updateBlock(true);
 			++placedBlocks;
 			
 			if (blockLimitReached(placedBlocks, blocksPerTick, startTime)) {
