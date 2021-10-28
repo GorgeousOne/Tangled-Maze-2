@@ -15,7 +15,6 @@ import me.gorgeousone.tangledmaze.maze.MazePart;
 import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.util.BlockVec;
-import me.gorgeousone.tangledmaze.util.blocktype.BlockLocType;
 import me.gorgeousone.tangledmaze.util.text.TextException;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -97,7 +96,7 @@ public class BuildHandler {
 		
 		if (mazePart == MazePart.WALLS) {
 			for (MazePart builtPart : backup.getBuiltParts()) {
-				unbuildMazePart(backup.getBlocks(builtPart));
+				unbuildMazePart(backup, builtPart);
 			}
 			sessionHandler.removeBackup(maze);
 			maze.setActive(true);
@@ -106,12 +105,16 @@ public class BuildHandler {
 		if (!backup.getBuiltParts().contains(mazePart)) {
 			return;
 		}
-		unbuildMazePart(backup.getBlocks(mazePart));
+		unbuildMazePart(backup, mazePart);
 		backup.removeMazePart(mazePart);
 	}
 	
-	private void unbuildMazePart(Set<BlockLocType> backupBlocks) {
-		new BlockResetter(backupBlocks, ConfigSettings.BLOCKS_PER_TICK, null).runTaskTimer(plugin, 0, 1);
+	private void unbuildMazePart(MazeBackup backup, MazePart mazePart) {
+		new BlockResetter(backup.getBlocks(mazePart), ConfigSettings.BLOCKS_PER_TICK, callback -> {
+			if (MazePart.WALLS == mazePart) {
+				sessionHandler.removeBackup(backup.getMaze());
+			}
+		}).runTaskTimer(plugin, 0, 1);
 	}
 	
 	//	private void displayPaths(Clip maze, MazeMap mazeMap) {

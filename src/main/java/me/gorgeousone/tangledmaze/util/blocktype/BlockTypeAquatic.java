@@ -9,6 +9,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.entity.Player;
+import sun.rmi.runtime.Log;
 
 import java.util.Objects;
 import java.util.Random;
@@ -21,16 +22,23 @@ public class BlockTypeAquatic extends BlockType {
 	private static final Random RANDOM = new Random();
 	
 	private final BlockData blockData;
-	private final boolean isFreelyDirectional;
-	private final boolean isFreelyOrientable;
-	
+	private boolean isFreelyDirectional;
+	private boolean isFreelyOrientable;
 	private String[] allowedFaces;
 	private String[] allowedAxes;
 	
+	public BlockTypeAquatic(BlockTypeAquatic other) {
+		blockData = other.blockData.clone();
+		isFreelyDirectional = other.isFreelyDirectional;
+		isFreelyOrientable = other.isFreelyOrientable;
+		allowedFaces = other.allowedFaces.clone();
+		allowedAxes = other.allowedAxes.clone();
+	}
+	
 	public BlockTypeAquatic(BlockData data) {
 		blockData = data.clone();
-		isFreelyDirectional = blockData instanceof Directional && !blockData.getAsString(true).contains("facing");
-		isFreelyOrientable = blockData instanceof Orientable && !blockData.getAsString(true).contains("axis");
+		allowedFaces = new String[0];
+		allowedAxes = new String[0];
 	}
 	
 	public BlockTypeAquatic(Material material) {
@@ -55,6 +63,9 @@ public class BlockTypeAquatic extends BlockType {
 		if (!randomizeFacing) {
 			return;
 		}
+		this.isFreelyDirectional = blockData instanceof Directional && !blockData.getAsString(true).contains("facing");
+		this.isFreelyOrientable = blockData instanceof Orientable && !blockData.getAsString(true).contains("axis");
+		
 		if (isFreelyDirectional) {
 			allowedFaces = ((Directional) blockData).getFaces().stream().map(face -> face.name().toLowerCase()).toArray(String[]::new);
 		} else if (isFreelyOrientable) {
@@ -104,7 +115,7 @@ public class BlockTypeAquatic extends BlockType {
 	
 	@Override
 	public BlockTypeAquatic clone() {
-		return new BlockTypeAquatic(blockData);
+		return new BlockTypeAquatic(this);
 	}
 	
 	@Override

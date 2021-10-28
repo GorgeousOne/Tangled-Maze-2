@@ -61,9 +61,11 @@ public class MazeMap {
 	}
 	
 	public void setType(Vec2 min, Vec2 max, AreaType type) {
-		for (int x = min.getX() - mapMin.getX(); x < max.getX() - mapMin.getX(); ++x) {
-			for (int z = min.getZ() - mapMin.getZ(); z < max.getZ() - mapMin.getZ(); ++z) {
-				areaTypeMap[x][z] = type;
+		for (int x = min.getX(); x < max.getX(); ++x) {
+			for (int z = min.getZ(); z < max.getZ(); ++z) {
+				if (contains(x, z)) {
+					areaTypeMap[x - mapMin.getX()][z - mapMin.getZ()] = type;
+				}
 			}
 		}
 	}
