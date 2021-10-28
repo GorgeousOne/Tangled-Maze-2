@@ -9,7 +9,6 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.entity.Player;
-import sun.rmi.runtime.Log;
 
 import java.util.Objects;
 import java.util.Random;

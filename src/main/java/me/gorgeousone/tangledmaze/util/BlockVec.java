@@ -1,8 +1,5 @@
 package me.gorgeousone.tangledmaze.util;
 
-import com.google.gson.annotations.JsonAdapter;
-import me.gorgeousone.tangledmaze.plus.gson.BlockVecAdapter;
-import me.gorgeousone.tangledmaze.plus.gson.Vec2Adapter;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -51,7 +48,7 @@ public class BlockVec {
 	public Location toLoc(World world) {
 		return new Location(world, x, y, z);
 	}
-
+	
 	public Vec2 toVec2() {
 		return new Vec2(x, z);
 	}

@@ -9,7 +9,6 @@ import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
 import me.gorgeousone.tangledmaze.maze.MazePart;
 import me.gorgeousone.tangledmaze.util.text.TextException;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Set;

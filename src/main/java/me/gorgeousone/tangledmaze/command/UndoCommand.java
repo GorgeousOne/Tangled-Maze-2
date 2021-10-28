@@ -5,7 +5,6 @@ import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.cmdframework.command.BaseCommand;
 import me.gorgeousone.tangledmaze.data.Message;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.UUID;
 

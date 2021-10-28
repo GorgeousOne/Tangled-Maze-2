@@ -1,14 +1,9 @@
 package me.gorgeousone.tangledmaze;
 
 import me.gorgeousone.tangledmaze.clip.Clip;
-import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.event.ClipDeleteEvent;
-import me.gorgeousone.tangledmaze.generation.MazeMap;
-import me.gorgeousone.tangledmaze.generation.MazeMapFactory;
 import me.gorgeousone.tangledmaze.maze.MazeBackup;
-import me.gorgeousone.tangledmaze.maze.MazePart;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
-import me.gorgeousone.tangledmaze.util.text.TextException;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 

@@ -9,7 +9,6 @@ import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import me.gorgeousone.tangledmaze.util.text.Placeholder;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Set;

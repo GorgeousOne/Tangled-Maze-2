@@ -17,6 +17,7 @@ public abstract class BlockType {
 	
 	/**
 	 * Updates the state of this block with the information of the BlockType.
+	 *
 	 * @param block
 	 * @param applyPhysics
 	 * @return the previous type of the block

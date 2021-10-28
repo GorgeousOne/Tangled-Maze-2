@@ -14,15 +14,15 @@ public class Version {
 	}
 	
 	public boolean isLower(Version other) {
-		int[] intArray = new int[] {major, minor, patch};
-		int[] otherIntArray = new int[] {other.major, other.minor, other.patch};
+		int[] intArray = new int[]{major, minor, patch};
+		int[] otherIntArray = new int[]{other.major, other.minor, other.patch};
 		
 		for (int i = 0; i < intArray.length; i++) {
 			int versionDiff = intArray[i] - otherIntArray[i];
 			
 			if (versionDiff > 0) {
 				return false;
-			}else if (versionDiff < 0) {
+			} else if (versionDiff < 0) {
 				return true;
 			}
 		}

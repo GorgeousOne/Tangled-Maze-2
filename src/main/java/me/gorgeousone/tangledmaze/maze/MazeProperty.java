@@ -3,9 +3,9 @@ package me.gorgeousone.tangledmaze.maze;
 import java.util.Arrays;
 
 public enum MazeProperty {
-	WALL_HEIGHT(50, 3), //2
-	WALL_WIDTH(50, 2), //1
-	PATH_WIDTH(50, 3), //1
+	WALL_HEIGHT(50, 1),
+	WALL_WIDTH(50, 1),
+	PATH_WIDTH(50, 1),
 	CURLINESS(10, 3),
 	ROOF_WIDTH(50, 1);
 	

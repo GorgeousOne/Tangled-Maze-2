@@ -70,7 +70,7 @@ public class Clip {
 	public void setActive(boolean active) {
 		boolean oldState = isActive;
 		isActive = active;
-
+		
 		if (oldState != active) {
 			Bukkit.getPluginManager().callEvent(new MazeStateChangeEvent(this, active));
 		}

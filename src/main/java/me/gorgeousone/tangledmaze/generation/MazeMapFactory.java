@@ -92,7 +92,7 @@ public class MazeMapFactory {
 			}
 		}
 		mazeMap.setGridMap(gridMap);
-//		mazeMap.setPathTrees(PathGen.genPaths(gridMap, settings.getValue(MazeProperty.CURLINESS)));
+		//		mazeMap.setPathTrees(PathGen.genPaths(gridMap, settings.getValue(MazeProperty.CURLINESS)));
 		PathGen.genPaths(gridMap, settings.getValue(MazeProperty.CURLINESS));
 		copyPathsOntoMazeMap(gridMap, mazeMap);
 	}

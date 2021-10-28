@@ -1,11 +1,14 @@
 package me.gorgeousone.tangledmaze.listener;
 
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import me.gorgeousone.tangledmaze.SessionHandler;
+import me.gorgeousone.tangledmaze.TangledMazePlugin;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.clip.ClipActionFactory;
 import me.gorgeousone.tangledmaze.clip.ClipFactory;
 import me.gorgeousone.tangledmaze.clip.ClipType;
 import me.gorgeousone.tangledmaze.data.ConfigSettings;
+import me.gorgeousone.tangledmaze.data.Constants;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.render.RenderSession;
@@ -58,9 +61,13 @@ public class ClickListener implements Listener {
 			if (event.getHand() != EquipmentSlot.HAND) {
 				return;
 			}
-		} catch (NoSuchMethodError ignored) {
-		}
+		} catch (NoSuchMethodError ignored) {}
+		
 		Player player = event.getPlayer();
+		
+		if (!player.hasPermission(Constants.BUILD_PERM)) {
+			return;
+		}
 		ItemStack heldItem;
 		
 		try {

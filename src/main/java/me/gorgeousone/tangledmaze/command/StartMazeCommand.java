@@ -8,7 +8,6 @@ import me.gorgeousone.tangledmaze.event.MazeStartEvent;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.UUID;
 

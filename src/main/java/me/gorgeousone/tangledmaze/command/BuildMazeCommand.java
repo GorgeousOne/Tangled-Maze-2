@@ -16,7 +16,6 @@ import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import me.gorgeousone.tangledmaze.util.text.Placeholder;
 import me.gorgeousone.tangledmaze.util.text.TextException;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Set;

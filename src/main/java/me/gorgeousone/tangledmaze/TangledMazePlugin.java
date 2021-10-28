@@ -25,17 +25,19 @@ import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import me.gorgeousone.tangledmaze.updatecheck.UpdateCheck;
 import me.gorgeousone.tangledmaze.util.ConfigUtil;
+import me.gorgeousone.tangledmaze.util.MaterialUtil;
 import me.gorgeousone.tangledmaze.util.VersionUtil;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TangledMazePlugin extends JavaPlugin {
 	
 	private static final int resourceId = 59284;
-	private static final String resourceName = "tangled-maze-maze-generator-1-13";
-	private static final String updateInfoUrl = "https://pastebin.com/raw/piNNmtcP";
+	private static final String resourceName = "tangled-maze-plus-1-13";
+	private static final String updateInfoUrl = "https://pastebin.com/raw/BRJfXpPu";
 	
 	private SessionHandler sessionHandler;
 	private ToolHandler toolHandler;
@@ -124,6 +126,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 		
 		String versionString = VersionUtil.IS_LEGACY_SERVER ? "legacy" : "aquatic";
 		Constants.loadMaterials(ConfigUtil.loadConfig("materials-" + versionString, this));
+		MaterialUtil.load();
 	}
 	
 	private void loadLanguage() {

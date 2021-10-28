@@ -45,7 +45,7 @@ public class BuildHandler {
 		createBlockSegments(backup, mazePart, mazeMap, settings);
 		Set<BlockSegment> segments = backup.getSegments(mazePart);
 		
-		new BlockPlacer(mazeMap.getWorld(), collectBlocks(segments), settings.getPalette(mazePart), ConfigSettings.BLOCKS_PER_TICK, backupBlocks -> {
+		new BlockPlacer(mazeMap.getWorld(), collectBlocks(segments), settings.getPalette(mazePart), ConfigSettings.BLOCKS_PLACED_PER_TICK, backupBlocks -> {
 			boolean isFirstBuild = backup.hasBlocks(mazePart);
 			backup.setBlocksIfAbsent(mazePart, backupBlocks);
 			
@@ -100,7 +100,7 @@ public class BuildHandler {
 	}
 	
 	private void unbuildMazePart(MazeBackup backup, MazePart mazePart) {
-		new BlockResetter(backup.getBlocks(mazePart), ConfigSettings.BLOCKS_PER_TICK, null).runTaskTimer(plugin, 0, 1);
+		new BlockResetter(backup.getBlocks(mazePart), ConfigSettings.BLOCKS_PLACED_PER_TICK, null).runTaskTimer(plugin, 0, 1);
 	}
 	
 	//	private void displayPaths(Clip maze, MazeMap mazeMap) {

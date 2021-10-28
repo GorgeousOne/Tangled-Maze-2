@@ -34,9 +34,9 @@ public class WallGen extends Gen {
 					}
 					walls.add(wall);
 					
-					if (settings.getValue(MazeProperty.WALL_WIDTH) > 2) {
-						hollowOutWall(wall);
-					}
+//					if (settings.getValue(MazeProperty.WALL_WIDTH) > 2) {
+//						hollowOutWall(wall);
+//					}
 				}
 			}
 		}

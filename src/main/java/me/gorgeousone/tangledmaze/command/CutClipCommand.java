@@ -8,7 +8,6 @@ import me.gorgeousone.tangledmaze.cmdframework.command.BaseCommand;
 import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.UUID;
 

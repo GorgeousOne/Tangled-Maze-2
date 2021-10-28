@@ -13,7 +13,7 @@ import java.util.function.Function;
 
 public class MazeBackup {
 	
-	private Clip maze;
+	private final Clip maze;
 	private MazeMap mazeMap;
 	private final Map<MazePart, Set<BlockSegment>> partSegments;
 	private final Map<MazePart, Set<BlockLocType>> partBlocks;
@@ -30,7 +30,6 @@ public class MazeBackup {
 	
 	public void createMazeMapIfAbsent(MazeSettings settings) {
 		this.mazeMap = MazeMapFactory.createMazeMapOf(maze, settings);
-		
 	}
 	
 	public MazeMap getMazeMap() {

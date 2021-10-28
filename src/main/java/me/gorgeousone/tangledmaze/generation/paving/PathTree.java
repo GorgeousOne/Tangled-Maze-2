@@ -92,7 +92,6 @@ public class PathTree {
 	}
 	
 	/**
-	 *
 	 * @param seg1
 	 * @param seg2
 	 */
