@@ -221,9 +221,6 @@ public class Clip {
 	 * Recalculates y-coordinates of all locations in the clip
 	 */
 	public void updateHeights() {
-		if (!isActive) {
-			return;
-		}
 		for (Map.Entry<Vec2, Integer> fill : getFill().entrySet()) {
 			fill.setValue(BlockUtil.getSurfaceY(world, fill.getKey(), fill.getValue()));
 		}

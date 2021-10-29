@@ -15,13 +15,12 @@ help-pages:
     unbuild-command: Deconstructs your maze. Use the flags -floor or -roof to unbuild different parts of the maze.
 infos:
     plugin-reload: Reloaded config settings.
-    maze-wand-usage: Click two blocks. Then use /maze start to continue.
+    maze-wand-usage: Click two blocks with the and use /maze start to continue.
     tool-switch: Switched to %tool%.
     setting-change: Set %setting% to %value%.
     maze-not-built: Please build the maze first (without -roof or -floor flag).
-    maue-inaccessible: Cannot perform this action on a constructed maze. /maze unbuild
+    maze-not-editable: Cannot perform this action while your maze is built. /maze unbuild
     maze-build: Built your maze part with %count% blocks.
-    maze-unbuild: Deconstructed your maze.
     no-maze-to-unbuild: No maze found to remove.
 errors:
     missing-permission: You do not have the permission for this command.

@@ -40,7 +40,7 @@ public class CutClipCommand extends BaseCommand {
 			return;
 		}
 		if (!maze.isActive()) {
-			Message.INFO_MAZE_INACCESSIBLE.sendTo(sender);
+			Message.INFO_MAZE_NOT_EDITABLE.sendTo(sender);
 			return;
 		}
 		toolHandler.resetClipTool(playerId);

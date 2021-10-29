@@ -29,7 +29,7 @@ public class UndoCommand extends BaseCommand {
 			return;
 		}
 		if (!maze.isActive()) {
-			Message.INFO_MAZE_INACCESSIBLE.sendTo(sender);
+			Message.INFO_MAZE_NOT_EDITABLE.sendTo(sender);
 			return;
 		}
 		if (!maze.getActionHistory().isEmpty()) {

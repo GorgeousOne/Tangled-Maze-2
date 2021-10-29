@@ -29,7 +29,9 @@ public class MazeBackup {
 	}
 	
 	public void createMazeMapIfAbsent(MazeSettings settings) {
-		this.mazeMap = MazeMapFactory.createMazeMapOf(maze, settings);
+		if (null == mazeMap) {
+			this.mazeMap = MazeMapFactory.createMazeMapOf(maze, settings);
+		}
 	}
 	
 	public MazeMap getMazeMap() {

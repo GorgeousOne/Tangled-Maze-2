@@ -141,6 +141,12 @@ public class ClickListener implements Listener {
 		}
 	}
 	
+	/**
+	 * Returns hovered clicked block if hover clicking enabled. Otherwise
+	 * @param player
+	 * @param clickedBlock
+	 * @return
+	 */
 	private Block traceBlock(Player player, Block clickedBlock) {
 		if (clickedBlock == null && ConfigSettings.HOVER_CLICKING_ENABLED) {
 			BlockIterator iter = new BlockIterator(player, ConfigSettings.HOVER_RANGE);

@@ -22,7 +22,7 @@ public class FloorGen {
 				GridCell cell = gridMap.getCell(gridX, gridZ);
 				BlockSegment path = createFloorSegment(mazeMap, cell);
 				
-				if (path != null) {
+				if (null != path) {
 					paths.add(path);
 				}
 			}
@@ -35,34 +35,65 @@ public class FloorGen {
 		Vec2 max = cell.getMax();
 		Set<Vec2> columns = new HashSet<>();
 		
+		BlockSegment path = new BlockSegment(cell.getMin(), cell.getMax(), mazeMap.getWorld().getMaxHeight());
+		
 		for (int x = min.getX(); x < max.getX(); ++x) {
 			for (int z = min.getZ(); z < max.getZ(); ++z) {
 				AreaType type = mazeMap.getType(x, z);
 				
-				if (type != AreaType.PATH) {
+				if (null == type) {
 					continue;
 				}
-				columns.add(new Vec2(x, z));
-			}
-		}
-		if (columns.isEmpty()) {
-			return null;
-		}
-		BlockSegment path = new BlockSegment(cell.getMin(), cell.getMax(), mazeMap.getWorld().getMaxHeight());
-		
-		for (Vec2 column : columns) {
-			int maxFloorY = mazeMap.getY(column);
-			int minFloorY = maxFloorY;
-			
-			for (Vec2 neighbor : BlockUtil.getNeighbors(column.getX(), column.getZ(), 1)) {
-				if (mazeMap.getType(neighbor) == AreaType.PATH) {
-					minFloorY = Math.min(minFloorY, mazeMap.getY(neighbor));
+				Vec2 column = new Vec2(x, z);
+				int maxFloorY = mazeMap.getY(column);
+				int minFloorY = maxFloorY;
+				
+				for (Vec2 neighbor : BlockUtil.getNeighbors(column.getX(), column.getZ(), 1)) {
+					if (null != mazeMap.getType(neighbor)) {
+						minFloorY = Math.min(minFloorY, mazeMap.getY(neighbor));
+					}
 				}
-			}
-			for (int y = minFloorY; y <= maxFloorY; ++y) {
-				path.addBlock(column.getX(), y, column.getZ());
+				for (int y = minFloorY; y <= maxFloorY; ++y) {
+					path.addBlock(column.getX(), y, column.getZ());
+				}
 			}
 		}
 		return path;
 	}
+	
+//	private static BlockSegment createFloorSegment(MazeMap mazeMap, GridCell cell) {
+//		Vec2 min = cell.getMin();
+//		Vec2 max = cell.getMax();
+//		Set<Vec2> columns = new HashSet<>();
+//
+//		for (int x = min.getX(); x < max.getX(); ++x) {
+//			for (int z = min.getZ(); z < max.getZ(); ++z) {
+//				AreaType type = mazeMap.getType(x, z);
+//
+//				if (null == type) {
+//					continue;
+//				}
+//				columns.add(new Vec2(x, z));
+//			}
+//		}
+//		if (columns.isEmpty()) {
+//			return null;
+//		}
+//		BlockSegment path = new BlockSegment(cell.getMin(), cell.getMax(), mazeMap.getWorld().getMaxHeight());
+//
+//		for (Vec2 column : columns) {
+//			int maxFloorY = mazeMap.getY(column);
+//			int minFloorY = maxFloorY;
+//
+//			for (Vec2 neighbor : BlockUtil.getNeighbors(column.getX(), column.getZ(), 1)) {
+//				if (mazeMap.getType(neighbor) == AreaType.PATH) {
+//					minFloorY = Math.min(minFloorY, mazeMap.getY(neighbor));
+//				}
+//			}
+//			for (int y = minFloorY; y <= maxFloorY; ++y) {
+//				path.addBlock(column.getX(), y, column.getZ());
+//			}
+//		}
+//		return path;
+//	}
 }

@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 public class Constants {
@@ -19,8 +20,8 @@ public class Constants {
 			ChatColor.DARK_GREEN + "] " +
 			ChatColor.YELLOW;
 	
-	public static final TreeSet<Material> TRANSPARENT_SOLIDS = new TreeSet<>();
-	public static final TreeSet<Material> NOT_REPLACEABLES = new TreeSet<>();
+	public static final Set<Material> TRANSPARENT_SOLIDS = new TreeSet<>();
+	public static final Set<Material> NOT_REPLACEABLES = new TreeSet<>();
 	
 	public static void loadMaterials(FileConfiguration materialLists) {
 		TRANSPARENT_SOLIDS.clear();
@@ -29,14 +30,12 @@ public class Constants {
 		for (String materialName : (List<String>) materialLists.getList("transparent-solids")) {
 			try {
 				TRANSPARENT_SOLIDS.add(Material.valueOf(materialName));
-			} catch (IllegalArgumentException ignored) {
-			}
+			} catch (IllegalArgumentException ignored) {}
 		}
 		for (String materialName : (List<String>) materialLists.getList("not-replaceables")) {
 			try {
 				NOT_REPLACEABLES.add(Material.valueOf(materialName));
-			} catch (IllegalArgumentException ignored) {
-			}
+			} catch (IllegalArgumentException ignored) {}
 		}
 	}
 }

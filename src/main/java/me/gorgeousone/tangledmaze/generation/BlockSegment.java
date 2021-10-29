@@ -93,24 +93,30 @@ public class BlockSegment {
 	
 	public Set<Direction> getWallFacings(int x, int z) {
 		Set<Direction> facings = new HashSet<>();
+		
 		if (x == min.getX()) {
 			facings.add(Direction.WEST);
+			
 			if (z == min.getZ()) {
 				facings.add(Direction.NORTH_WEST);
-			} else if (z == max.getZ() - 1) {
+			}
+			if (z == max.getZ() - 1) {
 				facings.add(Direction.SOUTH_WEST);
 			}
-		} else if (x == max.getX() - 1) {
+		} if (x == max.getX() - 1) {
 			facings.add(Direction.EAST);
+			
 			if (z == min.getZ()) {
 				facings.add(Direction.NORTH_EAST);
-			} else if (z == max.getZ() - 1) {
+			}
+			if (z == max.getZ() - 1) {
 				facings.add(Direction.SOUTH_EAST);
 			}
 		}
 		if (z == min.getZ()) {
 			facings.add(Direction.NORTH);
-		} else if (z == max.getZ() - 1) {
+		}
+		if (z == max.getZ() - 1) {
 			facings.add(Direction.SOUTH);
 		}
 		return facings;

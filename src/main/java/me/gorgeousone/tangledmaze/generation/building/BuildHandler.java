@@ -89,7 +89,6 @@ public class BuildHandler {
 				unbuildMazePart(backup, builtPart);
 			}
 			sessionHandler.removeBackup(maze);
-			maze.setActive(true);
 			return;
 		}
 		if (!backup.getBuiltParts().contains(mazePart)) {
@@ -102,7 +101,8 @@ public class BuildHandler {
 	private void unbuildMazePart(MazeBackup backup, MazePart mazePart) {
 		new BlockResetter(plugin, backup.getBlocks(mazePart), ConfigSettings.BLOCKS_PLACED_PER_TICK, callback -> {
 			if (mazePart == MazePart.WALLS) {
-				backup.getMaze().updateHeights();
+					backup.getMaze().updateHeights();
+				backup.getMaze().setActive(true);
 			}
 		}).runTaskTimer(plugin, 0, 1);
 	}

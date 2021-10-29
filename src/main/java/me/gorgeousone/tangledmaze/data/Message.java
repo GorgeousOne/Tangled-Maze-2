@@ -21,7 +21,7 @@ public class Message {
 			INFO_TOOL_SWITCH,
 			INFO_SETTING_CHANGE,
 			INFO_MAZE_NOT_BUILT,
-			INFO_MAZE_INACCESSIBLE,
+			INFO_MAZE_NOT_EDITABLE,
 			INFO_MAZE_BUILD,
 			INFO_MAZE_UNBUILD,
 			ERROR_MISSING_PERMISSION,
@@ -69,9 +69,9 @@ public class Message {
 		INFO_TOOL_SWITCH = createInfo("tool-switch", infos);
 		INFO_SETTING_CHANGE = createInfo("setting-change", infos);
 		INFO_MAZE_NOT_BUILT = createInfo("maze-not-built", infos);
-		INFO_MAZE_INACCESSIBLE = createInfo("maze-inaccessible", infos);
-		INFO_MAZE_UNBUILD = createInfo("maze-unbuild", infos);
+		INFO_MAZE_NOT_EDITABLE = createInfo("maze-not-editable", infos);
 		INFO_MAZE_BUILD = createInfo("maze-build", infos);
+		INFO_MAZE_UNBUILD = createInfo("maze-unbuild", infos);
 		
 		ConfigurationSection errors = langConfig.getConfigurationSection("errors");
 		ERROR_MISSING_PERMISSION = createError("missing-permission", errors);

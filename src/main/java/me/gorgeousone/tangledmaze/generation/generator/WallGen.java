@@ -68,13 +68,10 @@ public class WallGen extends Gen {
 		BlockSegment wall = new BlockSegment(cell.getMin(), cell.getMax(), mazeMap.getWorld().getMaxHeight());
 		
 		for (Vec2 column : columns) {
-			int floorY = mazeMap.getY(column);
-			
-			for (int y = floorY + 1; y <= maxFloorY + height; ++y) {
+			for (int y = mazeMap.getY(column) + 1; y <= gridMap.getWallY(gridPos); ++y) {
 				wall.addBlock(column.getX(), y, column.getZ());
 			}
 		}
-		gridMap.setWallY(cell.gridX(), cell.gridZ(), maxFloorY + height);
 		return wall;
 	}
 	
