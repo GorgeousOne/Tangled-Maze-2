@@ -4,6 +4,7 @@ import me.gorgeousone.tangledmaze.event.ClipActionProcessEvent;
 import me.gorgeousone.tangledmaze.event.ClipUpdateEvent;
 import me.gorgeousone.tangledmaze.event.MazeExitSetEvent;
 import me.gorgeousone.tangledmaze.event.MazeStateChangeEvent;
+import me.gorgeousone.tangledmaze.util.BlockUtil;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -213,6 +214,18 @@ public class Clip {
 		
 		if (borderContains(loc)) {
 			Bukkit.getPluginManager().callEvent(new ClipUpdateEvent(this, loc, newY));
+		}
+	}
+	
+	/**
+	 * Recalculates y-coordinates of all locations in the clip
+	 */
+	public void updateHeights() {
+		if (!isActive) {
+			return;
+		}
+		for (Map.Entry<Vec2, Integer> fill : getFill().entrySet()) {
+			fill.setValue(BlockUtil.getSurfaceY(world, fill.getKey(), fill.getValue()));
 		}
 	}
 }

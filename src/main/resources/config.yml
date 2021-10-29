@@ -2,4 +2,4 @@ wand-item: golden_shovel
 hover-clicking:
     enabled: true
     range: 50
-blocks-build-per-tick: -1
+blocks-placed-per-tick: -1

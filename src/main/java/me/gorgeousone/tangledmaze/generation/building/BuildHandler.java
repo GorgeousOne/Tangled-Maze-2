@@ -100,7 +100,11 @@ public class BuildHandler {
 	}
 	
 	private void unbuildMazePart(MazeBackup backup, MazePart mazePart) {
-		new BlockResetter(backup.getBlocks(mazePart), ConfigSettings.BLOCKS_PLACED_PER_TICK, null).runTaskTimer(plugin, 0, 1);
+		new BlockResetter(plugin, backup.getBlocks(mazePart), ConfigSettings.BLOCKS_PLACED_PER_TICK, callback -> {
+			if (mazePart == MazePart.WALLS) {
+				backup.getMaze().updateHeights();
+			}
+		}).runTaskTimer(plugin, 0, 1);
 	}
 	
 	//	private void displayPaths(Clip maze, MazeMap mazeMap) {

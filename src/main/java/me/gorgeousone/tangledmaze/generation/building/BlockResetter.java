@@ -1,6 +1,7 @@
 package me.gorgeousone.tangledmaze.generation.building;
 
 import me.gorgeousone.tangledmaze.util.blocktype.BlockLocType;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.awt.event.ActionListener;
@@ -10,13 +11,16 @@ import java.util.Set;
 
 public class BlockResetter extends BukkitRunnable {
 	
-	private final Random random = new Random();
-	
+	private final JavaPlugin plugin;
 	private final ActionListener callback;
 	private final int blocksPerTick;
 	private final Iterator<BlockLocType> blockIter;
 	
-	public BlockResetter(Set<BlockLocType> blocks, int blocksPerTick, ActionListener callback) {
+	public BlockResetter(JavaPlugin plugin,
+	                     Set<BlockLocType> blocks,
+	                     int blocksPerTick,
+	                     ActionListener callback) {
+		this.plugin = plugin;
 		this.callback = callback;
 		this.blocksPerTick = blocksPerTick;
 		this.blockIter = blocks.iterator();
@@ -36,7 +40,12 @@ public class BlockResetter extends BukkitRunnable {
 			}
 		}
 		if (callback != null) {
-			callback.actionPerformed(null);
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					callback.actionPerformed(null);
+				}
+			}.runTaskLater(plugin, 2);
 			this.cancel();
 		}
 	}

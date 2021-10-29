@@ -29,13 +29,12 @@ import me.gorgeousone.tangledmaze.util.MaterialUtil;
 import me.gorgeousone.tangledmaze.util.VersionUtil;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TangledMazePlugin extends JavaPlugin {
 	
-	private static final int resourceId = 59284;
+	private static final int resourceId = 76591;
 	private static final String resourceName = "tangled-maze-plus-1-13";
 	private static final String updateInfoUrl = "https://pastebin.com/raw/BRJfXpPu";
 	
