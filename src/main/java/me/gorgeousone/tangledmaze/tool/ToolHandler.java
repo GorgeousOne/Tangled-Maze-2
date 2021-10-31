@@ -30,8 +30,12 @@ public class ToolHandler implements Listener {
 	}
 	
 	public ToolType createToolIfAbsent(UUID playerId) {
-		playerTools.putIfAbsent(playerId, ToolType.CLIP_TOOL);
+		playerTools.putIfAbsent(playerId, ToolType.EXIT_SETTER);
 		return playerTools.get(playerId);
+	}
+	
+	public boolean setToolType(UUID playerId, ToolType newToolType) {
+		return playerTools.put(playerId, newToolType) != newToolType;
 	}
 	
 	/**
