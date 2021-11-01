@@ -94,7 +94,7 @@ public class Clip {
 	}
 	
 	public int getY(Vec2 loc) {
-		return fill.get(loc);
+		return fill.getOrDefault(loc, -1);
 	}
 	
 	public List<Vec2> getExits() {
@@ -102,7 +102,11 @@ public class Clip {
 	}
 	
 	public void add(Block fillBlock) {
-		fill.put(new Vec2(fillBlock), fillBlock.getY());
+		add(fillBlock.getX(), fillBlock.getZ(), fillBlock.getY());
+	}
+	
+	public void add(int x, int z, int y) {
+		fill.put(new Vec2(x, z), y);
 	}
 	
 	public void add(Map<Vec2, Integer> fillBlocks) {
