@@ -4,6 +4,8 @@ import me.gorgeousone.tangledmaze.generation.BlockSegment;
 import me.gorgeousone.tangledmaze.generation.GridCell;
 import me.gorgeousone.tangledmaze.generation.GridMap;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
+import me.gorgeousone.tangledmaze.maze.MazeProperty;
+import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
@@ -12,14 +14,14 @@ import java.util.Set;
 
 public class RoofGen extends Gen {
 	
-	public static Set<BlockSegment> genRoof(MazeMap mazeMap, int wallHeight) {
+	public static Set<BlockSegment> genRoof(MazeMap mazeMap, MazeSettings settings) {
 		GridMap gridMap = mazeMap.getPathMap();
 		Set<BlockSegment> roofSegments = new HashSet<>();
 		
 		for (int gridX = 0; gridX < gridMap.getWidth(); ++gridX) {
 			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {
 				GridCell cell = gridMap.getCell(gridX, gridZ);
-				BlockSegment roofTile = createRoofTile(mazeMap, gridMap, cell, wallHeight);
+				BlockSegment roofTile = createRoofTile(mazeMap, gridMap, cell, settings.getValue(MazeProperty.WALL_HEIGHT), settings.getValue(MazeProperty.ROOF_WIDTH));
 				
 				if (roofTile != null) {
 					roofSegments.add(roofTile);
@@ -29,7 +31,7 @@ public class RoofGen extends Gen {
 		return roofSegments;
 	}
 	
-	private static BlockSegment createRoofTile(MazeMap mazeMap, GridMap gridMap, GridCell cell, int wallHeight) {
+	private static BlockSegment createRoofTile(MazeMap mazeMap, GridMap gridMap, GridCell cell, int wallHeight, int roofWidth) {
 		Set<Vec2> columns = getColumns(cell, mazeMap, null);
 		
 		if (columns.isEmpty()) {
@@ -51,7 +53,7 @@ public class RoofGen extends Gen {
 				}
 				maxNeighborRoofY = Math.max(maxNeighborRoofY, neighborRoofY);
 			}
-			for (int y = roofY; y <= maxNeighborRoofY; ++y) {
+			for (int y = roofY; y < maxNeighborRoofY + roofWidth; ++y) {
 				roof.addBlock(column.getX(), y, column.getZ());
 			}
 		}

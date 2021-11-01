@@ -12,7 +12,6 @@ import me.gorgeousone.tangledmaze.generation.generator.RoofGen;
 import me.gorgeousone.tangledmaze.generation.generator.WallGen;
 import me.gorgeousone.tangledmaze.maze.MazeBackup;
 import me.gorgeousone.tangledmaze.maze.MazePart;
-import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.text.TextException;
@@ -64,7 +63,7 @@ public class BuildHandler {
 				backup.computeSegmentsIfAbsent(MazePart.FLOOR, floor -> FloorGen.genFloor(mazeMap));
 				break;
 			case ROOF:
-				backup.computeSegmentsIfAbsent(MazePart.ROOF, roof -> RoofGen.genRoof(mazeMap, settings.getValue(MazeProperty.WALL_HEIGHT)));
+				backup.computeSegmentsIfAbsent(MazePart.ROOF, roof -> RoofGen.genRoof(mazeMap, settings));
 				break;
 		}
 	}
