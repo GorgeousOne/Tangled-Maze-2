@@ -14,6 +14,8 @@ import java.util.Map;
  */
 public class ClipActionFactory {
 	
+	private ClipActionFactory() {}
+	
 	public static boolean canBeExit(Clip clip, Vec2 loc) {
 		ClipAction noChanges = new ClipAction(clip);
 		return sealsClipBorder(noChanges, loc, Direction.fourCardinals());
@@ -123,7 +125,7 @@ public class ClipActionFactory {
 				deletion.addBorder(clipBorder);
 			}
 		}
-		//		remove every part of the new added border not sealing the maze anyway
+		//remove every part of the new added border not sealing the maze anyway
 		Iterator<Vec2> iter = deletion.getAddedBorder().iterator();
 		
 		while (iter.hasNext()) {
@@ -147,104 +149,44 @@ public class ClipActionFactory {
 			}
 		}
 	}
-	
+
 	public static ClipAction expandBorder(Clip maze, Block block) {
 		if (!maze.isBorderBlock(block)) {
 			return null;
 		}
-		Vec2 blockVec = new Vec2(block);
-		ClipAction expansion = new ClipAction(maze);
-		
-		extendMazeBorder(expansion, maze, blockVec);
-		removeIntrusiveMazeBorder(expansion, maze, blockVec);
-		return expansion;
+		return addClip(maze, create3x3Square(maze, block));
 	}
 	
-	/**
-	 * Add directly surrounding blocks to the maze border
-	 */
-	private static void extendMazeBorder(ClipAction expansion, Clip maze, Vec2 loc) {
-		expansion.removeBorder(loc);
-		
-		for (Direction dir : Direction.values()) {
-			
-			Vec2 neighbor = loc.clone().add(dir.getVec2());
-			int height = BlockUtil.getSurfaceY(maze.getWorld(), neighbor, maze.getY(loc));
-			
-			if (!maze.contains(neighbor)) {
-				
-				expansion.addFill(neighbor, height);
-				expansion.addBorder(neighbor);
-				
-			} else if (maze.exitsContain(neighbor) && !sealsClipBorder(expansion, neighbor, Direction.fourCardinals())) {
-				expansion.removeExit(neighbor);
-			}
-		}
-	}
-	
-	//look for neighbors, that are now intruding the border unnecessarily around the expanded block
-	private static void removeIntrusiveMazeBorder(ClipAction expansion, Clip maze, Vec2 loc) {
-		for (Direction dir : Direction.values()) {
-			Vec2 neighbor = loc.clone().add(dir.getVec2());
-			
-			if (maze.borderContains(neighbor) && !sealsClipBorder(expansion, neighbor, Direction.values())) {
-				expansion.removeBorder(neighbor);
-			}
-		}
-	}
-	
-	/**
-	 * Creates a {@link ClipAction} with information about blocks in order to reduce the maze border at the given block.
-	 * Returns null if the block is not part of the maze border (see {@link Clip#isBorderBlock(Block)}).
-	 *
-	 * @param block the block where the maze border should be reduced/erased
-	 * @return ClipAction of the expansion
-	 */
 	public static ClipAction eraseBorder(Clip maze, Block block) {
 		if (!maze.isBorderBlock(block)) {
 			return null;
 		}
-		Vec2 blockVec = new Vec2(block);
-		ClipAction action = new ClipAction(maze);
-		action.removeBorder(blockVec);
-		reduceMazeBorderAroundBlock(action, maze, blockVec);
-		removeProtrusiveMazeBorder(action, maze, blockVec);
-		return action;
+		return removeClip(maze, create3x3Square(maze, block));
 	}
 	
-	private static void reduceMazeBorderAroundBlock(ClipAction erasure, Clip maze, Vec2 loc) {
-		if (maze.exitsContain(loc)) {
-			erasure.removeExit(loc);
-		}
-		erasure.removeBorder(loc);
-		erasure.removeFill(loc, maze.getY(loc));
-		
-		if (!sealsClipBorder(erasure, loc, Direction.values())) {
-			return;
-		}
-		
-		for (Direction dir : Direction.values()) {
-			Vec2 neighbor = loc.clone().add(dir.getVec2());
-			
-			if (maze.contains(neighbor) && !maze.borderContains(neighbor)) {
-				erasure.addBorder(neighbor);
-			}
-			if (maze.exitsContain(neighbor) && !sealsClipBorder(erasure, neighbor, Direction.fourCardinals())) {
-				erasure.removeExit(neighbor);
-			}
-		}
-	}
 	
-	private static void removeProtrusiveMazeBorder(ClipAction erasure, Clip maze, Vec2 loc) {
-		//detect outstanding neighbor borders of the block
-		for (Direction dir : Direction.values()) {
-			Vec2 neighbor = loc.clone().add(dir.getVec2());
-			//remove the neighbor if it still stands out
-			if (maze.borderContains(neighbor) && !sealsClipBorder(erasure, neighbor, Direction.values())) {
-				int height = maze.getY(neighbor);
-				erasure.removeFill(neighbor, height);
+	private static Clip create3x3Square(Clip maze, Block block) {
+		Clip square = new Clip(null, maze.getWorld());
+		int midX = block.getX();
+		int midZ = block.getZ();
+		int midY = block.getY();
+		
+		for (int dx = -1; dx <= 1; ++dx) {
+			for (int dz = -1; dz <= 1; ++dz) {
+				Vec2 loc = new Vec2(midX + dx, midZ + dz);
+				int y = maze.getY(loc);
+				
+				if (-1 == y) {
+					y = BlockUtil.getSurfaceY(maze.getWorld(), loc, midY);
+				}
+				square.add(loc.getX(), loc.getZ(), y);
+				
+				if (dx != 0 || dz != 0) {
+					square.addBorder(loc);
+				}
 			}
 		}
+		return square;
 	}
 	
 	public static boolean sealsClipBorder(ClipAction changes, Vec2 loc, Direction[] directions) {
