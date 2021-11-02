@@ -10,32 +10,35 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Class
+ */
 public class ToolHandler implements Listener {
 	
 	private final SessionHandler sessionHandler;
-	private final Map<UUID, ToolType> playerTools;
+	private final Map<UUID, ToolType> playerToolTypes;
 	private final Map<UUID, ClipTool> playerClipTools;
 	private final Map<UUID, ClipType> playerClipTypes;
 	
 	public ToolHandler(SessionHandler sessionHandler) {
 		this.sessionHandler = sessionHandler;
-		playerTools = new HashMap<>();
+		playerToolTypes = new HashMap<>();
 		playerClipTools = new HashMap<>();
 		playerClipTypes = new HashMap<>();
 	}
 	
 	public void disable() {
-		playerTools.clear();
+		playerToolTypes.clear();
 		playerClipTools.clear();
 	}
 	
 	public ToolType createToolIfAbsent(UUID playerId) {
-		playerTools.putIfAbsent(playerId, ToolType.EXIT_SETTER);
-		return playerTools.get(playerId);
+		playerToolTypes.putIfAbsent(playerId, ToolType.EXIT_SETTER);
+		return playerToolTypes.get(playerId);
 	}
 	
 	public boolean setToolType(UUID playerId, ToolType newToolType) {
-		return playerTools.put(playerId, newToolType) != newToolType;
+		return playerToolTypes.put(playerId, newToolType) != newToolType;
 	}
 	
 	/**
@@ -47,10 +50,10 @@ public class ToolHandler implements Listener {
 	}
 	
 	/**
-	 * Removes any (not maze) clip started by the player
+	 * Removes any (golden) clip started by the player
 	 */
 	public void resetClipTool(UUID playerId) {
-		if (null == Bukkit.getPlayer(playerId)) {
+		if (!playerClipTools.containsKey(playerId)) {
 			return;
 		}
 		playerClipTools.get(playerId).reset();
@@ -102,28 +105,7 @@ public class ToolHandler implements Listener {
 	
 	public void removePlayer(UUID playerId) {
 		playerClipTypes.remove(playerId);
+		playerClipTools.remove(playerId);
+		playerToolTypes.remove(playerId);
 	}
-	
-	//	public boolean setTool(UUID playerId, ToolType toolType) {
-	//		ToolType oldTool = playerTools.put(playerId, toolType);
-	//		boolean switchedTool = oldTool != toolType;
-	//
-	//		if (switchedTool) {
-	//			Clip clip = sessionHandler.getClip(playerId);
-	//
-	//			if (clip != null) {
-	//				ClipTool tool = sessionHandler.getClipTool(playerId);
-	//				tool.setShape();
-	//				sessionHandler.removeClip(playerId, true);
-	//				Bukkit.getPluginManager().callEvent(new ClipToolChangeEvent(tool, ClipToolChangeEvent.Cause.COMPLETE));
-	//			}
-	//		}
-	//		return switchedTool;
-	//	}
-	
-	//	@EventHandler
-	//	public void onMazeBuild(MazeBuildEvent event) {
-	//		UUID playerId = event.getPlayerId();
-	//		playerTools.put(playerId, ToolType.CLIP);
-	//	}
 }

@@ -18,6 +18,7 @@ import me.gorgeousone.tangledmaze.data.Constants;
 import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
 import me.gorgeousone.tangledmaze.listener.BlockChangeListener;
+import me.gorgeousone.tangledmaze.listener.ChangeWorldListener;
 import me.gorgeousone.tangledmaze.listener.ClickListener;
 import me.gorgeousone.tangledmaze.listener.PlayerQuitListener;
 import me.gorgeousone.tangledmaze.plus.PremiumHandler;
@@ -92,6 +93,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 		manager.registerEvents(new ClickListener(this, sessionHandler, toolHandler, renderHandler), this);
 		manager.registerEvents(new PlayerQuitListener(sessionHandler, renderHandler, toolHandler), this);
 		manager.registerEvents(new BlockChangeListener(this, sessionHandler), this);
+		manager.registerEvents(new ChangeWorldListener(toolHandler, renderHandler), this);
 	}
 	
 	private void registerCommands() {

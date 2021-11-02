@@ -43,8 +43,12 @@ public class CutClipCommand extends BaseCommand {
 			Message.INFO_MAZE_NOT_EDITABLE.sendTo(sender);
 			return;
 		}
-		toolHandler.resetClipTool(playerId);
 		ClipAction changes = ClipActionFactory.removeClip(maze, clip);
+		toolHandler.resetClipTool(playerId);
+		
+		if (null == changes) {
+			return;
+		}
 		maze.processAction(changes, true);
 	}
 }

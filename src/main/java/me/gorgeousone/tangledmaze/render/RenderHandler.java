@@ -15,6 +15,8 @@ import me.gorgeousone.tangledmaze.util.Vec2;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -204,6 +206,22 @@ public class RenderHandler implements Listener {
 			session.removeLayer(MAZE_EXIT_LAYER, true);
 			session.removeLayer(MAZE_BORDER_LAYER, true);
 		}
+	}
+	
+	/**
+	 * Removes the render session of a player and creates a new one with their maze int it, if it is located in the new world
+	 */
+	public void changePlayerWorld(UUID playerId, World newWorld) {
+		removePlayer(playerId);
+		Clip maze = sessionHandler.getMazeClip(playerId);
+		
+		if (null == maze || maze.getWorld() != newWorld) {
+			return;
+		}
+		createRenderIfAbsent(playerId);
+		RenderSession session = getPlayerRender(playerId);
+		session.hide();
+		displayMaze(session, maze);
 	}
 	
 	private void displayMaze(RenderSession render, Clip maze) {

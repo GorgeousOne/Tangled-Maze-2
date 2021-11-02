@@ -246,7 +246,7 @@ public class ClickListener implements Listener {
 		}
 		RenderSession render = renderHandler.getPlayerRender(player.getUniqueId());
 		
-		if (render != null && !render.isVisible()) {
+		if (null != render && !render.isVisible()) {
 			render.show();
 		}
 	}
