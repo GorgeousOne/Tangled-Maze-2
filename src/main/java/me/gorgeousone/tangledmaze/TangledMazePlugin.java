@@ -22,7 +22,6 @@ import me.gorgeousone.tangledmaze.listener.BlockChangeListener;
 import me.gorgeousone.tangledmaze.listener.ChangeWorldListener;
 import me.gorgeousone.tangledmaze.listener.ClickListener;
 import me.gorgeousone.tangledmaze.listener.PlayerQuitListener;
-import me.gorgeousone.tangledmaze.plus.PremiumHandler;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import me.gorgeousone.tangledmaze.updatecheck.UpdateCheck;
@@ -46,7 +45,6 @@ public final class TangledMazePlugin extends JavaPlugin {
 	private BuildHandler buildHandler;
 	private ConfigSettings settings;
 	private ParentCommand mazeCmd;
-	private PremiumHandler premiumHandler;
 	
 	@Override
 	public void onEnable() {
@@ -60,7 +58,6 @@ public final class TangledMazePlugin extends JavaPlugin {
 		registerCommands();
 		
 		settings = new ConfigSettings(this);
-		premiumHandler = new PremiumHandler(this);
 		reload();
 	}
 	
@@ -74,7 +71,6 @@ public final class TangledMazePlugin extends JavaPlugin {
 	public void reload() {
 		loadConfigSettings();
 		loadLanguage();
-		premiumHandler.reload();
 		checkForUpdates();
 	}
 	
@@ -101,6 +97,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 		mazeCmd = new ParentCommand("tangledmaze");
 		mazeCmd.addAlias("maze");
 		mazeCmd.addAlias("tm");
+		mazeCmd.setChildrenName("just tab");
 		mazeCmd.setPermission(Constants.BUILD_PERM);
 		
 		mazeCmd.addChild(new HelpCommand());

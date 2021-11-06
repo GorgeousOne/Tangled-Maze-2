@@ -16,10 +16,12 @@ import java.util.stream.Collectors;
 public class ParentCommand extends BaseCommand {
 	
 	private final Set<BaseCommand> children;
+	private String childrenName;
 	
 	public ParentCommand(String name) {
 		super(name);
 		children = new HashSet<>();
+		childrenName = "";
 	}
 	
 	public Set<BaseCommand> getChildren() {
@@ -40,9 +42,13 @@ public class ParentCommand extends BaseCommand {
 		return ChatColor.RED + "/" + getName();
 	}
 	
+	public void setChildrenName(String childrenName) {
+		this.childrenName = childrenName;
+	}
+	
 	@Override
 	public String getUsage() {
-		return super.getUsage() + " <>";
+		return super.getUsage() + " <" + childrenName + ">";
 	}
 	
 	@Override
