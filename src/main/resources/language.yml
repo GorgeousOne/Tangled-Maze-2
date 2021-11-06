@@ -1,18 +1,24 @@
 help-pages:
     wand-command: Gives you a maze wand item. It works like a world edit wand but for mazes :P \nClick two blocks and continue with &e/maze start&a
-    start-command: Converts your clipboard into a maze layout. Click on the border to place exits. Continue with &e/maze cut/add&a or &e/maze build&a
-    add-cut-command: Merges your clipboard with or your maze layout or cuts it away from it.
-    tool-command: Switch between the rectangle shape and the circle shape with this command.
+    start-command: Converts your clipboard into a maze layout. Click on the border to place exits. Continue with &e/maze build&a
+    add-cut-command: Merges your clipboard with your maze layout or cuts it away from it.
+    tool-command: 'Switch between different tools for editing your maze layout:'
+    tools:
+        rectangle: create rectangles when clicking with the maze wand
+        circle: create circles with the maze wand
+        exit: set exits for the maze on the redstone border
+        brush: 'left click: expand the redstone border \nright click: shrink the border'
     settings-command: 'Change how your maze will be built later:'
     settings:
         wall-height: height of walls in blocks
         path-width: width of paths to walk on
-        wall-width: with of walls between two paths
+        wall-width: width of walls of the maze
         roof-width: width of the roof.
         curliness: '1: short stretches of path, many turns \n10: long alleys, fewer turns'
     undo-command: Undo the last change to your maze layout like adding or cutting away a clipboard.
     build-command: Builds your maze. Type in names of blocks to build with, e.g.:\n &e/maze build 5*oak_leaves 2*oak_log[axis=y] glowstone&a \nUse the flags -floor or -roof to build different parts of the maze.
     unbuild-command: Deconstructs your maze. Use the flags -floor or -roof to unbuild different parts of the maze.
+    teleport-command: Teleports you back to your maze.
 infos:
     plugin-reload: Reloaded config settings.
     maze-wand-usage: Click two blocks with the and use /maze start to continue.

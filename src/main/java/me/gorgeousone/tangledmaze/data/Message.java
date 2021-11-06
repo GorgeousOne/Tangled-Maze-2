@@ -16,6 +16,7 @@ public class Message {
 			COMMAND_UNDO,
 			COMMAND_BUILD,
 			COMMAND_UNBUILD,
+			COMMAND_TELEPORT,
 			INFO_PLUGIN_RELOAD,
 			INFO_MAZE_WAND_USAGE,
 			INFO_TOOL_SWITCH,
@@ -42,7 +43,8 @@ public class Message {
 				COMMAND_SETTING,
 				COMMAND_UNDO,
 				COMMAND_BUILD,
-				COMMAND_UNBUILD
+				COMMAND_UNBUILD,
+				COMMAND_TELEPORT
 		};
 	}
 	
@@ -51,17 +53,24 @@ public class Message {
 		COMMAND_WAND = createHelpText("/maze wand", helps, "wand-command");
 		COMMAND_START = createHelpText("/maze start", helps, "start-command");
 		COMMAND_ADD_CUT = createHelpText("/maze add/cut", helps, "add-cut-command");
+		
 		COMMAND_TOOL = createHelpText("/maze tool <tool>", helps, "tool-command");
-		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "wallheight", helps, "settings.wall-height"));
-		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "pathwidth", helps, "settings.path-width"));
-		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "wallwidth", helps, "settings.wall-width"));
-		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "roodwidth", helps, "settings.roof-width"));
-		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "curliness", helps, "settings.curliness"));
+		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "rectangle", helps,"tools.rectangle"));
+		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "circle", helps, "tools.circle"));
+		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "exit", helps, "tools.exit"));
+		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "brush", helps, "tools.brush"));
 		
 		COMMAND_SETTING = createHelpText("/maze setting <setting> <integer>", helps, "settings-command");
+		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "wallheight", helps, "settings.wall-height"));
+		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "pathwidth", helps, "settings.path-width"));
+		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "wallwidth", helps, "settings.wall-width"));
+		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "roodwidth", helps, "settings.roof-width"));
+		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "curliness", helps, "settings.curliness"));
+		
 		COMMAND_UNDO = createHelpText("/maze undo", helps, "undo-command");
-		COMMAND_BUILD = createHelpText("/maze build <blocks>...", helps, "build-command");
-		COMMAND_UNBUILD = createHelpText("/maze unbuild", helps, "-command");
+		COMMAND_BUILD = createHelpText("/maze build [maze part] <blocks>...", helps, "build-command");
+		COMMAND_UNBUILD = createHelpText("/maze unbuild [maze part]", helps, "unbuild-command");
+		COMMAND_TELEPORT = createHelpText("/maze teleport", helps, "teleport-command");
 		
 		ConfigurationSection infos = langConfig.getConfigurationSection("infos");
 		INFO_PLUGIN_RELOAD = createInfo("plugin-reload", infos);

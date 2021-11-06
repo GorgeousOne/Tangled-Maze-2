@@ -10,5 +10,9 @@ commands:
 permissions:
     tangledmaze.build:
         default: op
-    tabgledmaze.reload:
+    tangledmaze.reload:
+        default: op
+    tangledmaze.tp:
+        default: op
+    tangledmaze.backup:
         default: op
