@@ -1,27 +1,32 @@
 help-pages:
     wand-command: Gives you a maze wand item. It works like a world edit wand but for mazes :P \nClick two blocks and continue with &e/maze start&a
-    start-command: Converts your clipboard into a maze layout. Click on the border to place exits. Continue with &e/maze cut/add&a or &e/maze build&a
-    add-cut-command: Merges your clipboard with or your maze layout or cuts it away from it.
-    tool-command: Switch between the rectangle shape and the circle shape with this command.
+    start-command: Converts your clipboard into a maze layout. Click on the border to place exits. Continue with &e/maze build&a
+    add-cut-command: Merges your clipboard with your maze layout or cuts it away from it.
+    tool-command: 'Switch between different tools for editing your maze layout:'
+    tools:
+        rectangle: create rectangles when clicking with the maze wand
+        circle: create circles with the maze wand
+        exit: set exits for the maze on the redstone border
+        brush: 'left click: expand the redstone border \nright click: shrink the border'
     settings-command: 'Change how your maze will be built later:'
     settings:
         wall-height: height of walls in blocks
         path-width: width of paths to walk on
-        wall-width: with of walls between two paths
+        wall-width: width of walls of the maze
         roof-width: width of the roof.
         curliness: '1: short stretches of path, many turns \n10: long alleys, fewer turns'
     undo-command: Undo the last change to your maze layout like adding or cutting away a clipboard.
     build-command: Builds your maze. Type in names of blocks to build with, e.g.:\n &e/maze build 5*oak_leaves 2*oak_log[axis=y] glowstone&a \nUse the flags -floor or -roof to build different parts of the maze.
     unbuild-command: Deconstructs your maze. Use the flags -floor or -roof to unbuild different parts of the maze.
+    teleport-command: Teleports you back to your maze.
 infos:
-    plugin-reload: Reloaded Tangled Maze.
-    maze-wand-usage: Click two blocks. Then use /maze start to continue.
+    plugin-reload: Reloaded config settings.
+    maze-wand-usage: Click two blocks with the and use /maze start to continue.
     tool-switch: Switched to %tool%.
     setting-change: Set %setting% to %value%.
-    maze-not-built: Please build the maze first (without any flags).
-    maue-inaccessible: Cannot perform this action on a constructed maze. /maze unbuild
+    maze-not-built: Please build the maze first (without -roof or -floor flag).
+    maze-not-editable: Cannot perform this action while your maze is built. /maze unbuild
     maze-build: Built your maze part with %count% blocks.
-    maze-unbuild: Deconstructed your maze.
     no-maze-to-unbuild: No maze found to remove.
 errors:
     missing-permission: You do not have the permission for this command.
@@ -34,3 +39,10 @@ errors:
     invalid-block-property: 'Invalid property ''%property%'' for block ''%block%''.'
     invalid-block-property-value: 'Invalid value ''%value%'' for property ''%property%''.'
     missing-block-property-value: 'Missing property value: ''%property%=...''.'
+plus:
+    backup-saved: 'Saved maze to file &a''%file%''&e.'
+    backup-file-already-exists: 'File ''%file%'' already exists. Use /maze backup <file-name> true to override it.'
+    backup-save-error: 'An error occurred while saving. &7(%error%)'
+    backup-loaded: 'Loaded file &a''%file%''&e.'
+    backup-file-not-found: 'Could not find file ''%file%''.'
+    backup-load-error: 'Unable to load file ''%file%''. Maybe it is damaged? &7(%error%)'

@@ -21,22 +21,23 @@ public class BlockTypeAquatic extends BlockType {
 	private static final Random RANDOM = new Random();
 	
 	private final BlockData blockData;
-	private final boolean isFreelyDirectional;
-	private final boolean isFreelyOrientable;
-	
+	private boolean isFreelyDirectional;
+	private boolean isFreelyOrientable;
 	private String[] allowedFaces;
 	private String[] allowedAxes;
 	
+	public BlockTypeAquatic(BlockTypeAquatic other) {
+		blockData = other.blockData.clone();
+		isFreelyDirectional = other.isFreelyDirectional;
+		isFreelyOrientable = other.isFreelyOrientable;
+		allowedFaces = other.allowedFaces.clone();
+		allowedAxes = other.allowedAxes.clone();
+	}
+	
 	public BlockTypeAquatic(BlockData data) {
 		blockData = data.clone();
-		isFreelyDirectional = blockData instanceof Directional && !blockData.getAsString(true).contains("facing");
-		isFreelyOrientable = blockData instanceof Orientable && !blockData.getAsString(true).contains("axis");
-		
-		if (isFreelyDirectional) {
-			allowedFaces = ((Directional) blockData).getFaces().stream().map(face -> face.name().toLowerCase()).toArray(String[]::new);
-		} else if (isFreelyOrientable) {
-			allowedAxes = ((Orientable) blockData).getAxes().stream().map(face -> face.name().toLowerCase()).toArray(String[]::new);
-		}
+		allowedFaces = new String[0];
+		allowedAxes = new String[0];
 	}
 	
 	public BlockTypeAquatic(Material material) {
@@ -52,7 +53,23 @@ public class BlockTypeAquatic extends BlockType {
 	}
 	
 	public BlockTypeAquatic(String serialized) {
+		this(serialized, false);
+	}
+	
+	public BlockTypeAquatic(String serialized, boolean randomizeFacing) {
 		this(deserialize(serialized));
+		
+		if (!randomizeFacing) {
+			return;
+		}
+		this.isFreelyDirectional = blockData instanceof Directional && !blockData.getAsString(true).contains("facing");
+		this.isFreelyOrientable = blockData instanceof Orientable && !blockData.getAsString(true).contains("axis");
+		
+		if (isFreelyDirectional) {
+			allowedFaces = ((Directional) blockData).getFaces().stream().map(face -> face.name().toLowerCase()).toArray(String[]::new);
+		} else if (isFreelyOrientable) {
+			allowedAxes = ((Orientable) blockData).getAxes().stream().map(face -> face.name().toLowerCase()).toArray(String[]::new);
+		}
 	}
 	
 	public static BlockData deserialize(String serialized) {
@@ -70,7 +87,7 @@ public class BlockTypeAquatic extends BlockType {
 	}
 	
 	@Override
-	public BlockState updateBlock(Block block, boolean physics) {
+	public BlockType updateBlock(Block block, boolean applyPhysics) {
 		BlockState oldState = block.getState();
 		BlockState newState = block.getState();
 		BlockData copy = blockData.clone();
@@ -81,8 +98,8 @@ public class BlockTypeAquatic extends BlockType {
 			copy = copy.merge(copy.getMaterial().createBlockData("[facing=" + allowedFaces[RANDOM.nextInt(allowedFaces.length)] + "]"));
 		}
 		newState.setBlockData(copy);
-		newState.update(true, physics);
-		return oldState;
+		newState.update(true, applyPhysics);
+		return BlockType.get(oldState);
 	}
 	
 	@Override
@@ -97,7 +114,7 @@ public class BlockTypeAquatic extends BlockType {
 	
 	@Override
 	public BlockTypeAquatic clone() {
-		return new BlockTypeAquatic(blockData);
+		return new BlockTypeAquatic(this);
 	}
 	
 	@Override
@@ -114,6 +131,6 @@ public class BlockTypeAquatic extends BlockType {
 	
 	@Override
 	public String toString() {
-		return "AquaBlock{" + blockData.getAsString() + '}';
+		return blockData.getAsString(true);
 	}
 }

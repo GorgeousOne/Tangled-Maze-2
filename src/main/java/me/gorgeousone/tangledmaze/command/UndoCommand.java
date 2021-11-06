@@ -5,7 +5,6 @@ import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.cmdframework.command.BaseCommand;
 import me.gorgeousone.tangledmaze.data.Message;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
@@ -22,16 +21,15 @@ public class UndoCommand extends BaseCommand {
 	
 	@Override
 	public void onCommand(CommandSender sender, String[] args) {
-		Player player = (Player) sender;
-		UUID playerId = player.getUniqueId();
+		UUID playerId = getSenderId(sender);
 		Clip maze = sessionHandler.getMazeClip(playerId);
 		
-		if (maze == null) {
+		if (null == maze) {
 			Message.ERROR_MAZE_MISSING.sendTo(sender);
 			return;
 		}
 		if (!maze.isActive()) {
-			Message.INFO_MAZE_INACCESSIBLE.sendTo(sender);
+			Message.INFO_MAZE_NOT_EDITABLE.sendTo(sender);
 			return;
 		}
 		if (!maze.getActionHistory().isEmpty()) {

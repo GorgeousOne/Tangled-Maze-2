@@ -1,4 +1,4 @@
-name: TangledMaze
+name: TangledMazePlus
 version: ${project.version}
 main: me.gorgeousone.tangledmaze.TangledMazePlugin
 api-version: 1.13
@@ -10,5 +10,9 @@ commands:
 permissions:
     tangledmaze.build:
         default: op
-    tabgledmaze.reload:
+    tangledmaze.reload:
+        default: op
+    tangledmaze.tp:
+        default: op
+    tangledmaze.backup:
         default: op

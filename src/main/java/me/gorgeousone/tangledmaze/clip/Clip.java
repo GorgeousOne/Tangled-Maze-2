@@ -4,6 +4,7 @@ import me.gorgeousone.tangledmaze.event.ClipActionProcessEvent;
 import me.gorgeousone.tangledmaze.event.ClipUpdateEvent;
 import me.gorgeousone.tangledmaze.event.MazeExitSetEvent;
 import me.gorgeousone.tangledmaze.event.MazeStateChangeEvent;
+import me.gorgeousone.tangledmaze.util.BlockUtil;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -27,16 +28,16 @@ import java.util.stream.Collectors;
  */
 public class Clip {
 	
-	private final UUID playerId;
+	private UUID ownerId;
 	private final World world;
-	private final TreeMap<Vec2, Integer> fill;
-	private final TreeSet<Vec2> border;
+	private final Map<Vec2, Integer> fill;
+	private final Set<Vec2> border;
 	private final List<Vec2> exits;
 	private final Stack<ClipAction> actionHistory;
 	private boolean isActive;
 	
 	public Clip(UUID playerId, World world) {
-		this.playerId = playerId;
+		this.ownerId = playerId;
 		this.world = world;
 		fill = new TreeMap<>();
 		border = new TreeSet<>();
@@ -45,34 +46,46 @@ public class Clip {
 		isActive = true;
 	}
 	
-	public UUID getPlayerId() {
-		return playerId;
+	public UUID getOwnerId() {
+		return ownerId;
+	}
+	
+	public void setOwnerId(UUID ownerId) {
+		this.ownerId = ownerId;
 	}
 	
 	public World getWorld() {
 		return world;
 	}
 	
+	/**
+	 * Returns true if the clip is editable and no built as maze right now
+	 */
 	public boolean isActive() {
 		return isActive;
 	}
 	
+	/**
+	 * Calls an event to signal a toggle of being editable
+	 */
 	public void setActive(boolean active) {
-		if (isActive != active) {
+		boolean oldState = isActive;
+		isActive = active;
+		
+		if (oldState != active) {
 			Bukkit.getPluginManager().callEvent(new MazeStateChangeEvent(this, active));
 		}
-		isActive = active;
 	}
 	
 	public Stack<ClipAction> getActionHistory() {
 		return actionHistory;
 	}
 	
-	public TreeMap<Vec2, Integer> getFill() {
+	public Map<Vec2, Integer> getFill() {
 		return fill;
 	}
 	
-	public TreeSet<Vec2> getBorder() {
+	public Set<Vec2> getBorder() {
 		return border;
 	}
 	
@@ -81,7 +94,7 @@ public class Clip {
 	}
 	
 	public int getY(Vec2 loc) {
-		return fill.get(loc);
+		return fill.getOrDefault(loc, -1);
 	}
 	
 	public List<Vec2> getExits() {
@@ -89,7 +102,11 @@ public class Clip {
 	}
 	
 	public void add(Block fillBlock) {
-		fill.put(new Vec2(fillBlock), fillBlock.getY());
+		add(fillBlock.getX(), fillBlock.getZ(), fillBlock.getY());
+	}
+	
+	public void add(int x, int z, int y) {
+		fill.put(new Vec2(x, z), y);
 	}
 	
 	public void add(Map<Vec2, Integer> fillBlocks) {
@@ -204,4 +221,12 @@ public class Clip {
 		}
 	}
 	
+	/**
+	 * Recalculates y-coordinates of all locations in the clip
+	 */
+	public void updateHeights() {
+		for (Map.Entry<Vec2, Integer> fill : getFill().entrySet()) {
+			fill.setValue(BlockUtil.getSurfaceY(world, fill.getKey(), fill.getValue()));
+		}
+	}
 }

@@ -49,6 +49,10 @@ public class BlockVec {
 		return new Location(world, x, y, z);
 	}
 	
+	public Vec2 toVec2() {
+		return new Vec2(x, z);
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {

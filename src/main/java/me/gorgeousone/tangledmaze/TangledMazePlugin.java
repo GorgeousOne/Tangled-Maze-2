@@ -10,6 +10,7 @@ import me.gorgeousone.tangledmaze.command.HelpCommand;
 import me.gorgeousone.tangledmaze.command.ReloadCommand;
 import me.gorgeousone.tangledmaze.command.SettingsCommand;
 import me.gorgeousone.tangledmaze.command.StartMazeCommand;
+import me.gorgeousone.tangledmaze.command.TeleportCommand;
 import me.gorgeousone.tangledmaze.command.ToolCommand;
 import me.gorgeousone.tangledmaze.command.UnbuildMazeCommand;
 import me.gorgeousone.tangledmaze.command.UndoCommand;
@@ -18,27 +19,34 @@ import me.gorgeousone.tangledmaze.data.Constants;
 import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.generation.building.BuildHandler;
 import me.gorgeousone.tangledmaze.listener.BlockChangeListener;
+import me.gorgeousone.tangledmaze.listener.ChangeWorldListener;
 import me.gorgeousone.tangledmaze.listener.ClickListener;
 import me.gorgeousone.tangledmaze.listener.PlayerQuitListener;
+import me.gorgeousone.tangledmaze.plus.PremiumHandler;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
+import me.gorgeousone.tangledmaze.updatecheck.UpdateCheck;
 import me.gorgeousone.tangledmaze.util.ConfigUtil;
+import me.gorgeousone.tangledmaze.util.MaterialUtil;
 import me.gorgeousone.tangledmaze.util.VersionUtil;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TangledMazePlugin extends JavaPlugin {
+	
+	private static final int resourceId = 76591;
+	private static final String resourceName = "tangled-maze-plus-1-13";
+	private static final String updateInfoUrl = "https://pastebin.com/raw/BRJfXpPu";
 	
 	private SessionHandler sessionHandler;
 	private ToolHandler toolHandler;
 	private RenderHandler renderHandler;
 	private BuildHandler buildHandler;
 	private ConfigSettings settings;
-	
 	private ParentCommand mazeCmd;
+	private PremiumHandler premiumHandler;
 	
 	@Override
 	public void onEnable() {
@@ -46,11 +54,13 @@ public final class TangledMazePlugin extends JavaPlugin {
 		sessionHandler = new SessionHandler();
 		toolHandler = new ToolHandler(sessionHandler);
 		renderHandler = new RenderHandler(this, sessionHandler);
-		buildHandler = new BuildHandler(this);
+		buildHandler = new BuildHandler(this, sessionHandler);
+		
 		registerListeners();
 		registerCommands();
 		
 		settings = new ConfigSettings(this);
+		premiumHandler = new PremiumHandler(this);
 		reload();
 	}
 	
@@ -58,15 +68,18 @@ public final class TangledMazePlugin extends JavaPlugin {
 	public void onDisable() {
 		renderHandler.disable();
 		sessionHandler.disable();
-		buildHandler.disable();
 		toolHandler.disable();
-		Bukkit.broadcastMessage(ChatColor.GOLD + "TODO mazemap setType contains check");
-		Bukkit.broadcastMessage(ChatColor.GOLD + "stop auto removal");
 	}
 	
 	public void reload() {
 		loadConfigSettings();
 		loadLanguage();
+		premiumHandler.reload();
+		checkForUpdates();
+	}
+	
+	public SessionHandler getSessionHandler() {
+		return sessionHandler;
 	}
 	
 	public ParentCommand getMazeCommand() {
@@ -79,8 +92,9 @@ public final class TangledMazePlugin extends JavaPlugin {
 		manager.registerEvents(toolHandler, this);
 		manager.registerEvents(renderHandler, this);
 		manager.registerEvents(new ClickListener(this, sessionHandler, toolHandler, renderHandler), this);
-		manager.registerEvents(new PlayerQuitListener(sessionHandler, renderHandler), this);
+		manager.registerEvents(new PlayerQuitListener(sessionHandler, renderHandler, toolHandler), this);
 		manager.registerEvents(new BlockChangeListener(this, sessionHandler), this);
+		manager.registerEvents(new ChangeWorldListener(toolHandler, renderHandler), this);
 	}
 	
 	private void registerCommands() {
@@ -100,6 +114,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 		mazeCmd.addChild(new SettingsCommand(sessionHandler));
 		mazeCmd.addChild(new BuildMazeCommand(sessionHandler, buildHandler, toolHandler));
 		mazeCmd.addChild(new UnbuildMazeCommand(sessionHandler, buildHandler));
+		mazeCmd.addChild(new TeleportCommand(sessionHandler, renderHandler));
 		
 		CommandHandler cmdHandler = new CommandHandler(this);
 		cmdHandler.registerCommand(mazeCmd);
@@ -114,9 +129,14 @@ public final class TangledMazePlugin extends JavaPlugin {
 		
 		String versionString = VersionUtil.IS_LEGACY_SERVER ? "legacy" : "aquatic";
 		Constants.loadMaterials(ConfigUtil.loadConfig("materials-" + versionString, this));
+		MaterialUtil.load();
 	}
 	
 	private void loadLanguage() {
 		Message.loadLanguage(ConfigUtil.loadConfig("language", this));
+	}
+	
+	private void checkForUpdates() {
+		new UpdateCheck(this, resourceId, resourceName, updateInfoUrl).run();
 	}
 }

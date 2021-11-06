@@ -8,7 +8,6 @@ import me.gorgeousone.tangledmaze.cmdframework.command.BaseCommand;
 import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
@@ -28,25 +27,28 @@ public class AddClipCommand extends BaseCommand {
 	
 	@Override
 	public void onCommand(CommandSender sender, String[] args) {
-		Player player = (Player) sender;
-		UUID playerId = player.getUniqueId();
+		UUID playerId = getSenderId(sender);
 		Clip maze = sessionHandler.getMazeClip(playerId);
 		Clip clip = sessionHandler.getClip(playerId);
 		
-		if (maze == null) {
+		if (null == maze) {
 			Message.ERROR_MAZE_MISSING.sendTo(sender);
 			return;
 		}
-		if (clip == null) {
+		if (null == clip) {
 			Message.ERROR_CLIPBOARD_MISSING.sendTo(sender);
 			return;
 		}
 		if (!maze.isActive()) {
-			Message.INFO_MAZE_INACCESSIBLE.sendTo(sender);
+			Message.INFO_MAZE_NOT_EDITABLE.sendTo(sender);
 			return;
 		}
-		toolHandler.resetClipTool(playerId);
 		ClipAction changes = ClipActionFactory.addClip(maze, clip);
+		toolHandler.resetClipTool(playerId);
+		
+		if (null == changes) {
+			return;
+		}
 		maze.processAction(changes, true);
 	}
 }

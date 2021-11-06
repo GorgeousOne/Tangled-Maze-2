@@ -10,16 +10,24 @@ public final class MaterialUtil {
 	
 	private static final List<String> BLOCK_NAMES = new LinkedList<>();
 	
-	static {
+	public static void load() {
+		BLOCK_NAMES.clear();
+		
 		for (Material mat : Material.values()) {
 			if (mat.isBlock() && (mat.isOccluding() || mat.name().endsWith("LEAVES"))) {
 				BLOCK_NAMES.add(mat.name().toLowerCase());
 			}
 		}
+		for (Material mat : Constants.TRANSPARENT_SOLIDS) {
+			BLOCK_NAMES.add(mat.name().toLowerCase());
+		}
 	}
 	
 	private MaterialUtil() {}
 	
+	/**
+	 * @return LinkedList of all blocks that mazes can be built with
+	 */
 	public static List<String> getBlockNames() {
 		return BLOCK_NAMES;
 	}

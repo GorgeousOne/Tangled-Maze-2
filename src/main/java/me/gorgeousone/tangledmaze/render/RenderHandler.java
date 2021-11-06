@@ -13,7 +13,10 @@ import me.gorgeousone.tangledmaze.event.MazeStateChangeEvent;
 import me.gorgeousone.tangledmaze.tool.ClipTool;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -75,9 +78,8 @@ public class RenderHandler implements Listener {
 	/**
 	 * Returns the render session of the player with this UUID or creates a new one
 	 */
-	private RenderSession createRenderIfAbsent(UUID playerId) {
+	private void createRenderIfAbsent(UUID playerId) {
 		renderings.computeIfAbsent(playerId, render -> new RenderSession(playerId));
-		return renderings.get(playerId);
 	}
 	
 	/**
@@ -85,10 +87,11 @@ public class RenderHandler implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onClipToolChange(ClipToolChangeEvent event) {
-		
 		ClipTool tool = event.getTool();
 		ClipToolChangeEvent.Cause cause = event.getCause();
-		RenderSession session = createRenderIfAbsent(event.getPlayerId());
+		UUID playerID = event.getPlayerId();
+		createRenderIfAbsent(playerID);
+		RenderSession session = getPlayerRender(playerID);
 		
 		new BukkitRunnable() {
 			@Override
@@ -125,7 +128,12 @@ public class RenderHandler implements Listener {
 	@EventHandler
 	public void onMazeStart(MazeStartEvent event) {
 		Clip maze = event.getMaze();
-		RenderSession session = createRenderIfAbsent(maze.getPlayerId());
+		
+		if (!isPlayer(maze.getOwnerId())) {
+			return;
+		}
+		createRenderIfAbsent(maze.getOwnerId());
+		RenderSession session = getPlayerRender(maze.getOwnerId());
 		
 		session.removeLayer(MAZE_EXIT_LAYER, false);
 		session.removeLayer(MAZE_MAIN_EXIT_LAYER, false);
@@ -138,7 +146,7 @@ public class RenderHandler implements Listener {
 	 */
 	@EventHandler
 	public void onClipDelete(ClipDeleteEvent event) {
-		RenderSession session = createRenderIfAbsent(event.getPlayerId());
+		RenderSession session = getPlayerRender(event.getPlayerId());
 		session.removeLayer(CLIP_RESIZE_LAYER, false);
 		session.removeLayer(CLIP_BORDER_LAYER, true);
 		session.removeLayer(CLIP_VERTEX_LAYER, true);
@@ -149,8 +157,8 @@ public class RenderHandler implements Listener {
 	 */
 	@EventHandler
 	public void onClipActionProcess(ClipActionProcessEvent event) {
-		UUID playerId = event.getClip().getPlayerId();
-		RenderSession session = createRenderIfAbsent(playerId);
+		UUID playerId = event.getClip().getOwnerId();
+		RenderSession session = getPlayerRender(playerId);
 		ClipAction change = event.getAction();
 		
 		session.removeFromLayer(MAZE_BORDER_LAYER, change.getRemovedBorder(), true);
@@ -161,8 +169,8 @@ public class RenderHandler implements Listener {
 	
 	@EventHandler
 	public void onExitSet(MazeExitSetEvent event) {
-		UUID playerId = event.getMaze().getPlayerId();
-		RenderSession session = createRenderIfAbsent(playerId);
+		UUID playerId = event.getMaze().getOwnerId();
+		RenderSession session = getPlayerRender(playerId);
 		
 		session.removeFromLayer(MAZE_EXIT_LAYER, event.getRemovedExits(), true);
 		session.removeFromLayer(MAZE_MAIN_EXIT_LAYER, event.getRemovedMainExits(), true);
@@ -172,15 +180,24 @@ public class RenderHandler implements Listener {
 	
 	@EventHandler
 	public void onClipUpdate(ClipUpdateEvent event) {
-		UUID playerId = event.getClip().getPlayerId();
-		RenderSession session = createRenderIfAbsent(playerId);
+		UUID playerId = event.getClip().getOwnerId();
+		
+		if (!isPlayer(playerId)) {
+			return;
+		}
+		RenderSession session = getPlayerRender(playerId);
 		session.updateBlock(event.getLoc(), event.getNewY());
 	}
 	
 	@EventHandler
 	public void onMazeStateChange(MazeStateChangeEvent event) {
 		Clip maze = event.getMaze();
-		RenderSession session = getPlayerRender(maze.getPlayerId());
+		UUID playerId = maze.getOwnerId();
+		
+		if (!isPlayer(playerId)) {
+			return;
+		}
+		RenderSession session = getPlayerRender(playerId);
 		
 		if (event.isMazeActive()) {
 			displayMaze(session, maze);
@@ -191,7 +208,26 @@ public class RenderHandler implements Listener {
 		}
 	}
 	
+	/**
+	 * Removes the render session of a player and creates a new one with their maze int it, if it is located in the new world
+	 */
+	public void changePlayerWorld(UUID playerId, World newWorld) {
+		removePlayer(playerId);
+		Clip maze = sessionHandler.getMazeClip(playerId);
+		
+		if (null == maze || maze.getWorld() != newWorld) {
+			return;
+		}
+		createRenderIfAbsent(playerId);
+		RenderSession session = getPlayerRender(playerId);
+		session.hide();
+		displayMaze(session, maze);
+	}
+	
 	private void displayMaze(RenderSession render, Clip maze) {
+		if (!maze.isActive()) {
+			return;
+		}
 		render.addLayer(MAZE_BORDER_LAYER, maze.getBlocks(maze.getBorder()), MAZE_BORDER_MAT);
 		List<Vec2> exits = maze.getExits();
 		
@@ -202,5 +238,9 @@ public class RenderHandler implements Listener {
 			render.addLayer(MAZE_MAIN_EXIT_LAYER, new HashMap<>(), MAZE_MAIN_EXIT_MAT);
 			render.addLayer(MAZE_EXIT_LAYER, new HashMap<>(), MAZE_EXIT_MAT);
 		}
+	}
+	
+	private boolean isPlayer(UUID senderId) {
+		return null != Bukkit.getPlayer(senderId);
 	}
 }

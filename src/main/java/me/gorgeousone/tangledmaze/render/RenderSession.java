@@ -25,13 +25,21 @@ import java.util.UUID;
 public class RenderSession {
 	
 	private final UUID playerId;
+	private final UUID worldId;
 	private final Map<Vec2, Integer> displayedBlocks;
 	private final Map<Integer, Set<Vec2>> layers;
 	private final Map<Integer, BlockType> layerTypes;
 	private boolean isVisible;
 	
 	public RenderSession(UUID playerId) {
-		this.playerId = Objects.requireNonNull(playerId);
+		Player player = Bukkit.getPlayer(playerId);
+
+		if (null == player) {
+			throw new IllegalArgumentException("Could not find player to UUID " + playerId);
+		}
+		this.playerId = playerId;
+		worldId = player.getWorld().getUID();
+		
 		displayedBlocks = new HashMap<>();
 		layers = new TreeMap<>(Collections.reverseOrder());
 		layerTypes = new HashMap<>();
@@ -66,16 +74,14 @@ public class RenderSession {
 	}
 	
 	public void show() {
-		if (!isVisible) {
-			Player player = Bukkit.getPlayer(playerId);
-			World world = player.getWorld();
-			
-			for (Map.Entry<Vec2, Integer> block : displayedBlocks.entrySet()) {
-				Location blockLoc = block.getKey().toLocation(world, block.getValue());
-				layerTypes.get(getTopLayer(block.getKey())).sendBlockChange(player, blockLoc);
-			}
-			isVisible = true;
+		Player player = Bukkit.getPlayer(playerId);
+		World world = player.getWorld();
+		
+		for (Map.Entry<Vec2, Integer> block : displayedBlocks.entrySet()) {
+			Location blockLoc = block.getKey().toLocation(world, block.getValue());
+			layerTypes.get(getTopLayer(block.getKey())).sendBlockChange(player, blockLoc);
 		}
+		isVisible = true;
 	}
 	
 	public void addLayer(int layerIndex, Collection<Block> blocks, BlockType blockType) {

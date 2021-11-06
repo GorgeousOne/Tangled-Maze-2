@@ -27,14 +27,17 @@ public class MazeSettings {
 		return newValue;
 	}
 	
-	public void setPalette(BlockPalette palette, MazePart mazePart) {
+	public void setPalette(MazePart mazePart, BlockPalette palette) {
 		blockPalettes.put(mazePart, palette);
 	}
 	
 	public BlockPalette getPalette(MazePart mazePart) {
+		return blockPalettes.get(mazePart);
+	}
+	
+	public void computePaletteIfAbsent(MazePart mazePart) {
 		if (!blockPalettes.containsKey(mazePart)) {
 			blockPalettes.put(mazePart, blockPalettes.get(MazePart.WALLS));
 		}
-		return blockPalettes.get(mazePart);
 	}
 }

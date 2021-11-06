@@ -6,6 +6,7 @@ import me.gorgeousone.tangledmaze.clip.ClipActionFactory;
 import me.gorgeousone.tangledmaze.clip.ClipFactory;
 import me.gorgeousone.tangledmaze.clip.ClipType;
 import me.gorgeousone.tangledmaze.data.ConfigSettings;
+import me.gorgeousone.tangledmaze.data.Constants;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.render.RenderSession;
@@ -18,6 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -54,20 +56,16 @@ public class ClickListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerClick(PlayerInteractEvent event) {
-		try {
-			if (event.getHand() != EquipmentSlot.HAND) {
-				return;
-			}
-		} catch (NoSuchMethodError ignored) {
+		
+		if (!isMainHand(event)) {
+			return;
 		}
 		Player player = event.getPlayer();
-		ItemStack heldItem;
 		
-		try {
-			heldItem = player.getInventory().getItemInMainHand();
-		} catch (NoSuchMethodError error) {
-			heldItem = player.getItemInHand();
+		if (!player.hasPermission(Constants.BUILD_PERM)) {
+			return;
 		}
+		ItemStack heldItem = getHeldItem(player);
 		Block clickedBlock = event.getClickedBlock();
 		
 		if (!isMazeWand(heldItem)) {
@@ -83,39 +81,71 @@ public class ClickListener implements Listener {
 		if (tracedBlock == null) {
 			return;
 		}
-		handleWandClick(playerId, tracedBlock);
+		handleWandClick(playerId, tracedBlock, isLeftClick(event.getAction()));
+		
 		if (event.getClickedBlock() != null) {
 			updateClickedBlocks(player, event.getClickedBlock());
 		}
 	}
 	
-	private void handleWandClick(UUID playerId, Block clickedBlock) {
+	private boolean isMainHand(PlayerInteractEvent event) {
+		try {
+			return event.getHand() == EquipmentSlot.HAND;
+		} catch (NoSuchMethodError legacyError) {
+			return true;
+		}
+	}
+	
+	private ItemStack getHeldItem(Player player) {
+		try {
+			return player.getInventory().getItemInMainHand();
+		} catch (NoSuchMethodError legacyError) {
+			return player.getItemInHand();
+		}
+	}
+	
+	private boolean isLeftClick(Action action) {
+		return action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK;
+	}
+	
+	private void handleWandClick(UUID playerId, Block clickedBlock, boolean isLeftClick) {
+		ClipTool clipTool = toolHandler.createClipToolIfAbsent(playerId);
+		Clip clip = sessionHandler.getClip(playerId);
+		Clip maze = sessionHandler.getMazeClip(playerId);
+		
+		if (!isOnlyMazeBorderClicked(clipTool, clip, maze, clickedBlock)) {
+			ClipType clipType = toolHandler.createClipTypeIfAbsent(playerId);
+			
+			if (clipTool.getShape() != clipType) {
+				sessionHandler.removeClip(playerId, true);
+				toolHandler.resetClipTool(playerId);
+				clipTool.setType(clipType);
+			}
+			clipTool.addVertex(clickedBlock);
+			return;
+		}
+		
 		switch (toolHandler.createToolIfAbsent(playerId)) {
-			case CLIP_TOOL:
-				ClipTool clipTool = toolHandler.createClipToolIfAbsent(playerId);
-				Clip clip = sessionHandler.getClip(playerId);
-				Clip maze = sessionHandler.getMazeClip(playerId);
-				
-				if (isOnlyMazeBorderClicked(clipTool, clip, maze, clickedBlock)) {
-					if (ClipActionFactory.canBeExit(maze, new Vec2(clickedBlock))) {
-						maze.toggleExit(clickedBlock);
-					}
-					break;
+			case EXIT_SETTER:
+				if (ClipActionFactory.canBeExit(maze, new Vec2(clickedBlock))) {
+					maze.toggleExit(clickedBlock);
 				}
-				ClipType clipType = toolHandler.createClipTypeIfAbsent(playerId);
-				
-				if (clipTool.getShape() != clipType) {
-					sessionHandler.removeClip(playerId, true);
-					toolHandler.resetClipTool(playerId);
-					clipTool.setType(clipType);
-				}
-				clipTool.addVertex(clickedBlock);
 				break;
 			case BRUSH:
+				if (isLeftClick) {
+					maze.processAction(ClipActionFactory.expandBorder(maze, clickedBlock), true);
+				} else {
+					maze.processAction(ClipActionFactory.eraseBorder(maze, clickedBlock), true);
+				}
 				break;
 		}
 	}
 	
+	/**
+	 * Hides all clips of a player if the player interacts with any block if them
+	 * @param player
+	 * @param clickedBlock
+	 */
 	private void hideClipsOnClick(Player player, Block clickedBlock) {
 		UUID playerId = player.getUniqueId();
 		RenderSession render = renderHandler.getPlayerRender(playerId);
@@ -134,6 +164,12 @@ public class ClickListener implements Listener {
 		}
 	}
 	
+	/**
+	 * Returns hovered clicked block if hover clicking enabled. Otherwise
+	 * @param player
+	 * @param clickedBlock
+	 * @return
+	 */
 	private Block traceBlock(Player player, Block clickedBlock) {
 		if (clickedBlock == null && ConfigSettings.HOVER_CLICKING_ENABLED) {
 			BlockIterator iter = new BlockIterator(player, ConfigSettings.HOVER_RANGE);
@@ -149,6 +185,9 @@ public class ClickListener implements Listener {
 		return clickedBlock;
 	}
 	
+	/**
+	 * Returns true if a maze redstone border was clicked and that no gold clip creation was in progress
+	 */
 	private boolean isOnlyMazeBorderClicked(ClipTool clipTool, Clip clip, Clip maze, Block clickedBlock) {
 		return maze != null && maze.isBorderBlock(clickedBlock) &&
 		       (clip == null || !clip.isBorderBlock(clickedBlock)) &&
@@ -207,7 +246,7 @@ public class ClickListener implements Listener {
 		}
 		RenderSession render = renderHandler.getPlayerRender(player.getUniqueId());
 		
-		if (render != null && !render.isVisible()) {
+		if (null != render) {
 			render.show();
 		}
 	}

@@ -7,21 +7,22 @@ import me.gorgeousone.tangledmaze.util.Vec2;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A class to store locations of blocks forming a maze in a big 3D boolean array.
+ */
 public class BlockSegment {
 	
 	private final Vec2 min;
 	private final Vec2 max;
-	private final Vec2 gridPos;
 	
 	private final int worldHeight;
 	private int minY;
 	private int maxY;
 	private final boolean[][][] blocks;
 	
-	public BlockSegment(Vec2 min, Vec2 max, Vec2 gridPos, int worldHeight) {
+	public BlockSegment(Vec2 min, Vec2 max, int worldHeight) {
 		this.min = min;
 		this.max = max;
-		this.gridPos = gridPos;
 		this.worldHeight = worldHeight;
 		
 		int sizeX = max.getX() - min.getX();
@@ -29,6 +30,10 @@ public class BlockSegment {
 		blocks = new boolean[sizeX][worldHeight][sizeZ];
 		minY = worldHeight;
 		maxY = 0;
+	}
+	
+	public int getWorldHeight() {
+		return worldHeight;
 	}
 	
 	public BlockVec getMin() {
@@ -88,24 +93,30 @@ public class BlockSegment {
 	
 	public Set<Direction> getWallFacings(int x, int z) {
 		Set<Direction> facings = new HashSet<>();
+		
 		if (x == min.getX()) {
 			facings.add(Direction.WEST);
+			
 			if (z == min.getZ()) {
 				facings.add(Direction.NORTH_WEST);
-			} else if (z == max.getZ() - 1) {
+			}
+			if (z == max.getZ() - 1) {
 				facings.add(Direction.SOUTH_WEST);
 			}
-		} else if (x == max.getX() - 1) {
+		} if (x == max.getX() - 1) {
 			facings.add(Direction.EAST);
+			
 			if (z == min.getZ()) {
 				facings.add(Direction.NORTH_EAST);
-			} else if (z == max.getZ() - 1) {
+			}
+			if (z == max.getZ() - 1) {
 				facings.add(Direction.SOUTH_EAST);
 			}
 		}
 		if (z == min.getZ()) {
 			facings.add(Direction.NORTH);
-		} else if (z == max.getZ() - 1) {
+		}
+		if (z == max.getZ() - 1) {
 			facings.add(Direction.SOUTH);
 		}
 		return facings;

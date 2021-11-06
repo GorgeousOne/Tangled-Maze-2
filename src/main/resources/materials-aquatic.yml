@@ -28,6 +28,7 @@ transparent-solids:
     - RED_STAINED_GLASS
     - BLACK_STAINED_GLASS
 not-replaceables:
+    - LIGHTNING_ROD
     - BEDROCK
     - DISPENSER
     - STICKY_PISTON
@@ -79,6 +80,10 @@ not-replaceables:
     - CRIMSON_SIGN
     - WARPED_SIGN
     - BREWING_STAND
+    - CAULDRON
+    - WATER_CAULDRON
+    - LAVA_CAULDRON
+    - POWDER_SNOW_CAULDRON
     - CAULDRON
     - COMPOSTER
     - BARREL

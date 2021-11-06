@@ -2,30 +2,35 @@ package me.gorgeousone.tangledmaze;
 
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.event.ClipDeleteEvent;
+import me.gorgeousone.tangledmaze.maze.MazeBackup;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class SessionHandler implements Listener {
 	
 	private final Map<UUID, Clip> playerClips;
 	private final Map<UUID, Clip> playerMazes;
-	private final HashMap<UUID, MazeSettings> mazeSettings;
+	private final Map<UUID, MazeSettings> mazeSettings;
+	private final Map<Clip, MazeBackup> mazeBackups;
 	
 	public SessionHandler() {
 		playerClips = new HashMap<>();
 		playerMazes = new HashMap<>();
 		mazeSettings = new HashMap<>();
+		mazeBackups = new HashMap<>();
 	}
 	
 	public void disable() {
 		playerClips.clear();
 		playerMazes.clear();
 		mazeSettings.clear();
+		mazeBackups.clear();
 	}
 	
 	public void removePlayer(UUID playerId) {
@@ -69,5 +74,33 @@ public class SessionHandler implements Listener {
 	public MazeSettings getSettings(UUID playerId) {
 		mazeSettings.computeIfAbsent(playerId, setting -> new MazeSettings());
 		return mazeSettings.get(playerId);
+	}
+	
+	public void setSettings(UUID playerId, MazeSettings settings) {
+		mazeSettings.put(playerId, settings);
+	}
+	
+	public boolean hasBackup(Clip maze) {
+		return mazeBackups.containsKey(maze);
+	}
+	
+	public void backupMaze(Clip maze, MazeSettings settings) {
+		mazeBackups.computeIfAbsent(maze, backup -> new MazeBackup(maze, settings));
+	}
+	
+	public MazeBackup getBackup(Clip maze) {
+		return mazeBackups.get(maze);
+	}
+	
+	public Set<Clip> getAllBackupedClips() {
+		return mazeBackups.keySet();
+	}
+	
+	public void removeBackup(Clip maze) {
+		mazeBackups.remove(maze);
+	}
+	
+	public void setMazeBackup(Clip maze, MazeBackup backup) {
+		mazeBackups.put(maze, backup);
 	}
 }

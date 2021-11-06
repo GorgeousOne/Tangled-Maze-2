@@ -108,6 +108,10 @@ public class GridMap {
 		return floorYs[gridX][gridZ];
 	}
 	
+	public void setFloorY(Vec2 gridPos, int y) {
+		setFloorY(gridPos.getX(), gridPos.getZ(), y);
+	}
+	
 	public void setFloorY(int gridX, int gridZ, int y) {
 		floorYs[gridX][gridZ] = y;
 	}
@@ -125,6 +129,7 @@ public class GridMap {
 	 */
 	public int getWallY(int gridX, int gridZ, int wallHeight) {
 		int wallY = getWallY(gridX, gridZ);
+		
 		if (wallY == 0) {
 			wallY = getFloorY(gridX, gridZ) + wallHeight;
 		}

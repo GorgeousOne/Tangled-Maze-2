@@ -16,7 +16,6 @@ import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import me.gorgeousone.tangledmaze.util.text.Placeholder;
 import me.gorgeousone.tangledmaze.util.text.TextException;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Set;
@@ -42,11 +41,10 @@ public class BuildMazeCommand extends ArgCommand {
 	
 	@Override
 	protected void executeArgs(CommandSender sender, List<ArgValue> argValues, Set<String> usedFlags) {
-		Player player = (Player) sender;
-		UUID playerId = player.getUniqueId();
+		UUID playerId = getSenderId(sender);
 		Clip maze = sessionHandler.getMazeClip(playerId);
 		
-		if (maze == null) {
+		if (null == maze) {
 			Message.ERROR_MAZE_MISSING.sendTo(sender);
 			return;
 		}
@@ -65,20 +63,19 @@ public class BuildMazeCommand extends ArgCommand {
 		if (argValues.size() != 0) {
 			try {
 				BlockPalette palette = deserializeBlockPalette(argValues);
-				settings.setPalette(palette, mazePart);
+				settings.setPalette(mazePart, palette);
 			} catch (TextException e) {
 				e.sendTextTo(sender);
-				e.printStackTrace();
 			}
 		}
-		maze.setActive(false);
-		toolHandler.resetClipTool(playerId);
-		
 		try {
 			buildHandler.buildMaze(playerId, maze, settings, mazePart);
 		} catch (TextException e) {
 			e.sendTextTo(sender);
+			return;
 		}
+		maze.setActive(false);
+		toolHandler.resetClipTool(playerId);
 	}
 	
 	public BlockPalette deserializeBlockPalette(List<ArgValue> stringArgs) throws TextException {
@@ -101,7 +98,7 @@ public class BuildMazeCommand extends ArgCommand {
 				materialString = inputString;
 			}
 			try {
-				BlockType blockType = BlockType.get(materialString);
+				BlockType blockType = BlockType.get(materialString, true);
 				palette.addBlock(blockType, MathUtil.clamp(count, 1, 1000));
 			} catch (IllegalArgumentException e) {
 				throw new TextException(Message.ERROR_INVALID_BLOCK_NAME, new Placeholder("block", materialString));

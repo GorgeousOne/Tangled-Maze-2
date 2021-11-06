@@ -5,12 +5,14 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 public class Constants {
 	
 	public static final String
 			BUILD_PERM = "tangledmaze.build",
+			TP_PERM = "tangledmaze.tp",
 			RELOAD_PERM = "tangledmaze.reload";
 	
 	public static final String prefix =
@@ -19,8 +21,8 @@ public class Constants {
 			ChatColor.DARK_GREEN + "] " +
 			ChatColor.YELLOW;
 	
-	public static final TreeSet<Material> TRANSPARENT_SOLIDS = new TreeSet<>();
-	public static final TreeSet<Material> NOT_REPLACEABLES = new TreeSet<>();
+	public static final Set<Material> TRANSPARENT_SOLIDS = new TreeSet<>();
+	public static final Set<Material> NOT_REPLACEABLES = new TreeSet<>();
 	
 	public static void loadMaterials(FileConfiguration materialLists) {
 		TRANSPARENT_SOLIDS.clear();

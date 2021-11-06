@@ -16,12 +16,13 @@ public class Message {
 			COMMAND_UNDO,
 			COMMAND_BUILD,
 			COMMAND_UNBUILD,
+			COMMAND_TELEPORT,
 			INFO_PLUGIN_RELOAD,
 			INFO_MAZE_WAND_USAGE,
 			INFO_TOOL_SWITCH,
 			INFO_SETTING_CHANGE,
 			INFO_MAZE_NOT_BUILT,
-			INFO_MAZE_INACCESSIBLE,
+			INFO_MAZE_NOT_EDITABLE,
 			INFO_MAZE_BUILD,
 			INFO_MAZE_UNBUILD,
 			ERROR_MISSING_PERMISSION,
@@ -42,7 +43,8 @@ public class Message {
 				COMMAND_SETTING,
 				COMMAND_UNDO,
 				COMMAND_BUILD,
-				COMMAND_UNBUILD
+				COMMAND_UNBUILD,
+				COMMAND_TELEPORT
 		};
 	}
 	
@@ -51,17 +53,24 @@ public class Message {
 		COMMAND_WAND = createHelpText("/maze wand", helps, "wand-command");
 		COMMAND_START = createHelpText("/maze start", helps, "start-command");
 		COMMAND_ADD_CUT = createHelpText("/maze add/cut", helps, "add-cut-command");
+		
 		COMMAND_TOOL = createHelpText("/maze tool <tool>", helps, "tool-command");
-		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "wallheight", helps, "settings.wall-height"));
-		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "pathwidth", helps, "settings.path-width"));
-		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "wallwidth", helps, "settings.wall-width"));
-		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "roodwidth", helps, "settings.roof-width"));
-		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "curliness", helps, "settings.curliness"));
+		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "rectangle", helps,"tools.rectangle"));
+		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "circle", helps, "tools.circle"));
+		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "exit", helps, "tools.exit"));
+		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "brush", helps, "tools.brush"));
 		
 		COMMAND_SETTING = createHelpText("/maze setting <setting> <integer>", helps, "settings-command");
+		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "wallheight", helps, "settings.wall-height"));
+		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "pathwidth", helps, "settings.path-width"));
+		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "wallwidth", helps, "settings.wall-width"));
+		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "roodwidth", helps, "settings.roof-width"));
+		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "curliness", helps, "settings.curliness"));
+		
 		COMMAND_UNDO = createHelpText("/maze undo", helps, "undo-command");
-		COMMAND_BUILD = createHelpText("/maze build <blocks>...", helps, "build-command");
-		COMMAND_UNBUILD = createHelpText("/maze unbuild", helps, "-command");
+		COMMAND_BUILD = createHelpText("/maze build [maze part] <blocks>...", helps, "build-command");
+		COMMAND_UNBUILD = createHelpText("/maze unbuild [maze part]", helps, "unbuild-command");
+		COMMAND_TELEPORT = createHelpText("/maze teleport", helps, "teleport-command");
 		
 		ConfigurationSection infos = langConfig.getConfigurationSection("infos");
 		INFO_PLUGIN_RELOAD = createInfo("plugin-reload", infos);
@@ -69,9 +78,9 @@ public class Message {
 		INFO_TOOL_SWITCH = createInfo("tool-switch", infos);
 		INFO_SETTING_CHANGE = createInfo("setting-change", infos);
 		INFO_MAZE_NOT_BUILT = createInfo("maze-not-built", infos);
-		INFO_MAZE_INACCESSIBLE = createInfo("maze-inaccessible", infos);
-		INFO_MAZE_UNBUILD = createInfo("maze-unbuild", infos);
+		INFO_MAZE_NOT_EDITABLE = createInfo("maze-not-editable", infos);
 		INFO_MAZE_BUILD = createInfo("maze-build", infos);
+		INFO_MAZE_UNBUILD = createInfo("maze-unbuild", infos);
 		
 		ConfigurationSection errors = langConfig.getConfigurationSection("errors");
 		ERROR_MISSING_PERMISSION = createError("missing-permission", errors);
@@ -84,15 +93,15 @@ public class Message {
 		ERROR_INVALID_BLOCK_PROPERTY = createError("invalid-block-property", errors);
 	}
 	
-	private static Text createHelpText(String header, ConfigurationSection section, String path) {
+	public static Text createHelpText(String header, ConfigurationSection section, String path) {
 		return new Text(ChatColor.DARK_GREEN + header + "\\n" + ChatColor.GREEN + section.get(path));
 	}
 	
-	private static Text createInfo(String path, ConfigurationSection section) {
+	public static Text createInfo(String path, ConfigurationSection section) {
 		return new Text(Constants.prefix + section.getString(path));
 	}
 	
-	private static Text createError(String path, ConfigurationSection section) {
+	public static Text createError(String path, ConfigurationSection section) {
 		return new Text(ChatColor.RED + section.getString(path));
 	}
 }
