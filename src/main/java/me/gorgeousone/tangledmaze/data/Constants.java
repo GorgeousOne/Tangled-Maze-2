@@ -12,6 +12,7 @@ public class Constants {
 	
 	public static final String
 			BUILD_PERM = "tangledmaze.build",
+			TP_PERM = "tangledmaze.tp",
 			RELOAD_PERM = "tangledmaze.reload";
 	
 	public static final String prefix =

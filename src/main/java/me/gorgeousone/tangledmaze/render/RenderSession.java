@@ -74,16 +74,14 @@ public class RenderSession {
 	}
 	
 	public void show() {
-		if (!isVisible) {
-			Player player = Bukkit.getPlayer(playerId);
-			World world = player.getWorld();
-			
-			for (Map.Entry<Vec2, Integer> block : displayedBlocks.entrySet()) {
-				Location blockLoc = block.getKey().toLocation(world, block.getValue());
-				layerTypes.get(getTopLayer(block.getKey())).sendBlockChange(player, blockLoc);
-			}
-			isVisible = true;
+		Player player = Bukkit.getPlayer(playerId);
+		World world = player.getWorld();
+		
+		for (Map.Entry<Vec2, Integer> block : displayedBlocks.entrySet()) {
+			Location blockLoc = block.getKey().toLocation(world, block.getValue());
+			layerTypes.get(getTopLayer(block.getKey())).sendBlockChange(player, blockLoc);
 		}
+		isVisible = true;
 	}
 	
 	public void addLayer(int layerIndex, Collection<Block> blocks, BlockType blockType) {

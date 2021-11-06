@@ -1,4 +1,4 @@
-name: TangledMaze
+name: TangledMazePlus
 version: ${project.version}
 main: me.gorgeousone.tangledmaze.TangledMazePlugin
 api-version: 1.13
