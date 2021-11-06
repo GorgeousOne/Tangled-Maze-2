@@ -6,12 +6,14 @@ import org.bukkit.Material;
 import java.util.AbstractMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * A class for storing block types with a count. It allows picking blocks at random with differently weighted chances.
  */
 public class BlockPalette {
 	
+	private static final Random random = new Random();
 	private final LinkedList<Map.Entry<BlockType, Integer>> blocks;
 	private int size;
 	
@@ -33,6 +35,10 @@ public class BlockPalette {
 		if (blocks.add(new AbstractMap.SimpleEntry<>(data, count))) {
 			size += count;
 		}
+	}
+	
+	public BlockType getRndBlock() {
+		return getBlock(random.nextInt(size));
 	}
 	
 	/**

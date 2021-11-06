@@ -36,7 +36,7 @@ public class BuildHandler {
 		if (mazePart != MazePart.WALLS && !sessionHandler.hasBackup(maze)) {
 			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
 		}
-		sessionHandler.backupMaze(maze);
+		sessionHandler.backupMaze(maze, settings);
 		MazeBackup backup = sessionHandler.getBackup(maze);
 		backup.createMazeMapIfAbsent(settings);
 		MazeMap mazeMap = backup.getMazeMap();
@@ -44,6 +44,7 @@ public class BuildHandler {
 		createBlockSegments(backup, mazePart, mazeMap, settings);
 		Set<BlockSegment> segments = backup.getSegments(mazePart);
 		
+		settings.computePaletteIfAbsent(mazePart);
 		new BlockPlacer(mazeMap.getWorld(), collectBlocks(segments), settings.getPalette(mazePart), ConfigSettings.BLOCKS_PLACED_PER_TICK, backupBlocks -> {
 			boolean isFirstBuild = backup.hasBlocks(mazePart);
 			backup.setBlocksIfAbsent(mazePart, backupBlocks);

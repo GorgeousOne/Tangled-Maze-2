@@ -20,7 +20,7 @@ public class PathTree {
 	
 	private int maxExitDist;
 	
-	public PathTree(int index) {
+	public PathTree() {
 		openEnds = new ArrayList<>();
 		cells = new HashSet<>();
 		intersections = new HashSet<>();
@@ -30,6 +30,9 @@ public class PathTree {
 		return cells.size();
 	}
 	
+	/**
+	 * Returns true if no paths can be added at any path end anymore.
+	 */
 	public boolean isComplete() {
 		return openEnds.isEmpty();
 	}

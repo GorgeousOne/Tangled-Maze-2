@@ -63,7 +63,7 @@ public class BuildMazeCommand extends ArgCommand {
 		if (argValues.size() != 0) {
 			try {
 				BlockPalette palette = deserializeBlockPalette(argValues);
-				settings.setPalette(palette, mazePart);
+				settings.setPalette(mazePart, palette);
 			} catch (TextException e) {
 				e.sendTextTo(sender);
 			}

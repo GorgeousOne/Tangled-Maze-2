@@ -8,10 +8,9 @@ public class MazeMap {
 	private final World world;
 	private final Vec2 mapMin;
 	private final Vec2 mapMax;
-	private transient final AreaType[][] areaTypeMap;
-	private transient final int[][] terrainMap;
+	private final AreaType[][] areaTypeMap;
+	private final int[][] terrainMap;
 	private GridMap gridMap;
-	//	private List<PathTree> pathTrees;
 	
 	public MazeMap(World world, Vec2 min, Vec2 max) {
 		this.world = world;
@@ -96,14 +95,6 @@ public class MazeMap {
 	public void setGridMap(GridMap gridMap) {
 		this.gridMap = gridMap;
 	}
-	
-	//	public List<PathTree> getPathTrees() {
-	//		return pathTrees;
-	//	}
-	
-	//	public void setPathTrees(List<PathTree> pathTrees) {
-	//		this.pathTrees = pathTrees;
-	//	}
 	
 	public void flip() {
 		for (int x = 0; x < terrainMap.length; ++x) {

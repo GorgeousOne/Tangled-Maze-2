@@ -8,6 +8,7 @@ import me.gorgeousone.tangledmaze.util.Vec2;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -20,17 +21,17 @@ public class PathGen {
 	private static final Random RANDOM = new Random();
 	private static final int maxLinkedSegmentCount = 4;
 	
-	public static List<PathTree> genPaths(GridMap gridMap, int curliness) {
+	public static void genPaths(GridMap gridMap, int curliness) {
 		List<PathTree> pathTrees = createPathTrees(gridMap.getPathStarts());
 		List<PathTree> openPathTrees = new ArrayList<>(pathTrees);
 		
 		PathTree currentTree = openPathTrees.get(0);
 		int linkedSegmentCount = 1;
 		boolean lastSegmentWasExtended = false;
+		GridCell currentPathEnd;
 		
 		while (!openPathTrees.isEmpty()) {
-			GridCell currentPathEnd;
-			//continue last path end or pick random after n connected paths
+			//continues generating at last path end or picks random after n connected segments
 			if (linkedSegmentCount <= maxLinkedSegmentCount) {
 				currentPathEnd = currentTree.getLastEnd();
 				linkedSegmentCount++;
@@ -53,25 +54,19 @@ public class PathGen {
 					continue;
 				}
 			}
-			//choose one random available direction and create new path towards that
-			Direction rndFacing = availableDirs.get(RANDOM.nextInt(availableDirs.size()));
-			GridCell newPathEnd = pavePath(currentPathEnd, rndFacing, gridMap);
-			//to make longer straight segments which will look more fancy
-			if (!lastSegmentWasExtended) {
-				lastSegmentWasExtended = extendPath(newPathEnd, rndFacing, RANDOM.nextInt(curliness - 1) + 1, gridMap);
-			} else {
-				lastSegmentWasExtended = false;
-			}
+			lastSegmentWasExtended = generatePathSegment(currentPathEnd, availableDirs, gridMap, curliness, lastSegmentWasExtended);
 		}
-		linkPathTrees2(gridMap, pathTrees);
-		return pathTrees;
+		linkPathTrees(gridMap, pathTrees);
 	}
 	
+	/**
+	 * Returns a list of PathTrees each starting at a different path start
+	 */
 	private static List<PathTree> createPathTrees(List<GridCell> pathStarts) {
 		List<PathTree> pathTrees = new ArrayList<>();
 		
 		for (GridCell pathStart : pathStarts) {
-			PathTree tree = new PathTree(pathStarts.indexOf(pathStart));
+			PathTree tree = new PathTree();
 			tree.addSegment(pathStart, null);
 			pathTrees.add(tree);
 		}
@@ -79,16 +74,7 @@ public class PathGen {
 	}
 	
 	private static PathTree getSmallestTree(List<PathTree> pathTrees) {
-		int min = Integer.MAX_VALUE;
-		PathTree minTree = null;
-		
-		for (PathTree tree : pathTrees) {
-			if (tree.size() < min) {
-				minTree = tree;
-				min = tree.size();
-			}
-		}
-		return minTree;
+		return pathTrees.stream().min(Comparator.comparingInt(PathTree::size)).orElse(null);
 	}
 	
 	/**
@@ -113,24 +99,21 @@ public class PathGen {
 	}
 	
 	/**
-	 * Sets the path type of the next 2 grid cells to PAVED in the given direction
-	 *
-	 * @return the latter new path segment
+	 * Creates path segment on the grid map and extends it if possible
+	 * @return true if the path segment extended at least once
 	 */
-	private static GridCell pavePath(GridCell pathEnd, Direction facing, GridMap gridMap) {
-		Vec2 facingVec = facing.getVec2();
-		Vec2 newPath1 = pathEnd.getGridPos().add(facingVec);
-		Vec2 newPath2 = newPath1.clone().add(facingVec);
+	private static boolean generatePathSegment(GridCell currentPathEnd,
+	                                           List<Direction> availableDirs,
+	                                           GridMap gridMap,
+	                                           int curliness,
+	                                           boolean lastSegmentWasExtended) {
+		Direction rndFacing = availableDirs.get(RANDOM.nextInt(availableDirs.size()));
+		GridCell newPathEnd = pavePath(currentPathEnd, rndFacing, gridMap);
 		
-		gridMap.setPathType(newPath1, PathType.PAVED);
-		gridMap.setPathType(newPath2, PathType.PAVED);
-		
-		PathTree tree = pathEnd.getTree();
-		GridCell newSegment1 = gridMap.getCell(newPath1);
-		GridCell newSegment2 = gridMap.getCell(newPath2);
-		tree.addSegment(newSegment1, pathEnd);
-		tree.addSegment(newSegment2, newSegment1);
-		return newSegment2;
+		if (!lastSegmentWasExtended && curliness > 1) {
+			return extendPath(newPathEnd, rndFacing, RANDOM.nextInt(curliness - 1) + 1, gridMap);
+		}
+		return false;
 	}
 	
 	/**
@@ -158,13 +141,34 @@ public class PathGen {
 	}
 	
 	/**
+	 * Sets the path type of the next 2 grid cells to PAVED in the given direction
+	 *
+	 * @return the latter new path segment
+	 */
+	private static GridCell pavePath(GridCell pathEnd, Direction facing, GridMap gridMap) {
+		Vec2 facingVec = facing.getVec2();
+		Vec2 newPath1 = pathEnd.getGridPos().add(facingVec);
+		Vec2 newPath2 = newPath1.clone().add(facingVec);
+		
+		gridMap.setPathType(newPath1, PathType.PAVED);
+		gridMap.setPathType(newPath2, PathType.PAVED);
+		
+		PathTree tree = pathEnd.getTree();
+		GridCell newSegment1 = gridMap.getCell(newPath1);
+		GridCell newSegment2 = gridMap.getCell(newPath2);
+		tree.addSegment(newSegment1, pathEnd);
+		tree.addSegment(newSegment2, newSegment1);
+		return newSegment2;
+	}
+	
+	/**
 	 * Connects the paths of the given path trees to each other trying to always find the longest path
 	 * between the exit of one tree to the exit of the other one.
 	 *
 	 * @param gridMap   to look up maze segments on
 	 * @param pathTrees to connect to each other
 	 */
-	private static void linkPathTrees2(GridMap gridMap, List<PathTree> pathTrees) {
+	private static void linkPathTrees(GridMap gridMap, List<PathTree> pathTrees) {
 		while (true) {
 			Set<Map.Entry<GridCell, GridCell>> treeLinks = new HashSet<>();
 			

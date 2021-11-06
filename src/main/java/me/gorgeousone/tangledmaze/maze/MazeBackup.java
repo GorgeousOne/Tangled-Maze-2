@@ -14,18 +14,24 @@ import java.util.function.Function;
 public class MazeBackup {
 	
 	private final Clip maze;
+	private final MazeSettings settings;
 	private MazeMap mazeMap;
 	private final Map<MazePart, Set<BlockSegment>> partSegments;
 	private final Map<MazePart, Set<BlockLocType>> partBlocks;
 	
-	public MazeBackup(Clip maze) {
+	public MazeBackup(Clip maze, MazeSettings settings) {
 		this.maze = maze;
+		this.settings = settings;
 		partSegments = new HashMap<>();
 		partBlocks = new HashMap<>();
 	}
 	
 	public Clip getMaze() {
 		return maze;
+	}
+	
+	public MazeSettings getSettings() {
+		return settings;
 	}
 	
 	public void createMazeMapIfAbsent(MazeSettings settings) {
@@ -52,10 +58,6 @@ public class MazeBackup {
 	
 	public Set<BlockLocType> getBlocks(MazePart mazePart) {
 		return partBlocks.get(mazePart);
-	}
-	
-	public void setSegments(MazePart mazePart, Set<BlockSegment> segments) {
-		partSegments.put(mazePart, segments);
 	}
 	
 	/**

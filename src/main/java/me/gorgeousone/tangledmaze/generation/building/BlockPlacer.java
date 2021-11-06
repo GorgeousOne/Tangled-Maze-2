@@ -10,12 +10,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.Set;
 
 public final class BlockPlacer extends BukkitRunnable {
 	
-	private final Random random = new Random();
 	private final Set<BlockLocType> backupBlocks = new HashSet<>();
 	
 	private final World world;
@@ -57,7 +55,7 @@ public final class BlockPlacer extends BukkitRunnable {
 		Block block = world.getBlockAt(blockVec.getX(), blockVec.getY(), blockVec.getZ());
 		
 		if (MaterialUtil.canBeReplaced(block.getType())) {
-			BlockType type = palette.getBlock(random.nextInt(palette.size()));
+			BlockType type = palette.getRndBlock();
 			backupBlocks.add(new BlockLocType(block.getLocation(), type).updateBlock(false));
 		}
 	}

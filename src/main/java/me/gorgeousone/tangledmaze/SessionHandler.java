@@ -76,12 +76,16 @@ public class SessionHandler implements Listener {
 		return mazeSettings.get(playerId);
 	}
 	
+	public void setSettings(UUID playerId, MazeSettings settings) {
+		mazeSettings.put(playerId, settings);
+	}
+	
 	public boolean hasBackup(Clip maze) {
 		return mazeBackups.containsKey(maze);
 	}
 	
-	public void backupMaze(Clip maze) {
-		mazeBackups.computeIfAbsent(maze, backup -> new MazeBackup(maze));
+	public void backupMaze(Clip maze, MazeSettings settings) {
+		mazeBackups.computeIfAbsent(maze, backup -> new MazeBackup(maze, settings));
 	}
 	
 	public MazeBackup getBackup(Clip maze) {
