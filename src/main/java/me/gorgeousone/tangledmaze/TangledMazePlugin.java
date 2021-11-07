@@ -35,8 +35,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TangledMazePlugin extends JavaPlugin {
 	
-	private static final int resourceId = 76591;
-	private static final String resourceName = "tangled-maze-plus-1-13";
+	private static final int resourceId = 59284;
+	private static final String resourceName = "tangled-maze-maze-generator";
 	private static final String updateInfoUrl = "https://pastebin.com/raw/BRJfXpPu";
 	
 	private SessionHandler sessionHandler;
