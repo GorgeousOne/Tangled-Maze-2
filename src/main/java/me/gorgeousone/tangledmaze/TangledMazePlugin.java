@@ -48,7 +48,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
-		BlockType.configureVersion(VersionUtil.IS_LEGACY_SERVER);
+		configureAPI();
 		sessionHandler = new SessionHandler();
 		toolHandler = new ToolHandler(sessionHandler);
 		renderHandler = new RenderHandler(this, sessionHandler);
@@ -72,6 +72,13 @@ public final class TangledMazePlugin extends JavaPlugin {
 		loadConfigSettings();
 		loadLanguage();
 		checkForUpdates();
+	}
+	
+	/**
+	 * Configures settings needed if the plugin jar is used as API
+	 */
+	public static void configureAPI() {
+		BlockType.configureVersion(VersionUtil.IS_LEGACY_SERVER);
 	}
 	
 	public SessionHandler getSessionHandler() {

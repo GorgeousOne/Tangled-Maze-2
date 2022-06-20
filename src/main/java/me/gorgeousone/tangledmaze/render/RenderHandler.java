@@ -146,6 +146,11 @@ public class RenderHandler implements Listener {
 	 */
 	@EventHandler
 	public void onClipDelete(ClipDeleteEvent event) {
+		UUID playerId = event.getClip().getOwnerId();
+		
+		if (!isPlayer(playerId)) {
+			return;
+		}
 		RenderSession session = getPlayerRender(event.getPlayerId());
 		session.removeLayer(CLIP_RESIZE_LAYER, false);
 		session.removeLayer(CLIP_BORDER_LAYER, true);
@@ -158,6 +163,10 @@ public class RenderHandler implements Listener {
 	@EventHandler
 	public void onClipActionProcess(ClipActionProcessEvent event) {
 		UUID playerId = event.getClip().getOwnerId();
+		
+		if (!isPlayer(playerId)) {
+			return;
+		}
 		RenderSession session = getPlayerRender(playerId);
 		ClipAction change = event.getAction();
 		
@@ -170,8 +179,11 @@ public class RenderHandler implements Listener {
 	@EventHandler
 	public void onExitSet(MazeExitSetEvent event) {
 		UUID playerId = event.getMaze().getOwnerId();
-		RenderSession session = getPlayerRender(playerId);
 		
+		if (!isPlayer(playerId)) {
+			return;
+		}
+		RenderSession session = getPlayerRender(playerId);
 		session.removeFromLayer(MAZE_EXIT_LAYER, event.getRemovedExits(), true);
 		session.removeFromLayer(MAZE_MAIN_EXIT_LAYER, event.getRemovedMainExits(), true);
 		session.addToLayer(MAZE_MAIN_EXIT_LAYER, event.getAddedMainExits());
@@ -241,6 +253,6 @@ public class RenderHandler implements Listener {
 	}
 	
 	private boolean isPlayer(UUID senderId) {
-		return null != Bukkit.getPlayer(senderId);
+		return null != senderId && null != Bukkit.getPlayer(senderId);
 	}
 }
