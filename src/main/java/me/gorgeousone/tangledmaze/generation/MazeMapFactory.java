@@ -1,6 +1,6 @@
 package me.gorgeousone.tangledmaze.generation;
 
-import      me.gorgeousone.tangledmaze.clip.Clip;
+import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.generation.paving.ExitSegment;
 import me.gorgeousone.tangledmaze.generation.paving.PathGen;
 import me.gorgeousone.tangledmaze.generation.paving.PathType;

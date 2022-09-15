@@ -19,7 +19,7 @@ public class UpdateInfo {
 		this.resourceId = resourceId;
 		
 		String[] split = updateInfo.split(";");
-		version = new Version(split[0], "\\.");
+		version = new Version(split[0]);
 		description = split[1];
 	}
 	

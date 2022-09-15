@@ -2,7 +2,11 @@ package me.gorgeousone.tangledmaze.generation;
 
 import me.gorgeousone.tangledmaze.generation.paving.PathTree;
 import me.gorgeousone.tangledmaze.util.BlockVec;
+import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class GridCell {
 	
@@ -66,5 +70,44 @@ public class GridCell {
 	
 	public void setParent(GridCell parent) {
 		this.parent = parent;
+	}
+	
+	/**
+	 * Returns the
+	 *
+	 * @param x
+	 * @param z
+	 * @return
+	 */
+	public Set<Direction> getWallFacings(int x, int z) {
+		Set<Direction> facings = new HashSet<>();
+		
+		if (x == min.getX()) {
+			facings.add(Direction.WEST);
+			
+			if (z == min.getZ()) {
+				facings.add(Direction.NORTH_WEST);
+			}
+			if (z == max.getZ() - 1) {
+				facings.add(Direction.SOUTH_WEST);
+			}
+		}
+		if (x == max.getX() - 1) {
+			facings.add(Direction.EAST);
+			
+			if (z == min.getZ()) {
+				facings.add(Direction.NORTH_EAST);
+			}
+			if (z == max.getZ() - 1) {
+				facings.add(Direction.SOUTH_EAST);
+			}
+		}
+		if (z == min.getZ()) {
+			facings.add(Direction.NORTH);
+		}
+		if (z == max.getZ() - 1) {
+			facings.add(Direction.SOUTH);
+		}
+		return facings;
 	}
 }

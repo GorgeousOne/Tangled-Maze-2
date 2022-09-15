@@ -1,7 +1,5 @@
 package me.gorgeousone.tangledmaze.tool;
 
-import me.gorgeousone.tangledmaze.clip.ClipType;
-
 public enum ToolType {
 	EXIT_SETTER("exit setter", "exit", "entrance"),
 	BRUSH("brush", "brush", "eraser");

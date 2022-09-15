@@ -1,6 +1,6 @@
 package me.gorgeousone.tangledmaze.updatecheck;
 
-import me.gorgeousone.tangledmaze.util.Version;
+import me.gorgeousone.tangledmaze.util.VersionUtil;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -17,14 +17,12 @@ public class UpdateCheck {
 	private final int resourceId;
 	private final String resourceName;
 	private final String updateInfoPasteUrl;
-	private final Version currentVersion;
 	
 	public UpdateCheck(JavaPlugin plugin, int resourceId, String resourceName, String updateInfoPasteUrl) {
 		this.plugin = plugin;
 		this.resourceId = resourceId;
 		this.resourceName = resourceName;
 		this.updateInfoPasteUrl = updateInfoPasteUrl;
-		this.currentVersion = new Version(plugin.getDescription().getVersion(), "\\.");
 	}
 	
 	public void run() {
@@ -49,7 +47,7 @@ public class UpdateCheck {
 		Scanner scanner = new Scanner(inputStream);
 		UpdateInfo latestUpdate = new UpdateInfo(scanner.nextLine(), resourceName, resourceId);
 		
-		if (currentVersion.isLower(latestUpdate.getVersion())) {
+		if (VersionUtil.PLUGIN_VERSION.isBelow(latestUpdate.getVersion())) {
 			return latestUpdate;
 		}
 		return null;

@@ -55,7 +55,7 @@ public class Message {
 		COMMAND_ADD_CUT = createHelpText("/maze add/cut", helps, "add-cut-command");
 		
 		COMMAND_TOOL = createHelpText("/maze tool <tool>", helps, "tool-command");
-		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "rectangle", helps,"tools.rectangle"));
+		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "rectangle", helps, "tools.rectangle"));
 		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "circle", helps, "tools.circle"));
 		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "exit", helps, "tools.exit"));
 		COMMAND_TOOL.add(createHelpText(ChatColor.YELLOW + "brush", helps, "tools.brush"));

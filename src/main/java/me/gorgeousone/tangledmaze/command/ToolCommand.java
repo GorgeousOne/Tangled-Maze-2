@@ -1,6 +1,5 @@
 package me.gorgeousone.tangledmaze.command;
 
-import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.clip.ClipType;
 import me.gorgeousone.tangledmaze.cmdframework.argument.ArgType;
 import me.gorgeousone.tangledmaze.cmdframework.argument.ArgValue;
@@ -12,14 +11,9 @@ import me.gorgeousone.tangledmaze.tool.ToolType;
 import me.gorgeousone.tangledmaze.util.text.Placeholder;
 import org.bukkit.command.CommandSender;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class ToolCommand extends ArgCommand {
 	
@@ -59,6 +53,7 @@ public class ToolCommand extends ArgCommand {
 	
 	/**
 	 * Tries to deserialize and set a ClipType
+	 *
 	 * @param clipArgument
 	 * @return true if clipArgument matched a ClipType
 	 */

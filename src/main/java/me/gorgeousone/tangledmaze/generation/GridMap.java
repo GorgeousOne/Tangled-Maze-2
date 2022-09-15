@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A class that devides the area of a maze map into a grid of cells where path and wall segments can be identified and generated more easily.
+ * A class that divides the area of a maze map into a grid of cells where path and wall segments can be identified and generated more easily.
  */
 public class GridMap {
 	
@@ -315,6 +315,7 @@ public class GridMap {
 		
 		return new GridCell(segmentStart, segmentSize, new Vec2(gridX, gridZ));
 	}
+	
 	
 	//	public Vec2 getBlockLoc(int gridX, int gridZ) {
 	//		return new Vec2(
