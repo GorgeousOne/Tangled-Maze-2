@@ -16,9 +16,9 @@ import java.util.Map;
 
 public class MazeMapFactory {
 	
-	public static MazeMap createMazeMapOf(Clip maze, MazeSettings settings) {
+	public static MazeMap createMazeMapOf(Clip maze, MazeSettings settings, int worldMinY) {
 		Map.Entry<Vec2, Vec2> clipBounds = calculateClipBounds(maze);
-		MazeMap map = new MazeMap(maze.getWorld(), clipBounds.getKey(), clipBounds.getValue());
+		MazeMap map = new MazeMap(maze.getWorld(), clipBounds.getKey(), clipBounds.getValue(), worldMinY);
 		copyMazeOntoMazeMap(maze, map);
 		
 		TerrainEditor.levelOffSpikes(map);
@@ -123,6 +123,7 @@ public class MazeMapFactory {
 		}
 		for (int gridX = 0; gridX < gridMap.getWidth(); ++gridX) {
 			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {
+				
 				gridMap.setWallY(gridX, gridZ, calcWallY(gridMap, new Vec2(gridX, gridZ), wallHeight));
 			}
 		}

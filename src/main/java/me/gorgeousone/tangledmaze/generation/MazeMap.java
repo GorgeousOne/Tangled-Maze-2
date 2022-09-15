@@ -3,6 +3,8 @@ package me.gorgeousone.tangledmaze.generation;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.World;
 
+import java.util.Arrays;
+
 /**
  * Class that stores 2D arrays with area types and terrain height, and a grid map
  */
@@ -15,7 +17,7 @@ public class MazeMap {
 	private final int[][] terrainMap;
 	private GridMap gridMap;
 	
-	public MazeMap(World world, Vec2 min, Vec2 max) {
+	public MazeMap(World world, Vec2 min, Vec2 max, int worldMinY) {
 		this.world = world;
 		this.mapMin = min;
 		this.mapMax = max.add(1, 1);
@@ -24,6 +26,12 @@ public class MazeMap {
 		int sizeZ = max.getZ() - min.getZ();
 		areaTypeMap = new AreaType[sizeX][sizeZ];
 		terrainMap = new int[sizeX][sizeZ];
+		
+		if (worldMinY != 0) {
+			for (int[] rows : terrainMap) {
+				Arrays.fill(rows, worldMinY);
+			}
+		}
 	}
 	
 	public World getWorld() {

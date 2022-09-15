@@ -26,15 +26,15 @@ public class RoofGen extends Gen {
 		return roofSegments;
 	}
 	
-	private static BlockCollection addRoofSegment(BlockCollection roof,
-	                                              MazeMap mazeMap,
-	                                              GridMap gridMap,
-	                                              GridCell cell,
-	                                              int roofWidth) {
+	private static void addRoofSegment(BlockCollection roof,
+	                                   MazeMap mazeMap,
+	                                   GridMap gridMap,
+	                                   GridCell cell,
+	                                   int roofWidth) {
 		Set<Vec2> columns = getColumns(cell, mazeMap, null);
 		
 		if (columns.isEmpty()) {
-			return null;
+			return;
 		}
 		Vec2 gridPos = cell.getGridPos();
 		int roofY = gridMap.getWallY(gridPos) + 1;
@@ -44,17 +44,14 @@ public class RoofGen extends Gen {
 			
 			for (Direction wallFacing : cell.getWallFacings(column.getX(), column.getZ())) {
 				Vec2 neighborCellPos = gridPos.clone().add(wallFacing.getVec2());
-				int neighborRoofY = gridMap.getWallY(neighborCellPos) + 1;
 				
-				if (neighborRoofY == 0) {
-					continue;
+				if (gridMap.contains(neighborCellPos)) {
+					maxNeighborRoofY = Math.max(maxNeighborRoofY, gridMap.getWallY(neighborCellPos) + 1);
 				}
-				maxNeighborRoofY = Math.max(maxNeighborRoofY, neighborRoofY);
 			}
 			for (int y = roofY; y < maxNeighborRoofY + roofWidth; ++y) {
 				roof.addBlock(column.getX(), y, column.getZ());
 			}
 		}
-		return roof;
 	}
 }

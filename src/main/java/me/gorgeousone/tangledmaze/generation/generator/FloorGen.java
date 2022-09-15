@@ -39,7 +39,7 @@ public class FloorGen {
 				int minFloorY = maxFloorY;
 				
 				for (Vec2 neighbor : BlockUtil.getNeighbors(column.getX(), column.getZ(), 1)) {
-					if (null != mazeMap.getType(neighbor)) {
+					if (mazeMap.contains(neighbor)) {
 						minFloorY = Math.min(minFloorY, mazeMap.getY(neighbor));
 					}
 				}

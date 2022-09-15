@@ -19,7 +19,7 @@ public class TerrainEditor {
 		
 		for (int x = min.getX(); x < max.getX(); ++x) {
 			for (int z = min.getZ(); z < max.getZ(); ++z) {
-				if (!mazeMap.contains(x, z)) {
+				if (mazeMap.getType(x, z) == null) {
 					continue;
 				}
 				int floorY = mazeMap.getY(x, z);

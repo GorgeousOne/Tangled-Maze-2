@@ -6,6 +6,7 @@ import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.generation.BlockCollection;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.generation.MazeMapFactory;
+import me.gorgeousone.tangledmaze.util.BlockUtil;
 import me.gorgeousone.tangledmaze.util.VersionUtil;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockLocType;
 
@@ -45,7 +46,7 @@ public class MazeBackup {
 	
 	public void createMazeMapIfAbsent(MazeSettings settings) {
 		if (null == mazeMap) {
-			this.mazeMap = MazeMapFactory.createMazeMapOf(maze, settings);
+			this.mazeMap = MazeMapFactory.createMazeMapOf(maze, settings, BlockUtil.getWorldMinHeight(maze.getWorld()));
 		}
 	}
 	
