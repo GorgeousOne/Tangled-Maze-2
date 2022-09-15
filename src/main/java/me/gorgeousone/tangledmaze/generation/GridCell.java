@@ -8,6 +8,9 @@ import me.gorgeousone.tangledmaze.util.Vec2;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A class that
+ */
 public class GridCell {
 	
 	private final Vec2 min;
@@ -73,10 +76,10 @@ public class GridCell {
 	}
 	
 	/**
-	 * Returns the
+	 * Returns a set of directions in which the world x and z coordinate are border of the grid cell
 	 *
-	 * @param x
-	 * @param z
+	 * @param x world x coordinate inside a grid cell
+	 * @param z world z coordinate inside a grid cell
 	 * @return
 	 */
 	public Set<Direction> getWallFacings(int x, int z) {

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A class that divides the area of a maze map into a grid of cells where path and wall segments can be identified and generated more easily.
+ * A class that divides the area of a maze map into a grid of cells with path type, floor ys and wall ys for each cell.
  */
 public class GridMap {
 	
@@ -94,64 +94,46 @@ public class GridMap {
 		setPathType(gridPos.getX(), gridPos.getZ(), type);
 	}
 	
-	public int getFloorY(Vec2 gridPos) {
-		return getFloorY(gridPos.getX(), gridPos.getZ());
-	}
-	
 	/**
 	 * Returns the maximum floor height for the whole grid cell
 	 */
-	public int getFloorY(int gridX, int gridZ) {
-		if (!contains(gridX, gridZ)) {
-			return -1;
+	public int getFloorY(Vec2 gridPos) {
+		if (!contains(gridPos.getX(), gridPos.getZ())) {
+			throw new IllegalArgumentException("Floor " + gridPos.getX() + ", " + gridPos.getZ() + " out of grid map.");
 		}
-		return floorYs[gridX][gridZ];
-	}
-	
-	public void setFloorY(Vec2 gridPos, int y) {
-		setFloorY(gridPos.getX(), gridPos.getZ(), y);
+		return floorYs[gridPos.getX()][gridPos.getZ()];
 	}
 	
 	public void setFloorY(int gridX, int gridZ, int y) {
 		floorYs[gridX][gridZ] = y;
 	}
 	
-	public int getWallY(Vec2 gridPos) {
-		return getWallY(gridPos.getX(), gridPos.getZ());
-	}
-	
-	public int getWallY(Vec2 gridPos, int wallHeight) {
-		return getWallY(gridPos.getX(), gridPos.getZ(), wallHeight);
-	}
-	
-	/**
-	 * Returns the y height of a wall segment in the grid. Returns floorY + wallHeight if not set
-	 */
-	public int getWallY(int gridX, int gridZ, int wallHeight) {
-		int wallY = getWallY(gridX, gridZ);
-		
-		if (wallY == 0) {
-			wallY = getFloorY(gridX, gridZ) + wallHeight;
-		}
-		return wallY;
-	}
-	
 	/**
 	 * Returns the y height of a wall segment in the grid. Returns 0 if not set
 	 */
-	public int getWallY(int gridX, int gridZ) {
-		if (!contains(gridX, gridZ)) {
-			return -1;
+	public int getWallY(Vec2 gridPos) {
+		if (!contains(gridPos.getX(), gridPos.getZ())) {
+			throw new IllegalArgumentException("Wall " + gridPos.getX() + ", " + gridPos.getZ() + " out of grid map.");
 		}
-		return wallYs[gridX][gridZ];
+		return wallYs[gridPos.getX()][gridPos.getZ()];
 	}
 	
+	/**
+	 * Sets the top y coordinate of a grid...
+	 * @param gridX
+	 * @param gridZ
+	 * @param y
+	 */
 	public void setWallY(int gridX, int gridZ, int y) {
 		wallYs[gridX][gridZ] = y;
 	}
 	
 	public void setPathType(int gridX, int gridZ, PathType type) {
 		pathTypes[gridX][gridZ] = type;
+	}
+	
+	public boolean contains(Vec2 gridPos) {
+		return contains(gridPos.getX(), gridPos.getZ());
 	}
 	
 	public boolean contains(int gridX, int gridZ) {
@@ -178,7 +160,7 @@ public class GridMap {
 	
 	/**
 	 * Creates an exit segment extending to the next grid cell.
-	 * Then optionally creates a left or right turn in order to perfectly end on a conjunction
+	 * Then optionally creates a left or right turn in order to perfectly end on a path conjunction
 	 */
 	public void setExit(Vec2 exitBlockLoc, Direction facing) {
 		Vec2 exitStart = calculateExitStart(exitBlockLoc, facing, pathWidth);
@@ -207,7 +189,8 @@ public class GridMap {
 			chosenTurn = chooseLeft ? leftTurn : rightTurn;
 			ExitSegment otherTurn = chooseLeft ? rightTurn : leftTurn;
 			
-			//stops paths from reaching an exit from the opposite side
+			//places a blocked path at tje opposite side of chosen turn
+			//to prevent path generator to connect a second path to the exit
 			if (otherTurn.length() > otherTurn.width() && otherTurn.length() < 2 * otherTurn.width() + 1) {
 				setPathType(getGridPos(otherTurn.getEnd()), PathType.BLOCKED);
 			}
@@ -315,13 +298,4 @@ public class GridMap {
 		
 		return new GridCell(segmentStart, segmentSize, new Vec2(gridX, gridZ));
 	}
-	
-	
-	//	public Vec2 getBlockLoc(int gridX, int gridZ) {
-	//		return new Vec2(
-	//				(gridX / 2) * gridMeshSize,
-	//				(gridZ / 2) * gridMeshSize).add(
-	//				(gridX % 2) * pathWidth,
-	//				(gridZ % 2) * pathWidth);
-	//	}
 }

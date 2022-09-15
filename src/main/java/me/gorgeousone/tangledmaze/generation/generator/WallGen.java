@@ -47,7 +47,10 @@ public class WallGen extends Gen {
 		
 		for (Direction facing : Direction.fourCardinals()) {
 			Vec2 neighborCell = gridPos.clone().add(facing.getVec2());
-			maxFloorY = Math.max(maxFloorY, gridMap.getFloorY(neighborCell));
+			
+			if (gridMap.contains(neighborCell)) {
+				maxFloorY = Math.max(maxFloorY, gridMap.getFloorY(neighborCell));
+			}
 		}
 		for (Vec2 column : columns) {
 			for (int y = mazeMap.getY(column) + 1; y <= gridMap.getWallY(gridPos); ++y) {

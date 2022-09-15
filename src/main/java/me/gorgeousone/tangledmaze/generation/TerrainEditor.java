@@ -19,7 +19,7 @@ public class TerrainEditor {
 		
 		for (int x = min.getX(); x < max.getX(); ++x) {
 			for (int z = min.getZ(); z < max.getZ(); ++z) {
-				if (mazeMap.getType(x, z) == null) {
+				if (!mazeMap.contains(x, z)) {
 					continue;
 				}
 				int floorY = mazeMap.getY(x, z);
@@ -38,10 +38,8 @@ public class TerrainEditor {
 		List<Integer> neighborYs = new LinkedList<>();
 		
 		for (Vec2 neighbor : BlockUtil.getNeighbors(x, z, radius)) {
-			int y = mazeMap.getY(neighbor);
-			
-			if (y != -1) {
-				neighborYs.add(y);
+			if (mazeMap.contains(neighbor)) {
+				neighborYs.add(mazeMap.getY(neighbor));
 			}
 		}
 		return neighborYs;

@@ -20,7 +20,7 @@ public class RoofGen extends Gen {
 		for (int gridX = 0; gridX < gridMap.getWidth(); ++gridX) {
 			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {
 				GridCell cell = gridMap.getCell(gridX, gridZ);
-				addRoofSegment(roofSegments, mazeMap, gridMap, cell, settings.getValue(MazeProperty.WALL_HEIGHT), settings.getValue(MazeProperty.ROOF_WIDTH));
+				addRoofSegment(roofSegments, mazeMap, gridMap, cell, settings.getValue(MazeProperty.ROOF_WIDTH));
 			}
 		}
 		return roofSegments;
@@ -30,7 +30,6 @@ public class RoofGen extends Gen {
 	                                              MazeMap mazeMap,
 	                                              GridMap gridMap,
 	                                              GridCell cell,
-	                                              int wallHeight,
 	                                              int roofWidth) {
 		Set<Vec2> columns = getColumns(cell, mazeMap, null);
 		
@@ -38,14 +37,14 @@ public class RoofGen extends Gen {
 			return null;
 		}
 		Vec2 gridPos = cell.getGridPos();
-		int roofY = gridMap.getWallY(gridPos, wallHeight) + 1;
+		int roofY = gridMap.getWallY(gridPos) + 1;
 		
 		for (Vec2 column : columns) {
 			int maxNeighborRoofY = roofY;
 			
 			for (Direction wallFacing : cell.getWallFacings(column.getX(), column.getZ())) {
 				Vec2 neighborCellPos = gridPos.clone().add(wallFacing.getVec2());
-				int neighborRoofY = gridMap.getWallY(neighborCellPos, wallHeight) + 1;
+				int neighborRoofY = gridMap.getWallY(neighborCellPos) + 1;
 				
 				if (neighborRoofY == 0) {
 					continue;

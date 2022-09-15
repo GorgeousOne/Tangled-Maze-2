@@ -3,6 +3,9 @@ package me.gorgeousone.tangledmaze.generation;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.World;
 
+/**
+ * Class that stores 2D arrays with area types and terrain height, and a grid map
+ */
 public class MazeMap {
 	
 	private final World world;
@@ -33,6 +36,10 @@ public class MazeMap {
 	
 	public Vec2 getMax() {
 		return mapMax.clone();
+	}
+	
+	public boolean contains(Vec2 loc) {
+		return contains(loc.getX(), loc.getZ());
 	}
 	
 	public boolean contains(int x, int z) {
@@ -75,7 +82,7 @@ public class MazeMap {
 	
 	public int getY(int x, int z) {
 		if (!contains(x, z)) {
-			return -1;
+			throw new IllegalArgumentException("Position " + x + ", " + z + " out of maze map.");
 		}
 		return terrainMap[x - mapMin.getX()][z - mapMin.getZ()];
 	}
