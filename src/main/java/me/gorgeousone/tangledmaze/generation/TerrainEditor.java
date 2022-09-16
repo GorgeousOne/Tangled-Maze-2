@@ -38,10 +38,8 @@ public class TerrainEditor {
 		List<Integer> neighborYs = new LinkedList<>();
 		
 		for (Vec2 neighbor : BlockUtil.getNeighbors(x, z, radius)) {
-			int y = mazeMap.getY(neighbor);
-			
-			if (y != -1) {
-				neighborYs.add(y);
+			if (mazeMap.contains(neighbor)) {
+				neighborYs.add(mazeMap.getY(neighbor));
 			}
 		}
 		return neighborYs;

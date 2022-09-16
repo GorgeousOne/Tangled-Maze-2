@@ -1,6 +1,5 @@
 package me.gorgeousone.tangledmaze.listener;
 
-import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import org.bukkit.entity.Player;

@@ -143,6 +143,7 @@ public class ClickListener implements Listener {
 	
 	/**
 	 * Hides all clips of a player if the player interacts with any block if them
+	 *
 	 * @param player
 	 * @param clickedBlock
 	 */
@@ -166,6 +167,7 @@ public class ClickListener implements Listener {
 	
 	/**
 	 * Returns hovered clicked block if hover clicking enabled. Otherwise
+	 *
 	 * @param player
 	 * @param clickedBlock
 	 * @return

@@ -6,7 +6,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.awt.event.ActionListener;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.Set;
 
 public class BlockResetter extends BukkitRunnable {

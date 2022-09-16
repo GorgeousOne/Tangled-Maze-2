@@ -100,6 +100,7 @@ public class PathGen {
 	
 	/**
 	 * Creates path segment on the grid map and extends it if possible
+	 *
 	 * @return true if the path segment extended at least once
 	 */
 	private static boolean generatePathSegment(GridCell currentPathEnd,

@@ -29,13 +29,11 @@ public class BlockUtil {
 	}
 	
 	public static Block getSurface(Block block) {
-		block.getRelative(BlockFace.DOWN);
-		
 		if (MaterialUtil.isSolidFloor(block.getType())) {
 			Block surfaceBlock = block;
 			Location nextBlockLoc = block.getLocation();
 			
-			while (nextBlockLoc.getY() < block.getWorld().getMaxHeight() - 1) {
+			while (nextBlockLoc.getY() < block.getWorld().getMaxHeight()) {
 				nextBlockLoc.add(0, 1, 0);
 				Block nextBlock = nextBlockLoc.getBlock();
 				
@@ -49,7 +47,7 @@ public class BlockUtil {
 		} else {
 			Location nextBlockLoc = block.getLocation();
 			
-			while (nextBlockLoc.getY() > 1) {
+			while (nextBlockLoc.getY() > getWorldMinHeight(block.getWorld())) {
 				nextBlockLoc.add(0, -1, 0);
 				Block nextBlock = nextBlockLoc.getBlock();
 				
@@ -85,4 +83,11 @@ public class BlockUtil {
 		));
 	}
 	
+	public static int getWorldMinHeight(World world) {
+		try {
+			return world.getMinHeight();
+		} catch (Exception noSuchMethodException) {
+			return 0;
+		}
+	}
 }

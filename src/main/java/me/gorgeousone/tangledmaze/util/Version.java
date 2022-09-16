@@ -1,10 +1,16 @@
 package me.gorgeousone.tangledmaze.util;
 
+import java.util.Objects;
+
 public class Version {
 	
 	int major;
 	int minor;
 	int patch;
+	
+	public Version(String versionString) {
+		this(versionString, "\\.");
+	}
 	
 	public Version(String versionString, String delimiter) {
 		String[] split = versionString.split(delimiter);
@@ -13,7 +19,7 @@ public class Version {
 		patch = Integer.parseInt(split[2]);
 	}
 	
-	public boolean isLower(Version other) {
+	public boolean isBelow(Version other) {
 		int[] intArray = new int[]{major, minor, patch};
 		int[] otherIntArray = new int[]{other.major, other.minor, other.patch};
 		
@@ -27,6 +33,23 @@ public class Version {
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Version)) {
+			return false;
+		}
+		Version version = (Version) o;
+		return major == version.major && minor == version.minor && patch == version.patch;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(major, minor, patch);
 	}
 	
 	@Override

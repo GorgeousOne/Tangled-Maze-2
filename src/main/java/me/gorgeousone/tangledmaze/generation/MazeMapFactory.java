@@ -1,11 +1,12 @@
 package me.gorgeousone.tangledmaze.generation;
 
-import      me.gorgeousone.tangledmaze.clip.Clip;
+import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.generation.paving.ExitSegment;
 import me.gorgeousone.tangledmaze.generation.paving.PathGen;
 import me.gorgeousone.tangledmaze.generation.paving.PathType;
 import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
+import me.gorgeousone.tangledmaze.util.BlockUtil;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
@@ -15,13 +16,13 @@ import java.util.Map;
 
 public class MazeMapFactory {
 	
-	public static MazeMap createMazeMapOf(Clip maze, MazeSettings settings) {
+	public static MazeMap createMazeMapOf(Clip maze, MazeSettings settings, int worldMinY) {
 		Map.Entry<Vec2, Vec2> clipBounds = calculateClipBounds(maze);
-		MazeMap map = new MazeMap(maze.getWorld(), clipBounds.getKey(), clipBounds.getValue());
+		MazeMap map = new MazeMap(maze.getWorld(), clipBounds.getKey(), clipBounds.getValue(), worldMinY);
 		copyMazeOntoMazeMap(maze, map);
 		
 		TerrainEditor.levelOffSpikes(map);
-		MazeMapFactory.createPaths(map, maze.getExits(), settings);
+		MazeMapFactory.createPaths(map, maze.getExits(), settings, BlockUtil.getWorldMinHeight(maze.getWorld()));
 		map.flip();
 		TerrainEditor.cleanWallEdges(map);
 		return map;
@@ -74,7 +75,7 @@ public class MazeMapFactory {
 	 * Creates a grid map for the maze and generates the paths on it.
 	 * Saves grid map and path trees in maze map.
 	 */
-	public static void createPaths(MazeMap mazeMap, List<Vec2> exits, MazeSettings settings) {
+	public static void createPaths(MazeMap mazeMap, List<Vec2> exits, MazeSettings settings, int worldMinY) {
 		GridMap gridMap = new GridMap(
 				mazeMap.getMin(),
 				mazeMap.getMax(),
@@ -86,7 +87,7 @@ public class MazeMapFactory {
 			
 			if (i == 0) {
 				gridMap.setEntrance(exitLoc, getExitFacing(exitLoc, mazeMap));
-				copyMazeOntoGrid(mazeMap, gridMap, settings.getValue(MazeProperty.WALL_HEIGHT));
+				copyMazeOntoGrid(mazeMap, gridMap, settings.getValue(MazeProperty.WALL_HEIGHT), worldMinY);
 			} else {
 				gridMap.setExit(exitLoc, getExitFacing(exitLoc, mazeMap));
 			}
@@ -107,12 +108,12 @@ public class MazeMapFactory {
 		throw new IllegalArgumentException("Exit " + exit + " does not touch the maze.");
 	}
 	
-	private static void copyMazeOntoGrid(MazeMap mazeMap, GridMap gridMap, int wallHeight) {
+	private static void copyMazeOntoGrid(MazeMap mazeMap, GridMap gridMap, int wallHeight, int worldMinY) {
 		for (int gridX = 0; gridX < gridMap.getWidth(); ++gridX) {
 			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {
 				
 				GridCell cell = gridMap.getCell(gridX, gridZ);
-				int floorY = getCellFloorY(cell, mazeMap);
+				int floorY = getCellFloorY(cell, mazeMap, worldMinY);
 				gridMap.setFloorY(gridX, gridZ, floorY);
 				
 				if (!isCellFree(gridMap.getCell(gridX, gridZ), mazeMap)) {
@@ -122,20 +123,42 @@ public class MazeMapFactory {
 		}
 		for (int gridX = 0; gridX < gridMap.getWidth(); ++gridX) {
 			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {
+				
 				gridMap.setWallY(gridX, gridZ, calcWallY(gridMap, new Vec2(gridX, gridZ), wallHeight));
 			}
 		}
 	}
 	
 	/**
-	 * Calculates wall height for a GridCell to be as high as walls of surrounding cellsq
+	 * Returns max y coordinate of floor found in a grid cell
+	 */
+	private static int getCellFloorY(GridCell cell, MazeMap mazeMap, int worldMinY) {
+		Vec2 cellMin = cell.getMin();
+		Vec2 cellMax = cell.getMax();
+		int maxY = worldMinY;
+		
+		for (int x = cellMin.getX(); x < cellMax.getX(); ++x) {
+			for (int z = cellMin.getZ(); z < cellMax.getZ(); ++z) {
+				if (mazeMap.contains(x, z)) {
+					maxY = Math.max(maxY, mazeMap.getY(x, z));
+				}
+			}
+		}
+		return maxY;
+	}
+	
+	/**
+	 * Calculates wall height for a GridCell to be as high as walls of surrounding cells
 	 */
 	private static int calcWallY(GridMap gridMap, Vec2 gridPos, int wallHeight) {
 		int maxFloorY = gridMap.getFloorY(gridPos) + wallHeight;
 		
 		for (Direction facing : Direction.fourCardinals()) {
 			Vec2 neighborCell = gridPos.clone().add(facing.getVec2());
-			maxFloorY = Math.max(maxFloorY, gridMap.getFloorY(neighborCell) + 2);
+			
+			if (gridMap.contains(neighborCell)) {
+				maxFloorY = Math.max(maxFloorY, gridMap.getFloorY(neighborCell) + 2);
+			}
 		}
 		return maxFloorY;
 	}
@@ -167,21 +190,5 @@ public class MazeMapFactory {
 			}
 		}
 		return true;
-	}
-	
-	/**
-	 * Returns max y coordinate of floor found in a grid cell
-	 */
-	private static int getCellFloorY(GridCell cell, MazeMap mazeMap) {
-		Vec2 cellMin = cell.getMin();
-		Vec2 cellMax = cell.getMax();
-		int maxY = -1;
-		
-		for (int x = cellMin.getX(); x < cellMax.getX(); ++x) {
-			for (int z = cellMin.getZ(); z < cellMax.getZ(); ++z) {
-				maxY = Math.max(maxY, mazeMap.getY(x, z));
-			}
-		}
-		return maxY;
 	}
 }

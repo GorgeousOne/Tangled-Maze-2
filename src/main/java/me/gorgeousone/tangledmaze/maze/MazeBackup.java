@@ -1,9 +1,13 @@
 package me.gorgeousone.tangledmaze.maze;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import me.gorgeousone.tangledmaze.clip.Clip;
-import me.gorgeousone.tangledmaze.generation.BlockSegment;
+import me.gorgeousone.tangledmaze.generation.BlockCollection;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.generation.MazeMapFactory;
+import me.gorgeousone.tangledmaze.util.BlockUtil;
+import me.gorgeousone.tangledmaze.util.VersionUtil;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockLocType;
 
 import java.util.HashMap;
@@ -13,17 +17,23 @@ import java.util.function.Function;
 
 public class MazeBackup {
 	
+	@SerializedName(value = "version")
+	@Expose(deserialize = false)
+	private final String versionString = VersionUtil.PLUGIN_VERSION.toString();
+	
 	private final Clip maze;
 	private final MazeSettings settings;
 	private MazeMap mazeMap;
-	private final Map<MazePart, Set<BlockSegment>> partSegments;
-	private final Map<MazePart, Set<BlockLocType>> partBlocks;
+	@SerializedName(value = "partBlockLocs", alternate = "partSegments")
+	private final Map<MazePart, BlockCollection> partBlockLocs;
+	@SerializedName(value = "partBlockTypes", alternate = "partBlocks")
+	private final Map<MazePart, Set<BlockLocType>> partBlocksTypes;
 	
 	public MazeBackup(Clip maze, MazeSettings settings) {
 		this.maze = maze;
 		this.settings = settings;
-		partSegments = new HashMap<>();
-		partBlocks = new HashMap<>();
+		partBlockLocs = new HashMap<>();
+		partBlocksTypes = new HashMap<>();
 	}
 	
 	public Clip getMaze() {
@@ -36,7 +46,7 @@ public class MazeBackup {
 	
 	public void createMazeMapIfAbsent(MazeSettings settings) {
 		if (null == mazeMap) {
-			this.mazeMap = MazeMapFactory.createMazeMapOf(maze, settings);
+			this.mazeMap = MazeMapFactory.createMazeMapOf(maze, settings, BlockUtil.getWorldMinHeight(maze.getWorld()));
 		}
 	}
 	
@@ -45,19 +55,19 @@ public class MazeBackup {
 	}
 	
 	public Set<MazePart> getBuiltParts() {
-		return partBlocks.keySet();
+		return partBlocksTypes.keySet();
 	}
 	
-	public Set<BlockSegment> getSegments(MazePart mazePart) {
-		return partSegments.get(mazePart);
+	public BlockCollection getPartBlockLocs(MazePart mazePart) {
+		return partBlockLocs.get(mazePart);
 	}
 	
-	public void computeSegmentsIfAbsent(MazePart mazePart, Function<MazePart, Set<BlockSegment>> mappingFunction) {
-		partSegments.computeIfAbsent(mazePart, mappingFunction);
+	public void computeSegmentsIfAbsent(MazePart mazePart, Function<MazePart, BlockCollection> mappingFunction) {
+		partBlockLocs.computeIfAbsent(mazePart, mappingFunction);
 	}
 	
 	public Set<BlockLocType> getBlocks(MazePart mazePart) {
-		return partBlocks.get(mazePart);
+		return partBlocksTypes.get(mazePart);
 	}
 	
 	/**
@@ -65,15 +75,15 @@ public class MazeBackup {
 	 * Returns true if this maze part didn't yet have backup blocks.
 	 */
 	public void setBlocksIfAbsent(MazePart mazePart, Set<BlockLocType> backupBlocks) {
-		partBlocks.putIfAbsent(mazePart, backupBlocks);
+		partBlocksTypes.putIfAbsent(mazePart, backupBlocks);
 	}
 	
 	public boolean hasBlocks(MazePart mazePart) {
-		return partBlocks.containsKey(mazePart);
+		return partBlocksTypes.containsKey(mazePart);
 	}
 	
 	public void removeMazePart(MazePart mazePart) {
-		partSegments.remove(mazePart);
-		partBlocks.remove(mazePart);
+		partBlockLocs.remove(mazePart);
+		partBlocksTypes.remove(mazePart);
 	}
 }

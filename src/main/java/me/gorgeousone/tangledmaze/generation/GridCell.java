@@ -2,8 +2,15 @@ package me.gorgeousone.tangledmaze.generation;
 
 import me.gorgeousone.tangledmaze.generation.paving.PathTree;
 import me.gorgeousone.tangledmaze.util.BlockVec;
+import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * A class that
+ */
 public class GridCell {
 	
 	private final Vec2 min;
@@ -66,5 +73,44 @@ public class GridCell {
 	
 	public void setParent(GridCell parent) {
 		this.parent = parent;
+	}
+	
+	/**
+	 * Returns a set of directions in which the world x and z coordinate are border of the grid cell
+	 *
+	 * @param x world x coordinate inside a grid cell
+	 * @param z world z coordinate inside a grid cell
+	 * @return
+	 */
+	public Set<Direction> getWallFacings(int x, int z) {
+		Set<Direction> facings = new HashSet<>();
+		
+		if (x == min.getX()) {
+			facings.add(Direction.WEST);
+			
+			if (z == min.getZ()) {
+				facings.add(Direction.NORTH_WEST);
+			}
+			if (z == max.getZ() - 1) {
+				facings.add(Direction.SOUTH_WEST);
+			}
+		}
+		if (x == max.getX() - 1) {
+			facings.add(Direction.EAST);
+			
+			if (z == min.getZ()) {
+				facings.add(Direction.NORTH_EAST);
+			}
+			if (z == max.getZ() - 1) {
+				facings.add(Direction.SOUTH_EAST);
+			}
+		}
+		if (z == min.getZ()) {
+			facings.add(Direction.NORTH);
+		}
+		if (z == max.getZ() - 1) {
+			facings.add(Direction.SOUTH);
+		}
+		return facings;
 	}
 }

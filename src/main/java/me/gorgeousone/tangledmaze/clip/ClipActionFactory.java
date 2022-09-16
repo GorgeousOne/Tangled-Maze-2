@@ -149,7 +149,7 @@ public class ClipActionFactory {
 			}
 		}
 	}
-
+	
 	public static ClipAction expandBorder(Clip maze, Block block) {
 		if (!maze.isBorderBlock(block)) {
 			return null;
