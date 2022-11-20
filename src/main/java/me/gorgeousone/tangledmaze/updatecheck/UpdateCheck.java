@@ -65,9 +65,13 @@ public class UpdateCheck {
 	private void sendStaffInfo(BaseComponent[] message) {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (player.isOp()) {
-				player.spigot().sendMessage(message);
+				try {
+					player.spigot().sendMessage(message);
+				} catch (NoSuchMethodError ignored) {}
 			}
 		}
-		Bukkit.getConsoleSender().spigot().sendMessage(message);
+		try {
+			Bukkit.getConsoleSender().spigot().sendMessage(message);
+		} catch (NoSuchMethodError ignored) {}
 	}
 }

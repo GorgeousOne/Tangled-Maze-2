@@ -86,7 +86,7 @@ public class BlockUtil {
 	public static int getWorldMinHeight(World world) {
 		try {
 			return world.getMinHeight();
-		} catch (Exception noSuchMethodException) {
+		} catch (NoSuchMethodError legacyError) {
 			return 0;
 		}
 	}
