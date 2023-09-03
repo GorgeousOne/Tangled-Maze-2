@@ -28,7 +28,7 @@ public class UndoCommand extends BaseCommand {
 			Message.ERROR_MAZE_MISSING.sendTo(sender);
 			return;
 		}
-		if (!maze.isActive()) {
+		if (!maze.isEditable()) {
 			Message.INFO_MAZE_NOT_EDITABLE.sendTo(sender);
 			return;
 		}

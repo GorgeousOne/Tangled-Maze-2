@@ -4,21 +4,20 @@ import me.gorgeousone.tangledmaze.util.blocktype.BlockLocType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.Set;
 
 public class BlockResetter extends BukkitRunnable {
 	
 	private final JavaPlugin plugin;
-	private final ActionListener callback;
+	private final Runnable callback;
 	private final int blocksPerTick;
 	private final Iterator<BlockLocType> blockIter;
 	
 	public BlockResetter(JavaPlugin plugin,
 	                     Set<BlockLocType> blocks,
 	                     int blocksPerTick,
-	                     ActionListener callback) {
+	                     Runnable callback) {
 		this.plugin = plugin;
 		this.callback = callback;
 		this.blocksPerTick = blocksPerTick;
@@ -39,10 +38,11 @@ public class BlockResetter extends BukkitRunnable {
 			}
 		}
 		if (callback != null) {
+			//why is this delay here?
 			new BukkitRunnable() {
 				@Override
 				public void run() {
-					callback.actionPerformed(null);
+					callback.run();
 				}
 			}.runTaskLater(plugin, 2);
 			this.cancel();
@@ -55,6 +55,6 @@ public class BlockResetter extends BukkitRunnable {
 				return true;
 			}
 		}
-		return System.currentTimeMillis() - startTime >= 40;
+		return System.currentTimeMillis() - startTime >= 25;
 	}
 }

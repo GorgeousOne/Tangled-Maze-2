@@ -66,15 +66,18 @@ public class BuildMazeCommand extends ArgCommand {
 				settings.setPalette(mazePart, palette);
 			} catch (TextException e) {
 				e.sendTextTo(sender);
+				return;
 			}
 		}
 		try {
-			buildHandler.buildMaze(playerId, maze, settings, mazePart);
+			setAsync(sender);
+			buildHandler.buildMaze(playerId, maze, settings, mazePart, () -> finishAsync(sender));
 		} catch (TextException e) {
 			e.sendTextTo(sender);
+			finishAsync(sender);
 			return;
 		}
-		maze.setActive(false);
+		maze.setEditable(false);
 		toolHandler.resetClipTool(playerId);
 	}
 	

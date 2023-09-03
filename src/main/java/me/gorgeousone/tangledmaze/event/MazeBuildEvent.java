@@ -10,19 +10,17 @@ public class MazeBuildEvent extends Event {
 	
 	private static final HandlerList HANDLERS = new HandlerList();
 	private final Clip maze;
-	private final UUID playerId;
 	
-	public MazeBuildEvent(Clip maze, UUID playerId) {
+	public MazeBuildEvent(Clip maze) {
 		this.maze = maze;
-		this.playerId = playerId;
 	}
 	
 	public Clip getMaze() {
 		return maze;
 	}
 	
-	public UUID getPlayerId() {
-		return playerId;
+	public UUID getOwnerId() {
+		return maze.getOwnerId();
 	}
 	
 	@Override

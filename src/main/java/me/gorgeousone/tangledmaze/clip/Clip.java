@@ -34,7 +34,7 @@ public class Clip {
 	private final Set<Vec2> border;
 	private final List<Vec2> exits;
 	private final Stack<ClipAction> actionHistory;
-	private boolean isActive;
+	private boolean isEditable;
 	
 	public Clip(UUID playerId, World world) {
 		this.ownerId = playerId;
@@ -43,7 +43,7 @@ public class Clip {
 		border = new TreeSet<>();
 		exits = new ArrayList<>();
 		actionHistory = new Stack<>();
-		isActive = true;
+		isEditable = true;
 	}
 	
 	public UUID getOwnerId() {
@@ -61,19 +61,19 @@ public class Clip {
 	/**
 	 * Returns true if the clip is editable and no built as maze right now
 	 */
-	public boolean isActive() {
-		return isActive;
+	public boolean isEditable() {
+		return isEditable;
 	}
 	
 	/**
 	 * Calls an event to signal a toggle of being editable
 	 */
-	public void setActive(boolean active) {
-		boolean oldState = isActive;
-		isActive = active;
+	public void setEditable(boolean editable) {
+		boolean oldState = isEditable;
+		isEditable = editable;
 		
-		if (oldState != active) {
-			Bukkit.getPluginManager().callEvent(new MazeStateChangeEvent(this, active));
+		if (oldState != editable) {
+			Bukkit.getPluginManager().callEvent(new MazeStateChangeEvent(this, editable));
 		}
 	}
 	

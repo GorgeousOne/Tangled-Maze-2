@@ -39,7 +39,7 @@ public class AddClipCommand extends BaseCommand {
 			Message.ERROR_CLIPBOARD_MISSING.sendTo(sender);
 			return;
 		}
-		if (!maze.isActive()) {
+		if (!maze.isEditable()) {
 			Message.INFO_MAZE_NOT_EDITABLE.sendTo(sender);
 			return;
 		}

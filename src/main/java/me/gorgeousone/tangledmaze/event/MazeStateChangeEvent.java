@@ -4,15 +4,18 @@ import me.gorgeousone.tangledmaze.clip.Clip;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+/**
+ * An event that gets called when a maze changes its state of being editable (built / unbuilt).
+ */
 public class MazeStateChangeEvent extends Event {
 	
 	private static final HandlerList HANDLERS = new HandlerList();
 	private final Clip maze;
-	private final boolean isActive;
+	private final boolean isEditable;
 	
-	public MazeStateChangeEvent(Clip maze, boolean isActive) {
+	public MazeStateChangeEvent(Clip maze, boolean isEditable) {
 		this.maze = maze;
-		this.isActive = isActive;
+		this.isEditable = isEditable;
 	}
 	
 	public Clip getMaze() {
@@ -20,7 +23,7 @@ public class MazeStateChangeEvent extends Event {
 	}
 	
 	public boolean isMazeActive() {
-		return isActive;
+		return isEditable;
 	}
 	
 	@Override

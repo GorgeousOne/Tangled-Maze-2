@@ -56,13 +56,9 @@ public class ClickListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerClick(PlayerInteractEvent event) {
-		
-		if (!isMainHand(event)) {
-			return;
-		}
 		Player player = event.getPlayer();
 		
-		if (!player.hasPermission(Constants.BUILD_PERM)) {
+		if (!isMainHand(event) || !player.hasPermission(Constants.BUILD_PERM)) {
 			return;
 		}
 		ItemStack heldItem = getHeldItem(player);
@@ -70,7 +66,7 @@ public class ClickListener implements Listener {
 		
 		if (!isMazeWand(heldItem)) {
 			if (clickedBlock != null) {
-				hideClipsOnClick(player, clickedBlock);
+				hideClickedRender(player, clickedBlock);
 			}
 			return;
 		}
@@ -108,46 +104,13 @@ public class ClickListener implements Listener {
 		return action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK;
 	}
 	
-	private void handleWandClick(UUID playerId, Block clickedBlock, boolean isLeftClick) {
-		ClipTool clipTool = toolHandler.createClipToolIfAbsent(playerId);
-		Clip clip = sessionHandler.getClip(playerId);
-		Clip maze = sessionHandler.getMazeClip(playerId);
-		
-		if (!isOnlyMazeBorderClicked(clipTool, clip, maze, clickedBlock)) {
-			ClipType clipType = toolHandler.createClipTypeIfAbsent(playerId);
-			
-			if (clipTool.getShape() != clipType) {
-				sessionHandler.removeClip(playerId, true);
-				toolHandler.resetClipTool(playerId);
-				clipTool.setType(clipType);
-			}
-			clipTool.addVertex(clickedBlock);
-			return;
-		}
-		
-		switch (toolHandler.createToolIfAbsent(playerId)) {
-			case EXIT_SETTER:
-				if (ClipActionFactory.canBeExit(maze, new Vec2(clickedBlock))) {
-					maze.toggleExit(clickedBlock);
-				}
-				break;
-			case BRUSH:
-				if (isLeftClick) {
-					maze.processAction(ClipActionFactory.expandBorder(maze, clickedBlock), true);
-				} else {
-					maze.processAction(ClipActionFactory.eraseBorder(maze, clickedBlock), true);
-				}
-				break;
-		}
-	}
-	
 	/**
-	 * Hides all clips of a player if the player interacts with any block if them
+	 * Hides all fake block clip renders of a player if the player interacts with any block of them
 	 *
 	 * @param player
 	 * @param clickedBlock
 	 */
-	private void hideClipsOnClick(Player player, Block clickedBlock) {
+	private void hideClickedRender(Player player, Block clickedBlock) {
 		UUID playerId = player.getUniqueId();
 		RenderSession render = renderHandler.getPlayerRender(playerId);
 		
@@ -187,6 +150,31 @@ public class ClickListener implements Listener {
 		return clickedBlock;
 	}
 	
+	private void handleWandClick(UUID playerId, Block clickedBlock, boolean isLeftClick) {
+		ClipTool clipTool = toolHandler.createClipToolIfAbsent(playerId);
+		Clip clip = sessionHandler.getClip(playerId);
+		Clip maze = sessionHandler.getMazeClip(playerId);
+		
+		if (!isOnlyMazeBorderClicked(clipTool, clip, maze, clickedBlock)) {
+			addVertexToClipTool(playerId, clipTool, clickedBlock);
+			return;
+		}
+		switch (toolHandler.createToolIfAbsent(playerId)) {
+			case EXIT_SETTER:
+				if (ClipActionFactory.canBeExit(maze, new Vec2(clickedBlock))) {
+					maze.toggleExit(clickedBlock);
+				}
+				break;
+			case BRUSH:
+				if (isLeftClick) {
+					maze.processAction(ClipActionFactory.expandBorder(maze, clickedBlock), true);
+				} else {
+					maze.processAction(ClipActionFactory.eraseBorder(maze, clickedBlock), true);
+				}
+				break;
+		}
+	}
+	
 	/**
 	 * Returns true if a maze redstone border was clicked and that no gold clip creation was in progress
 	 */
@@ -195,6 +183,17 @@ public class ClickListener implements Listener {
 		       (clip == null || !clip.isBorderBlock(clickedBlock)) &&
 		       !clipTool.getVertices().contains(clickedBlock) &&
 		       (clip != null || clipTool.getVertices().size() == 0);
+	}
+	
+	private void addVertexToClipTool(UUID playerId, ClipTool clipTool, Block clickedBlock) {
+		ClipType clipType = toolHandler.getOrCreateClipType(playerId);
+		
+		if (clipTool.getShape() != clipType) {
+			sessionHandler.removeClip(playerId, true);
+			toolHandler.resetClipTool(playerId);
+			clipTool.setType(clipType);
+		}
+		clipTool.addVertex(clickedBlock);
 	}
 	
 	private void updateClickedBlocks(Player player, Block clickedBlock) {
@@ -238,6 +237,11 @@ public class ClickListener implements Listener {
 		}
 	}
 	
+	/**
+	 * Show clip renders if player selects wand item in hotbar
+	 *
+	 * @param event
+	 */
 	@EventHandler
 	public void onSlotSwitch(PlayerItemHeldEvent event) {
 		Player player = event.getPlayer();

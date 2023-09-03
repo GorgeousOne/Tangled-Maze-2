@@ -47,9 +47,11 @@ public class UnbuildMazeCommand extends ArgCommand {
 			mazePart = MazePart.ROOF;
 		}
 		try {
-			buildHandler.unbuildMaze(maze, mazePart);
+			setAsync(sender);
+			buildHandler.unbuildMaze(maze, mazePart, () -> finishAsync(sender));
 		} catch (TextException e) {
 			e.sendTextTo(sender);
+			finishAsync(sender);
 		}
 	}
 }

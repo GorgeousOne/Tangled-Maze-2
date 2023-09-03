@@ -33,7 +33,6 @@ public class StartMazeCommand extends BaseCommand {
 			Message.ERROR_CLIPBOARD_MISSING.sendTo(sender);
 			return;
 		}
-		
 		sessionHandler.setMazeClip(playerId, clip);
 		toolHandler.resetClipTool(playerId);
 		Bukkit.getPluginManager().callEvent(new MazeStartEvent(clip));

@@ -13,7 +13,7 @@ help-pages:
         wall-height: height of walls in blocks
         path-width: width of paths to walk on
         wall-width: width of walls of the maze
-        roof-width: width of the roof.
+        roof-width: width of the roof
         curliness: '1: short stretches of path, many turns \n10: long alleys, fewer turns'
     undo-command: Undo the last change to your maze layout like adding or cutting away a clipboard.
     build-command: Builds your maze. Type in names of blocks to build with, e.g.:\n &e/maze build 5*oak_leaves 2*oak_log[axis=y] glowstone&a \nUse the flags -floor or -roof to build different parts of the maze.
@@ -39,10 +39,3 @@ errors:
     invalid-block-property: 'Invalid property ''%property%'' for block ''%block%''.'
     invalid-block-property-value: 'Invalid value ''%value%'' for property ''%property%''.'
     missing-block-property-value: 'Missing property value: ''%property%=...''.'
-plus:
-    backup-saved: 'Saved maze to file &a''%file%''&e.'
-    backup-file-already-exists: 'File ''%file%'' already exists. Use /maze backup <file-name> true to override it.'
-    backup-save-error: 'An error occurred while saving. &7(%error%)'
-    backup-loaded: 'Loaded file &a''%file%''&e.'
-    backup-file-not-found: 'Could not find file ''%file%''.'
-    backup-load-error: 'Unable to load file ''%file%''. Maybe it is damaged? &7(%error%)'

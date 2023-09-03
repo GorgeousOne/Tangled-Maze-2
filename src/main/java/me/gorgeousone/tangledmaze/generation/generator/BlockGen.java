@@ -8,7 +8,7 @@ import me.gorgeousone.tangledmaze.util.Vec2;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class Gen {
+public abstract class BlockGen {
 	
 	protected static Set<Vec2> getColumns(GridCell cell, MazeMap mazeMap, AreaType areaType) {
 		Vec2 min = cell.getMin();

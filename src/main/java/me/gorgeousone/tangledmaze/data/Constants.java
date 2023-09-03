@@ -31,12 +31,14 @@ public class Constants {
 		for (String materialName : (List<String>) materialLists.getList("transparent-solids")) {
 			try {
 				TRANSPARENT_SOLIDS.add(Material.valueOf(materialName));
-			} catch (IllegalArgumentException ignored) {}
+			} catch (IllegalArgumentException ignored) {
+			}
 		}
 		for (String materialName : (List<String>) materialLists.getList("not-replaceables")) {
 			try {
 				NOT_REPLACEABLES.add(Material.valueOf(materialName));
-			} catch (IllegalArgumentException ignored) {}
+			} catch (IllegalArgumentException ignored) {
+			}
 		}
 	}
 }

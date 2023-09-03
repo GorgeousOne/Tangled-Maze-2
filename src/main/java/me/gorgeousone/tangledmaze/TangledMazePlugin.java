@@ -35,8 +35,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TangledMazePlugin extends JavaPlugin {
 	
-	private static final int resourceId = 59284;
-	private static final String resourceName = "tangled-maze-maze-generator";
+	private static final int resourceId = 76591;
+	private static final String resourceName = "tangled-maze-plus-1-13";
 	private static final String updateInfoUrl = "https://pastebin.com/raw/BRJfXpPu";
 	
 	private SessionHandler sessionHandler;
@@ -91,8 +91,6 @@ public final class TangledMazePlugin extends JavaPlugin {
 	
 	void registerListeners() {
 		PluginManager manager = Bukkit.getPluginManager();
-		manager.registerEvents(sessionHandler, this);
-		manager.registerEvents(toolHandler, this);
 		manager.registerEvents(renderHandler, this);
 		manager.registerEvents(new ClickListener(this, sessionHandler, toolHandler, renderHandler), this);
 		manager.registerEvents(new PlayerQuitListener(sessionHandler, renderHandler, toolHandler), this);
@@ -104,7 +102,6 @@ public final class TangledMazePlugin extends JavaPlugin {
 		mazeCmd = new ParentCommand("tangledmaze");
 		mazeCmd.addAlias("maze");
 		mazeCmd.addAlias("tm");
-		mazeCmd.setChildrenName("just tab");
 		mazeCmd.setPermission(Constants.BUILD_PERM);
 		
 		mazeCmd.addChild(new HelpCommand());

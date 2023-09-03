@@ -6,7 +6,7 @@ import org.bukkit.World;
 import java.util.Arrays;
 
 /**
- * Class that stores 2D arrays with area types and terrain height, and a grid map
+ * Class that stores 2D arrays with area types and terrain height of a maze, and a grid map
  */
 public class MazeMap {
 	

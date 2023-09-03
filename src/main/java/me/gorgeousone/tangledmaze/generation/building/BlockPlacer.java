@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public final class BlockPlacer extends BukkitRunnable {
 	
@@ -18,13 +19,13 @@ public final class BlockPlacer extends BukkitRunnable {
 	
 	private final World world;
 	private final BlockPalette palette;
-	private final BuildCallBack callback;
+	private final Consumer<Set<BlockLocType>> callback;
 	private final int blocksPerTick;
 	private final Iterator<BlockVec> blockIter;
 	
 	public BlockPlacer(World world,
 	                   Set<BlockVec> blocks,
-	                   BlockPalette palette, int blocksPerTick, BuildCallBack callback) {
+	                   BlockPalette palette, int blocksPerTick, Consumer<Set<BlockLocType>> callback) {
 		this.world = world;
 		this.callback = callback;
 		this.palette = palette;
@@ -46,7 +47,7 @@ public final class BlockPlacer extends BukkitRunnable {
 			}
 		}
 		if (callback != null) {
-			callback.onBuildFinish(backupBlocks);
+			callback.accept(backupBlocks);
 			this.cancel();
 		}
 	}
@@ -66,6 +67,6 @@ public final class BlockPlacer extends BukkitRunnable {
 				return true;
 			}
 		}
-		return System.currentTimeMillis() - startTime >= 40;
+		return System.currentTimeMillis() - startTime >= 25;
 	}
 }

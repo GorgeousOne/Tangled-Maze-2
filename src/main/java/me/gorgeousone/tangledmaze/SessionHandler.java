@@ -12,7 +12,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class SessionHandler implements Listener {
+/**
+ * Stores all data used to build a maze for each player during their time online.
+ */
+public class SessionHandler {
 	
 	private final Map<UUID, Clip> playerClips;
 	private final Map<UUID, Clip> playerMazes;
@@ -92,9 +95,6 @@ public class SessionHandler implements Listener {
 		return mazeBackups.get(maze);
 	}
 	
-	public Set<Clip> getAllBackupedClips() {
-		return mazeBackups.keySet();
-	}
 	
 	public void removeBackup(Clip maze) {
 		mazeBackups.remove(maze);

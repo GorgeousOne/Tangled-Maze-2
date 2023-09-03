@@ -122,7 +122,7 @@ public class RenderHandler implements Listener {
 	}
 	
 	/**
-	 * Renders new created maze clips in redstone
+	 * Starts keeping track of a maze clip to render it if it's visible and the owner is a player.
 	 */
 	@EventHandler
 	public void onMazeStart(MazeStartEvent event) {
@@ -236,7 +236,7 @@ public class RenderHandler implements Listener {
 	}
 	
 	private void displayMaze(RenderSession render, Clip maze) {
-		if (!maze.isActive()) {
+		if (!maze.isEditable()) {
 			return;
 		}
 		render.addLayer(MAZE_BORDER_LAYER, maze.getBlocks(maze.getBorder()), MAZE_BORDER_MAT);

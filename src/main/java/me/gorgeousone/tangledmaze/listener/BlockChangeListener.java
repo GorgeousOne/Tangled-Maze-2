@@ -54,7 +54,7 @@ public class BlockChangeListener implements Listener {
 				}
 			}
 			for (Clip maze : sessionHandler.getPlayerMazes().values()) {
-				if (maze.isActive() && maze.isFillBlock(changedBlock)) {
+				if (maze.isEditable() && maze.isFillBlock(changedBlock)) {
 					clipsToUpdate.add(maze);
 				}
 			}

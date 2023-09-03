@@ -11,7 +11,7 @@ import me.gorgeousone.tangledmaze.util.Vec2;
 
 import java.util.Set;
 
-public class WallGen extends Gen {
+public class WallBlockGen extends BlockGen {
 	
 	public static BlockCollection genWalls(MazeMap mazeMap) {
 		GridMap gridMap = mazeMap.getPathMap();

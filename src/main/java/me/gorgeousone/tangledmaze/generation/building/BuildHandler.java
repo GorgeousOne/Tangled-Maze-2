@@ -5,11 +5,12 @@ import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.data.ConfigSettings;
 import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.event.MazeBuildEvent;
+import me.gorgeousone.tangledmaze.event.MazeUnbuildEvent;
 import me.gorgeousone.tangledmaze.generation.BlockCollection;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.generation.generator.FloorGen;
-import me.gorgeousone.tangledmaze.generation.generator.RoofGen;
-import me.gorgeousone.tangledmaze.generation.generator.WallGen;
+import me.gorgeousone.tangledmaze.generation.generator.RoofBlockGen;
+import me.gorgeousone.tangledmaze.generation.generator.WallBlockGen;
 import me.gorgeousone.tangledmaze.maze.MazeBackup;
 import me.gorgeousone.tangledmaze.maze.MazePart;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
@@ -29,7 +30,7 @@ public class BuildHandler {
 		this.sessionHandler = sessionHandler;
 	}
 	
-	public void buildMaze(UUID playerId, Clip maze, MazeSettings settings, MazePart mazePart) throws TextException {
+	public void buildMaze(UUID playerId, Clip maze, MazeSettings settings, MazePart mazePart, Runnable callback) throws TextException {
 		if (mazePart != MazePart.WALLS && !sessionHandler.hasBackup(maze)) {
 			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
 		}
@@ -40,58 +41,54 @@ public class BuildHandler {
 		
 		createBlockSegments(backup, mazePart, mazeMap, settings);
 		BlockCollection segments = backup.getPartBlockLocs(mazePart);
-		
 		settings.computePaletteIfAbsent(mazePart);
+
 		new BlockPlacer(mazeMap.getWorld(), segments.listBlocks(), settings.getPalette(mazePart), ConfigSettings.BLOCKS_PLACED_PER_TICK, backupBlocks -> {
-			boolean isFirstBuild = backup.hasBlocks(mazePart);
 			backup.setBlocksIfAbsent(mazePart, backupBlocks);
-			
-			if (mazePart == MazePart.WALLS && isFirstBuild) {
-				Bukkit.getPluginManager().callEvent(new MazeBuildEvent(maze, playerId));
-			}
+			Bukkit.getPluginManager().callEvent(new MazeBuildEvent(maze));
+			callback.run();
 		}).runTaskTimer(plugin, 0, 1);
 	}
 	
 	private void createBlockSegments(MazeBackup backup, MazePart mazePart, MazeMap mazeMap, MazeSettings settings) {
 		switch (mazePart) {
 			case WALLS:
-				backup.computeSegmentsIfAbsent(MazePart.WALLS, walls -> WallGen.genWalls(mazeMap));
+				backup.computeSegmentsIfAbsent(MazePart.WALLS, walls -> WallBlockGen.genWalls(mazeMap));
 				break;
 			case FLOOR:
 				backup.computeSegmentsIfAbsent(MazePart.FLOOR, floor -> FloorGen.genFloor(mazeMap));
 				break;
 			case ROOF:
-				backup.computeSegmentsIfAbsent(MazePart.ROOF, roof -> RoofGen.genRoof(mazeMap, settings));
+				backup.computeSegmentsIfAbsent(MazePart.ROOF, roof -> RoofBlockGen.genRoof(mazeMap, settings));
 				break;
 		}
 	}
 	
-	public void unbuildMaze(Clip maze, MazePart mazePart) throws TextException {
+	public void unbuildMaze(Clip maze, MazePart mazePart, Runnable callback) throws TextException {
 		if (!sessionHandler.hasBackup(maze)) {
 			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
 		}
 		MazeBackup backup = sessionHandler.getBackup(maze);
 		
+		//unbuild the whole maze
 		if (mazePart == MazePart.WALLS) {
-			for (MazePart builtPart : backup.getBuiltParts()) {
-				unbuildMazePart(backup, builtPart);
-			}
-			sessionHandler.removeBackup(maze);
+			new BlockResetter(plugin, backup.getAllBlocks(), ConfigSettings.BLOCKS_PLACED_PER_TICK, () -> {
+				backup.removeAllMazeParts();
+				backup.getMaze().updateHeights();
+				backup.getMaze().setEditable(true);
+				Bukkit.getPluginManager().callEvent(new MazeUnbuildEvent(maze));
+				callback.run();
+			}).runTaskTimer(plugin, 0, 1);
 			return;
 		}
 		if (!backup.getBuiltParts().contains(mazePart)) {
+			callback.run();
 			return;
 		}
-		unbuildMazePart(backup, mazePart);
-		backup.removeMazePart(mazePart);
-	}
-	
-	private void unbuildMazePart(MazeBackup backup, MazePart mazePart) {
-		new BlockResetter(plugin, backup.getBlocks(mazePart), ConfigSettings.BLOCKS_PLACED_PER_TICK, callback -> {
-			if (mazePart == MazePart.WALLS) {
-				backup.getMaze().updateHeights();
-				backup.getMaze().setActive(true);
-			}
+		new BlockResetter(plugin, backup.getBlocks(mazePart), ConfigSettings.BLOCKS_PLACED_PER_TICK, () -> {
+			backup.removeMazePart(mazePart);
+			Bukkit.getPluginManager().callEvent(new MazeUnbuildEvent(maze));
+			callback.run();
 		}).runTaskTimer(plugin, 0, 1);
 	}
 }

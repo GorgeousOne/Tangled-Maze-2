@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class MazeBackup {
 	
@@ -65,7 +66,13 @@ public class MazeBackup {
 	public void computeSegmentsIfAbsent(MazePart mazePart, Function<MazePart, BlockCollection> mappingFunction) {
 		partBlockLocs.computeIfAbsent(mazePart, mappingFunction);
 	}
-	
+
+	public Set<BlockLocType> getAllBlocks() {
+		return partBlocksTypes.values().stream()
+				.flatMap(Set::stream)
+				.collect(Collectors.toSet());
+	}
+
 	public Set<BlockLocType> getBlocks(MazePart mazePart) {
 		return partBlocksTypes.get(mazePart);
 	}
@@ -85,5 +92,10 @@ public class MazeBackup {
 	public void removeMazePart(MazePart mazePart) {
 		partBlockLocs.remove(mazePart);
 		partBlocksTypes.remove(mazePart);
+	}
+	
+	public void removeAllMazeParts() {
+		partBlockLocs.clear();
+		partBlocksTypes.clear();
 	}
 }

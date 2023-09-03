@@ -40,8 +40,9 @@ public class SettingsCommand extends ArgCommand {
 		MazeSettings settings = sessionHandler.getSettings(playerId);
 		settings.setValue(property, inputValue);
 		
-		Message.INFO_SETTING_CHANGE.sendTo(sender,
-		                                   new Placeholder("setting", property.textName()),
-		                                   new Placeholder("value", inputValue));
+		Message.INFO_SETTING_CHANGE.sendTo(
+				sender,
+				new Placeholder("setting", property.textName()),
+				new Placeholder("value", settings.getValue(property)));
 	}
 }

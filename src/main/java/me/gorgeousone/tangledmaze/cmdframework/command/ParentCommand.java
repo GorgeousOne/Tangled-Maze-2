@@ -16,12 +16,10 @@ import java.util.stream.Collectors;
 public class ParentCommand extends BaseCommand {
 	
 	private final Set<BaseCommand> children;
-	private String childrenName;
 	
 	public ParentCommand(String name) {
 		super(name);
 		children = new HashSet<>();
-		childrenName = "";
 	}
 	
 	public Set<BaseCommand> getChildren() {
@@ -42,13 +40,9 @@ public class ParentCommand extends BaseCommand {
 		return ChatColor.RED + "/" + getName();
 	}
 	
-	public void setChildrenName(String childrenName) {
-		this.childrenName = childrenName;
-	}
-	
 	@Override
 	public String getUsage() {
-		return super.getUsage() + " <" + childrenName + ">";
+		return super.getUsage() + " <>";
 	}
 	
 	@Override
@@ -59,7 +53,9 @@ public class ParentCommand extends BaseCommand {
 		}
 		for (BaseCommand child : children) {
 			if (child.matchesAlias(args[0])) {
-				child.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
+				//makes it impossible for parent command to run callback twice
+				Runnable callback = executeCallbacks.remove(getSenderId(sender));
+				child.execute(sender, Arrays.copyOfRange(args, 1, args.length), callback);
 				return;
 			}
 		}

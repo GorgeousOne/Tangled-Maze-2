@@ -13,7 +13,7 @@ import java.util.UUID;
 /**
  * Class
  */
-public class ToolHandler implements Listener {
+public class ToolHandler {
 	
 	private final SessionHandler sessionHandler;
 	private final Map<UUID, ToolType> playerToolTypes;
@@ -61,7 +61,7 @@ public class ToolHandler implements Listener {
 	}
 	
 	public boolean setClipType(UUID playerId, ClipType newClipType) {
-		ClipType oldClipType = createClipTypeIfAbsent(playerId);
+		ClipType oldClipType = getOrCreateClipType(playerId);
 		
 		if (oldClipType == newClipType) {
 			return false;
@@ -98,7 +98,7 @@ public class ToolHandler implements Listener {
 		}
 	}
 	
-	public ClipType createClipTypeIfAbsent(UUID playerId) {
+	public ClipType getOrCreateClipType(UUID playerId) {
 		playerClipTypes.putIfAbsent(playerId, ClipType.RECTANGLE);
 		return playerClipTypes.get(playerId);
 	}
