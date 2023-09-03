@@ -167,7 +167,7 @@ public abstract class BaseCommand {
 	/**
 	 * Marks the command execution as finished for the sender and unblocks the senders command queue.
 	 */
-	protected void finishAsync(CommandSender sender) {
+	public void finishAsync(CommandSender sender) {
 		UUID senderId = getSenderId(sender);
 		
 		if (executeCallbacks.containsKey(senderId)) {

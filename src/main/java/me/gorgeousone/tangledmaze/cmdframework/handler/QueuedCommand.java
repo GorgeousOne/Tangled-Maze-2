@@ -1,6 +1,7 @@
 package me.gorgeousone.tangledmaze.cmdframework.handler;
 
 import me.gorgeousone.tangledmaze.cmdframework.command.BaseCommand;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class QueuedCommand {
@@ -28,6 +29,12 @@ public class QueuedCommand {
 	}
 	
 	public void execute(Runnable callback) {
-		command.execute(sender, args, callback);
+		try {
+			command.execute(sender, args, callback);
+		} catch (Exception e) {
+			sender.sendMessage(ChatColor.RED + "An internal error occurred while attempting to perform this command");
+			e.printStackTrace();
+			command.finishAsync(sender);
+		}
 	}
 }
