@@ -30,7 +30,7 @@ public class BuildHandler {
 		this.sessionHandler = sessionHandler;
 	}
 	
-	public void buildMaze(UUID playerId, Clip maze, MazeSettings settings, MazePart mazePart, Runnable callback) throws TextException {
+	public void buildMaze(Clip maze, MazeSettings settings, MazePart mazePart, Runnable callback) throws TextException {
 		if (mazePart != MazePart.WALLS && !sessionHandler.hasBackup(maze)) {
 			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
 		}

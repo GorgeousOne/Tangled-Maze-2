@@ -71,7 +71,7 @@ public class BuildMazeCommand extends ArgCommand {
 		}
 		try {
 			setAsync(sender);
-			buildHandler.buildMaze(playerId, maze, settings, mazePart, () -> finishAsync(sender));
+			buildHandler.buildMaze(maze, settings, mazePart, () -> finishAsync(sender));
 		} catch (TextException e) {
 			e.sendTextTo(sender);
 			finishAsync(sender);

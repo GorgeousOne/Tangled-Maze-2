@@ -35,9 +35,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TangledMazePlugin extends JavaPlugin {
 	
-	private static final int resourceId = 76591;
-	private static final String resourceName = "tangled-maze-plus-1-13";
+	private static final int resourceId = 59284;
+	private static final String resourceName = "tangled-maze-maze-generator";
 	private static final String updateInfoUrl = "https://pastebin.com/raw/BRJfXpPu";
+	private static TangledMazePlugin instance;
 	
 	private SessionHandler sessionHandler;
 	private ToolHandler toolHandler;
@@ -48,6 +49,8 @@ public final class TangledMazePlugin extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
+		instance = this;
+		
 		configureAPI();
 		sessionHandler = new SessionHandler();
 		toolHandler = new ToolHandler(sessionHandler);
@@ -79,6 +82,13 @@ public final class TangledMazePlugin extends JavaPlugin {
 	 */
 	public static void configureAPI() {
 		BlockType.configureVersion(VersionUtil.IS_LEGACY_SERVER);
+	}
+	
+	/**
+	 * For API use only
+	 */
+	public static TangledMazePlugin getInstance() {
+		return instance;
 	}
 	
 	public SessionHandler getSessionHandler() {
