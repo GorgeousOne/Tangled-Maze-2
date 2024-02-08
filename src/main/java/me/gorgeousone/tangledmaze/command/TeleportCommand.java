@@ -20,6 +20,8 @@ public class TeleportCommand extends BaseCommand {
 	
 	public TeleportCommand(SessionHandler sessionHandler, RenderHandler renderHandler) {
 		super("teleport");
+		addAlias("tp");
+		
 		setPermission(Constants.TP_PERM);
 		setPlayerRequired(true);
 		

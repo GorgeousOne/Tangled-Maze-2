@@ -9,6 +9,7 @@ import me.gorgeousone.tangledmaze.command.GetWandCommand;
 import me.gorgeousone.tangledmaze.command.HelpCommand;
 import me.gorgeousone.tangledmaze.command.ReloadCommand;
 import me.gorgeousone.tangledmaze.command.SettingsCommand;
+import me.gorgeousone.tangledmaze.command.SolveMazeCommand;
 import me.gorgeousone.tangledmaze.command.StartMazeCommand;
 import me.gorgeousone.tangledmaze.command.TeleportCommand;
 import me.gorgeousone.tangledmaze.command.ToolCommand;
@@ -126,6 +127,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 		mazeCmd.addChild(new BuildMazeCommand(sessionHandler, buildHandler, toolHandler));
 		mazeCmd.addChild(new UnbuildMazeCommand(sessionHandler, buildHandler));
 		mazeCmd.addChild(new TeleportCommand(sessionHandler, renderHandler));
+		mazeCmd.addChild(new SolveMazeCommand(sessionHandler, renderHandler));
 		
 		CommandHandler cmdHandler = new CommandHandler(this);
 		cmdHandler.registerCommand(mazeCmd);

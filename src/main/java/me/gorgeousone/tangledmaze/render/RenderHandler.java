@@ -10,6 +10,8 @@ import me.gorgeousone.tangledmaze.event.ClipUpdateEvent;
 import me.gorgeousone.tangledmaze.event.MazeExitSetEvent;
 import me.gorgeousone.tangledmaze.event.MazeStartEvent;
 import me.gorgeousone.tangledmaze.event.MazeStateChangeEvent;
+import me.gorgeousone.tangledmaze.generation.GridCell;
+import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.tool.ClipTool;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
@@ -22,6 +24,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,16 +35,22 @@ import java.util.UUID;
  */
 public class RenderHandler implements Listener {
 	
-	private final static int MAZE_BORDER_LAYER = 10;
-	private final static int MAZE_EXIT_LAYER = 20;
-	private final static int MAZE_MAIN_EXIT_LAYER = 30;
-	private final static int CLIP_BORDER_LAYER = 40;
-	private final static int CLIP_VERTEX_LAYER = 50;
-	private final static int CLIP_RESIZE_LAYER = 60;
+	private static int counter = 0;
+	private final static int MAZE_BORDER_LAYER = ++counter;
+	private final static int MAZE_SOLUTION_LAYER = ++counter;
+
+	private final static int MAZE_EXIT_LAYER = ++counter;
+	private final static int MAZE_MAIN_EXIT_LAYER = ++counter;
+
+	private final static int CLIP_BORDER_LAYER = ++counter;
+	private final static int CLIP_VERTEX_LAYER = ++counter;
+	private final static int CLIP_RESIZE_LAYER = ++counter;
+	
 	
 	private final BlockType MAZE_BORDER_MAT = BlockType.get(Material.REDSTONE_BLOCK);
 	private final BlockType MAZE_MAIN_EXIT_MAT = BlockType.get(Material.DIAMOND_BLOCK);
 	private final BlockType MAZE_EXIT_MAT = BlockType.get(Material.EMERALD_BLOCK);
+	private final BlockType MAZE_SOLUTION_MAT = BlockType.get(Material.EMERALD_BLOCK);
 	private final BlockType CLIP_BORDER_MAT = BlockType.get(Material.GOLD_BLOCK);
 	private final BlockType CLIP_VERTEX_MAT = BlockType.get(Material.LAPIS_BLOCK);
 	private final BlockType CLIP_RESIZE_MAT = BlockType.get(Material.LAPIS_ORE);
@@ -211,6 +220,7 @@ public class RenderHandler implements Listener {
 		RenderSession session = getPlayerRender(playerId);
 		
 		if (event.isMazeActive()) {
+			session.removeLayer(MAZE_SOLUTION_LAYER, true);
 			displayMaze(session, maze);
 		} else {
 			session.removeLayer(MAZE_MAIN_EXIT_LAYER, false);
@@ -233,6 +243,22 @@ public class RenderHandler implements Listener {
 		RenderSession session = getPlayerRender(playerId);
 		session.hide();
 		displayMaze(session, maze);
+	}
+	
+	public void displayMazeSolution(RenderSession session, MazeMap mazeMap, Collection<GridCell> solution) {
+		Map<Vec2, Integer> blocks = new HashMap<>();
+		
+		for (GridCell cell : solution) {
+			Vec2 min = cell.getMin();
+			Vec2 max = cell.getMax();
+			
+			for (int x = min.getX(); x < max.getX(); ++x) {
+				for (int z = min.getZ(); z < max.getZ(); ++z) {
+					blocks.put(new Vec2(x, z), mazeMap.getY(x, z));
+				}
+			}
+		}
+		session.addLayer(MAZE_SOLUTION_LAYER, blocks, MAZE_SOLUTION_MAT);
 	}
 	
 	private void displayMaze(RenderSession render, Clip maze) {

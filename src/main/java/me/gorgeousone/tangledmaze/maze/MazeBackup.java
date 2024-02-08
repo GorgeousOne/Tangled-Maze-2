@@ -94,8 +94,12 @@ public class MazeBackup {
 		partBlocksTypes.remove(mazePart);
 	}
 	
+	/**
+	 * Removes all saved block states of the maze and the maze map
+	 */
 	public void removeAllMazeParts() {
 		partBlockLocs.clear();
 		partBlocksTypes.clear();
+		mazeMap = null;
 	}
 }

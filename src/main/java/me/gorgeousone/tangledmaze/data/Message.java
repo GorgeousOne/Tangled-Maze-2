@@ -8,34 +8,36 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class Message {
 	
 	public static Text
-			COMMAND_WAND,
-			COMMAND_START,
 			COMMAND_ADD_CUT,
-			COMMAND_TOOL,
-			COMMAND_SETTING,
-			COMMAND_UNDO,
 			COMMAND_BUILD,
-			COMMAND_UNBUILD,
+			COMMAND_SETTING,
+			COMMAND_SOLVE,
+			COMMAND_START,
 			COMMAND_TELEPORT,
-			INFO_PLUGIN_RELOAD,
-			INFO_MAZE_WAND_USAGE,
-			INFO_TOOL_SWITCH,
-			INFO_SETTING_CHANGE,
-			INFO_MAZE_NOT_BUILT,
-			INFO_MAZE_NOT_EDITABLE,
+			COMMAND_TOOL,
+			COMMAND_UNBUILD,
+			COMMAND_UNDO,
+			COMMAND_WAND,
 			INFO_MAZE_BUILD,
+			INFO_MAZE_NOT_EDITABLE,
+			INFO_MAZE_NOT_BUILT,
+			INFO_MAZE_SINGLE_EXIT,
 			INFO_MAZE_UNBUILD,
-			ERROR_MISSING_PERMISSION,
+			INFO_MAZE_WAND_USAGE,
+			INFO_PLUGIN_RELOAD,
+			INFO_SETTING_CHANGE,
+			INFO_TOOL_SWITCH,
 			ERROR_CLIPBOARD_MISSING,
-			ERROR_MAZE_MISSING,
 			ERROR_EXIT_MISSING,
-			ERROR_INVALID_TOOL,
-			ERROR_INVALID_SETTING,
 			ERROR_INVALID_BLOCK_NAME,
-			ERROR_INVALID_BLOCK_PROPERTY;
+			ERROR_MISSING_PERMISSION,
+			ERROR_INVALID_BLOCK_PROPERTY,
+			ERROR_INVALID_SETTING,
+			ERROR_INVALID_TOOL,
+			ERROR_MAZE_MISSING;
 	
 	public static Text[] helpPages() {
-		return new Text[]{
+		return new Text[] {
 				COMMAND_WAND,
 				COMMAND_START,
 				COMMAND_ADD_CUT,
@@ -44,7 +46,8 @@ public class Message {
 				COMMAND_UNDO,
 				COMMAND_BUILD,
 				COMMAND_UNBUILD,
-				COMMAND_TELEPORT
+				COMMAND_TELEPORT,
+				COMMAND_SOLVE
 		};
 	}
 	
@@ -71,6 +74,7 @@ public class Message {
 		COMMAND_BUILD = createHelpText("/maze build [maze part] <blocks>...", helps, "build-command");
 		COMMAND_UNBUILD = createHelpText("/maze unbuild [maze part]", helps, "unbuild-command");
 		COMMAND_TELEPORT = createHelpText("/maze teleport", helps, "teleport-command");
+		COMMAND_SOLVE = createHelpText("/maze solve", helps, "solve-command");
 		
 		ConfigurationSection infos = langConfig.getConfigurationSection("infos");
 		INFO_PLUGIN_RELOAD = createInfo("plugin-reload", infos);
@@ -81,6 +85,7 @@ public class Message {
 		INFO_MAZE_NOT_EDITABLE = createInfo("maze-not-editable", infos);
 		INFO_MAZE_BUILD = createInfo("maze-build", infos);
 		INFO_MAZE_UNBUILD = createInfo("maze-unbuild", infos);
+		INFO_MAZE_SINGLE_EXIT = createInfo("maze-single-exit", infos);
 		
 		ConfigurationSection errors = langConfig.getConfigurationSection("errors");
 		ERROR_MISSING_PERMISSION = createError("missing-permission", errors);

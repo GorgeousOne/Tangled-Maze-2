@@ -16,14 +16,14 @@ public class PathTree {
 	private final static Random RANDOM = new Random();
 	private final List<GridCell> openEnds;
 	private final Set<GridCell> cells;
-	private final Set<GridCell> intersections;
+	private final Set<GridCell> junctions;
 	
 	private int maxExitDist;
 	
 	public PathTree() {
 		openEnds = new ArrayList<>();
 		cells = new HashSet<>();
-		intersections = new HashSet<>();
+		junctions = new HashSet<>();
 	}
 	
 	public int size() {
@@ -46,7 +46,7 @@ public class PathTree {
 		maxExitDist = Math.max(exitDist, maxExitDist);
 		
 		if (cell.gridX() % 2 == 0 && cell.gridZ() % 2 == 0) {
-			intersections.add(cell);
+			junctions.add(cell);
 			openEnds.add(0, cell);
 		}
 	}
@@ -55,8 +55,11 @@ public class PathTree {
 		return cells;
 	}
 	
-	public Set<GridCell> getIntersections() {
-		return intersections;
+	/**
+	 * Returns all path cells that are possibly junctions connecting multiple other path cells.
+	 */
+	public Set<GridCell> getJunctions() {
+		return junctions;
 	}
 	
 	public int getMaxExitDist() {
@@ -89,7 +92,7 @@ public class PathTree {
 			cell.setTree(this);
 		}
 		cells.addAll(other.cells);
-		intersections.addAll(other.intersections);
+		junctions.addAll(other.junctions);
 		addSegment(linkSegment, ownSegment);
 		balanceTree(linkSegment, otherSegment);
 	}

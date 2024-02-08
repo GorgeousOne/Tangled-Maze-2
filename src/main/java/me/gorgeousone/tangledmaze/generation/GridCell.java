@@ -6,6 +6,7 @@ import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -112,5 +113,31 @@ public class GridCell {
 			facings.add(Direction.SOUTH);
 		}
 		return facings;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof GridCell)) {
+			return false;
+		}
+		GridCell gridCell = (GridCell) o;
+		return Objects.equals(gridPos, gridCell.gridPos);
+	}
+	
+	@Override
+	public int hashCode() {
+		return gridPos.hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		return "GridCell{" +
+		       "gridPos=" + gridPos +
+		       ", min=" + min +
+		       ", max=" + max +
+		       '}';
 	}
 }

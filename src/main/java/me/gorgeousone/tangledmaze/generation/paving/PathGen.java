@@ -16,11 +16,23 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * A class to generate paths in a grid map with a variation of the Prim's algorithm.
+ * The algorithm starts at the user defined maze exits/starts. It picks a random exit/start
+ * and extends the path 1 to n times in a random direction. Each extension has a length
+ * between 1 and curliness.
+ * Then a new random start/open end is picked and the process is repeated until no more
+ * paths can be placed.
+ * The tree like path structures originating from each start are then connected to
+ * each other at points where they paths next to each other can be linked, forming one big tree,
+ * until all trees are connected. The connections are made so that the path from
+ * one start to another is as long as possible.
+ */
 public class PathGen {
 	
 	private static final Random RANDOM = new Random();
 	private static final int maxLinkedSegmentCount = 4;
-	
+
 	public static void genPaths(GridMap gridMap, int curliness) {
 		List<PathTree> pathTrees = createPathTrees(gridMap.getPathStarts());
 		List<PathTree> openPathTrees = new ArrayList<>(pathTrees);
@@ -174,7 +186,7 @@ public class PathGen {
 			Set<Map.Entry<GridCell, GridCell>> treeLinks = new HashSet<>();
 			
 			for (PathTree tree : pathTrees) {
-				addTreeLinks(gridMap, tree.getIntersections(), treeLinks);
+				listTreeLinks(gridMap, tree.getJunctions(), treeLinks);
 			}
 			Map.Entry<GridCell, GridCell> maxLengthLink = getMaxLengthLink(treeLinks);
 			
@@ -184,8 +196,10 @@ public class PathGen {
 			GridCell keySegment = maxLengthLink.getKey();
 			GridCell valueSegment = maxLengthLink.getValue();
 			
+			//get the segment between the two segments
 			Vec2 linkingGridPos = keySegment.getGridPos().add(valueSegment.getGridPos()).floorDiv(2);
 			GridCell linkSegment = gridMap.getCell(linkingGridPos);
+			//set the linking segment to PAVED
 			gridMap.setPathType(linkSegment.getGridPos(), PathType.PAVED);
 			
 			PathTree keyTree = keySegment.getTree();
@@ -197,13 +211,14 @@ public class PathGen {
 	}
 	
 	/**
-	 * Finds pairs of maze segments next to each other where one segment is from one path tree and the other segment from a different one.
+	 * Finds pairs of maze segments next to each other where one segment is from one path tree
+	 * and the other segment from a different one.
 	 *
 	 * @param gridMap   to look up maze segments on
 	 * @param cells     all possible keys for pairs
 	 * @param treeLinks collection to add the pairs to
 	 */
-	private static void addTreeLinks(
+	private static void listTreeLinks(
 			GridMap gridMap,
 			Set<GridCell> cells,
 			Set<Map.Entry<GridCell, GridCell>> treeLinks) {

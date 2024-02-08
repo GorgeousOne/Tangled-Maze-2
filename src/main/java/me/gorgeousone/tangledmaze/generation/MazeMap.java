@@ -111,6 +111,9 @@ public class MazeMap {
 		this.gridMap = gridMap;
 	}
 	
+	/**
+	 * Switches all area types from FREE and EXIT to WALL and PATH
+	 */
 	public void flip() {
 		for (int x = 0; x < terrainMap.length; ++x) {
 			for (int z = 0; z < terrainMap[0].length; ++z) {

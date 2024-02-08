@@ -1,5 +1,6 @@
 package me.gorgeousone.tangledmaze.render;
 
+import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import org.bukkit.Bukkit;
@@ -24,11 +25,9 @@ import java.util.UUID;
 public class RenderSession {
 	
 	private final UUID playerId;
-	private final UUID worldId;
-	private final Map<Vec2, Integer> displayedBlocks;
+	private final Map<Vec2, Integer> renderedBlocks;
 	private final Map<Integer, Set<Vec2>> layers;
 	private final Map<Integer, BlockType> layerTypes;
-	private boolean isVisible;
 	
 	public RenderSession(UUID playerId) {
 		Player player = Bukkit.getPlayer(playerId);
@@ -37,12 +36,10 @@ public class RenderSession {
 			throw new IllegalArgumentException("Could not find player to UUID " + playerId);
 		}
 		this.playerId = playerId;
-		worldId = player.getWorld().getUID();
 		
-		displayedBlocks = new HashMap<>();
+		renderedBlocks = new HashMap<>();
 		layers = new TreeMap<>(Collections.reverseOrder());
 		layerTypes = new HashMap<>();
-		isVisible = true;
 	}
 	
 	/**
@@ -52,23 +49,22 @@ public class RenderSession {
 		hide();
 		layers.clear();
 		layerTypes.clear();
-		displayedBlocks.clear();
+		renderedBlocks.clear();
 	}
 	
-	public boolean isVisible() {
-		return isVisible;
+	public boolean containsVisible(Block block) {
+		Vec2 pos = new Vec2(block);
+		int y = block.getY();
+		return renderedBlocks.containsKey(pos) && renderedBlocks.get(pos) == y;
 	}
 	
 	public void hide() {
-		if (isVisible) {
-			Player player = Bukkit.getPlayer(playerId);
-			World world = player.getWorld();
-			
-			for (Map.Entry<Vec2, Integer> block : displayedBlocks.entrySet()) {
-				Location blockLoc = block.getKey().toLocation(world, block.getValue());
-				BlockType.get(blockLoc.getBlock()).sendBlockChange(player, blockLoc);
-			}
-			isVisible = false;
+		Player player = Bukkit.getPlayer(playerId);
+		World world = player.getWorld();
+
+		for (Map.Entry<Vec2, Integer> block : renderedBlocks.entrySet()) {
+			Location blockLoc = block.getKey().toLocation(world, block.getValue());
+			BlockType.get(blockLoc.getBlock()).sendBlockChange(player, blockLoc);
 		}
 	}
 	
@@ -76,11 +72,10 @@ public class RenderSession {
 		Player player = Bukkit.getPlayer(playerId);
 		World world = player.getWorld();
 		
-		for (Map.Entry<Vec2, Integer> block : displayedBlocks.entrySet()) {
+		for (Map.Entry<Vec2, Integer> block : renderedBlocks.entrySet()) {
 			Location blockLoc = block.getKey().toLocation(world, block.getValue());
 			layerTypes.get(getTopLayer(block.getKey())).sendBlockChange(player, blockLoc);
 		}
-		isVisible = true;
 	}
 	
 	public void addLayer(int layerIndex, Collection<Block> blocks, BlockType blockType) {
@@ -115,7 +110,7 @@ public class RenderSession {
 				Location blockLoc = loc.toLocation(world, y);
 				blockType.sendBlockChange(player, blockLoc);
 			}
-			displayedBlocks.putIfAbsent(loc, y);
+			renderedBlocks.putIfAbsent(loc, y);
 		}
 		layer.addAll(blocks.keySet());
 	}
@@ -148,16 +143,16 @@ public class RenderSession {
 	/**
 	 * Hides the given blocks on the selected layer by displaying underlying layers or the original block type itself
 	 */
-	private void hideBlocks(int layerIndex, Set<Vec2> locs) {
+	public void hideBlocks(int layerIndex, Set<Vec2> locs) {
 		Player player = Bukkit.getPlayer(playerId);
 		World world = player.getWorld();
 		
 		for (Vec2 loc : locs) {
-			Location blockLoc = loc.toLocation(world, displayedBlocks.get(loc));
+			Location blockLoc = loc.toLocation(world, renderedBlocks.get(loc));
 			int topLayerIndex = getTopLayer(loc);
 			
 			if (topLayerIndex == -1) {
-				displayedBlocks.remove(loc);
+				renderedBlocks.remove(loc);
 				BlockType.get(blockLoc.getBlock()).sendBlockChange(player, blockLoc);
 			} else if (topLayerIndex <= layerIndex) {
 				layerTypes.get(topLayerIndex).sendBlockChange(player, blockLoc);
@@ -177,32 +172,34 @@ public class RenderSession {
 		return -1;
 	}
 	
+	/**
+	 * Updates the y value for all render layers at the given position, and re-renders the block if it is currently visible.
+	 * @param loc
+	 * @param newY
+	 */
 	public void updateBlock(Vec2 loc, int newY) {
 		Player player = Bukkit.getPlayer(playerId);
 		World world = player.getWorld();
-		boolean updatedTopLayer = !isVisible;
+		boolean updatedTopLayer = renderedBlocks.containsKey(loc);
 		
 		for (int layerKey : layers.keySet()) {
 			Set<Vec2> layer = layers.get(layerKey);
 			
 			if (layer.contains(loc)) {
 				if (!updatedTopLayer) {
-					Location blockLoc = loc.toLocation(world, displayedBlocks.get(loc));
+					Location blockLoc = loc.toLocation(world, renderedBlocks.get(loc));
 					BlockType.get(blockLoc.getBlock()).sendBlockChange(player, blockLoc);
 					
 					blockLoc.setY(newY);
 					layerTypes.get(layerKey).sendBlockChange(player, blockLoc);
 					updatedTopLayer = true;
 				}
-				displayedBlocks.put(loc, newY);
+				renderedBlocks.put(loc, newY);
 			}
 		}
 	}
 	
 	public void redisplayBlocks(Set<Vec2> locs) {
-		if (!isVisible) {
-			return;
-		}
 		Player player = Bukkit.getPlayer(playerId);
 		World world = player.getWorld();
 		
@@ -210,7 +207,7 @@ public class RenderSession {
 			int topLayer = getTopLayer(loc);
 			
 			if (topLayer != -1) {
-				layerTypes.get(topLayer).sendBlockChange(player, loc.toLocation(world, displayedBlocks.get(loc)));
+				layerTypes.get(topLayer).sendBlockChange(player, loc.toLocation(world, renderedBlocks.get(loc)));
 			}
 		}
 	}

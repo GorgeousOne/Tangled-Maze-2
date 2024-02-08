@@ -114,16 +114,8 @@ public class ClickListener implements Listener {
 		UUID playerId = player.getUniqueId();
 		RenderSession render = renderHandler.getPlayerRender(playerId);
 		
-		if (render == null || !render.isVisible()) {
-			return;
-		}
-		ClipTool clipTool = toolHandler.createClipToolIfAbsent(playerId);
-		Clip clip = sessionHandler.getClip(playerId);
-		Clip maze = sessionHandler.getMazeClip(playerId);
-		
-		if (clipTool.getVertices().contains(clickedBlock) ||
-		    clip != null && clip.isBorderBlock(clickedBlock) ||
-		    maze != null && maze.isBorderBlock(clickedBlock)) {
+		//TODO detect click on maze solution render / any rendered block
+		if (render != null && render.containsVisible(clickedBlock)) {
 			render.hide();
 		}
 	}

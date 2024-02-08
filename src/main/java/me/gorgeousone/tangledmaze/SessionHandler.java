@@ -83,8 +83,8 @@ public class SessionHandler {
 		mazeSettings.put(playerId, settings);
 	}
 	
-	public boolean hasBackup(Clip maze) {
-		return mazeBackups.containsKey(maze);
+	public boolean isBuilt(Clip maze) {
+		return mazeBackups.containsKey(maze) && mazeBackups.get(maze).getMazeMap() != null;
 	}
 	
 	public void backupMaze(Clip maze, MazeSettings settings) {
@@ -94,7 +94,6 @@ public class SessionHandler {
 	public MazeBackup getBackup(Clip maze) {
 		return mazeBackups.get(maze);
 	}
-	
 	
 	public void removeBackup(Clip maze) {
 		mazeBackups.remove(maze);

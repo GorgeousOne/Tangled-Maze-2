@@ -8,7 +8,6 @@ public class TextException extends Exception {
 	private final Placeholder[] placeholders;
 	
 	public TextException(Text message, Placeholder... placeholders) {
-		
 		this.text = message;
 		this.placeholders = placeholders;
 	}

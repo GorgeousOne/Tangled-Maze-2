@@ -18,8 +18,6 @@ import me.gorgeousone.tangledmaze.util.text.TextException;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.UUID;
-
 public class BuildHandler {
 	
 	private final JavaPlugin plugin;
@@ -31,7 +29,7 @@ public class BuildHandler {
 	}
 	
 	public void buildMaze(Clip maze, MazeSettings settings, MazePart mazePart, Runnable callback) throws TextException {
-		if (mazePart != MazePart.WALLS && !sessionHandler.hasBackup(maze)) {
+		if (mazePart != MazePart.WALLS && !sessionHandler.isBuilt(maze)) {
 			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
 		}
 		sessionHandler.backupMaze(maze, settings);
@@ -65,7 +63,7 @@ public class BuildHandler {
 	}
 	
 	public void unbuildMaze(Clip maze, MazePart mazePart, Runnable callback) throws TextException {
-		if (!sessionHandler.hasBackup(maze)) {
+		if (!sessionHandler.isBuilt(maze)) {
 			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
 		}
 		MazeBackup backup = sessionHandler.getBackup(maze);
