@@ -2,6 +2,10 @@ package me.gorgeousone.tangledmaze.util.blocktype;
 
 import org.bukkit.Location;
 
+/**
+ * A class to store the location and a version and its independent block type.
+ * Like a BlockState, but... idk, better?
+ */
 public class BlockLocType {
 	
 	private final Location location;

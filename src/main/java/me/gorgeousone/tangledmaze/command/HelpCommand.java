@@ -14,6 +14,9 @@ import org.bukkit.command.CommandSender;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The command to display a help page of all commands or a specific command if a page number is given.
+ */
 public class HelpCommand extends ArgCommand {
 	
 	public HelpCommand() {

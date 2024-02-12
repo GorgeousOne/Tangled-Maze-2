@@ -10,6 +10,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.UUID;
 
+/**
+ * A listener to remove a player from all handlers when they quit the server.
+ */
 public class PlayerQuitListener implements Listener {
 	
 	private final SessionHandler sessionHandler;

@@ -1,7 +1,5 @@
 package me.gorgeousone.tangledmaze.maze;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.generation.BlockCollection;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
@@ -16,18 +14,17 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * A backup of a maze's clip, build settings, build materials, and the previous block states of the blocks changed for each maze part.
+ */
 public class MazeBackup {
 	
-	@SerializedName(value = "version")
-	@Expose(deserialize = false)
 	private final String versionString = VersionUtil.PLUGIN_VERSION.toString();
 	
 	private final Clip maze;
 	private final MazeSettings settings;
 	private MazeMap mazeMap;
-	@SerializedName(value = "partBlockLocs", alternate = "partSegments")
 	private final Map<MazePart, BlockCollection> partBlockLocs;
-	@SerializedName(value = "partBlockTypes", alternate = "partBlocks")
 	private final Map<MazePart, Set<BlockLocType>> partBlocksTypes;
 	
 	public MazeBackup(Clip maze, MazeSettings settings) {

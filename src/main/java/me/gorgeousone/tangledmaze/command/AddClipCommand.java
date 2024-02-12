@@ -11,6 +11,9 @@ import org.bukkit.command.CommandSender;
 
 import java.util.UUID;
 
+/**
+ * The command to add a gold block clip to a redstone maze.
+ */
 public class AddClipCommand extends BaseCommand {
 	
 	private final SessionHandler sessionHandler;

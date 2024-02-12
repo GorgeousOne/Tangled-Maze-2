@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * The command to build the walls, floor or roof of a maze.
+ */
 public class BuildMazeCommand extends ArgCommand {
 	
 	private final SessionHandler sessionHandler;
@@ -81,6 +84,12 @@ public class BuildMazeCommand extends ArgCommand {
 		toolHandler.resetClipTool(playerId);
 	}
 	
+	/**
+	 * Converts a list of material strings in the format "count(optional)*material:subId(optional)" into a BlockPalette.
+	 * @param stringArgs the list of strings provided by the command sender
+	 * @return the BlockPalette created from the strings
+	 * @throws TextException if the strings are not in the correct format
+	 */
 	public BlockPalette deserializeBlockPalette(List<ArgValue> stringArgs) throws TextException {
 		BlockPalette palette = new BlockPalette();
 		
@@ -110,6 +119,9 @@ public class BuildMazeCommand extends ArgCommand {
 		return palette;
 	}
 	
+	/**
+	 * Returns a list of block names that the sender could tab complete to.
+	 */
 	@Override
 	public List<String> getTabList(String[] stringArgs) {
 		List<String> tabList = super.getTabList(stringArgs);

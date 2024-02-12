@@ -5,6 +5,9 @@ import me.gorgeousone.tangledmaze.generation.building.BlockPalette;
 import java.util.Arrays;
 import java.util.HashMap;
 
+/**
+ * A class to store build settings of a maze, like the dimensions of the maze parts and the block palettes for each maze part.
+ */
 public class MazeSettings {
 	
 	private final HashMap<MazeProperty, Integer> properties;

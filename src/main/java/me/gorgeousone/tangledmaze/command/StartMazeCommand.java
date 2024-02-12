@@ -11,6 +11,9 @@ import org.bukkit.command.CommandSender;
 
 import java.util.UUID;
 
+/**
+ * The command to start a maze using the currently selected gold block clip as the maze's layout.
+ */
 public class StartMazeCommand extends BaseCommand {
 	
 	private final SessionHandler sessionHandler;

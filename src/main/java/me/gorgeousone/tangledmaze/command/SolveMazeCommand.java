@@ -15,6 +15,9 @@ import org.bukkit.command.CommandSender;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * The command to render the solution of a maze with fake blocks to the player.
+ */
 public class SolveMazeCommand extends BaseCommand {
 	
 	private final SessionHandler sessionHandler;

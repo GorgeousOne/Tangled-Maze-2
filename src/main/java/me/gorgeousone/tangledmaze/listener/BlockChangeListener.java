@@ -28,7 +28,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A listener that makes all clips adapt to terrain height changes.
+ * A listener that makes all clips adapt to block changes that affect y-coordinates of the blocks they are made of.
  */
 public class BlockChangeListener implements Listener {
 	

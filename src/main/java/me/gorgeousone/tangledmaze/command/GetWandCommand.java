@@ -7,6 +7,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * The command to give a player the maze wand item specified in the config.
+ */
 public class GetWandCommand extends BaseCommand {
 	
 	public GetWandCommand() {

@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Class
+ * A class to keep track of and manage the maze editing and clip creating tools of players.
  */
 public class ToolHandler {
 	

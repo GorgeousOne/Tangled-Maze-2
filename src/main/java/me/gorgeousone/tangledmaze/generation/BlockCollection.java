@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A class to store locations of blocks forming a maze in a big 3D boolean array.
+ * A class to store locations of blocks forming a maze in a big 3D nested map.
  */
 public class BlockCollection {
 	

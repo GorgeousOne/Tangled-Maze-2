@@ -33,7 +33,8 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Creates player clips from blocks clicked by players
+ * A class for handling player interactions with the maze wand item or any block.
+ * It handles the creation of gold block clips and the display of fake block renders.
  */
 public class ClickListener implements Listener {
 	
@@ -106,7 +107,6 @@ public class ClickListener implements Listener {
 	
 	/**
 	 * Hides all fake block clip renders of a player if the player interacts with any block of them
-	 *
 	 * @param player
 	 * @param clickedBlock
 	 */
@@ -122,7 +122,6 @@ public class ClickListener implements Listener {
 	
 	/**
 	 * Returns hovered clicked block if hover clicking enabled. Otherwise
-	 *
 	 * @param player
 	 * @param clickedBlock
 	 * @return
@@ -231,7 +230,6 @@ public class ClickListener implements Listener {
 	
 	/**
 	 * Show clip renders if player selects wand item in hotbar
-	 *
 	 * @param event
 	 */
 	@EventHandler

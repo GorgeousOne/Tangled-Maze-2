@@ -14,8 +14,14 @@ import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A factory class to create the maze map for building a maze from a maze clip and settings.
+ */
 public class MazeMapFactory {
 	
+	/**
+	 * Generates a maze map with
+	 */
 	public static MazeMap createMazeMapOf(Clip maze, MazeSettings settings, int worldMinY) {
 		Map.Entry<Vec2, Vec2> clipBounds = calculateClipBounds(maze);
 		MazeMap map = new MazeMap(maze.getWorld(), clipBounds.getKey(), clipBounds.getValue(), worldMinY);

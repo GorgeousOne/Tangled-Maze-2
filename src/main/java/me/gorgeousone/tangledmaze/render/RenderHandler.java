@@ -31,7 +31,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Handles events that change what fake blocks need to be displayed in render sessions
+ * A class to keep track of and render all clips and clip actions of a player.
+ * It also listens to events that change the state of clips and clip actions and updates the render accordingly.
  */
 public class RenderHandler implements Listener {
 	

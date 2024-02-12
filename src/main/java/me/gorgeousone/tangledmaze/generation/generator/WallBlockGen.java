@@ -32,7 +32,6 @@ public class WallBlockGen extends BlockGen {
 	/**
 	 * Creates a piece of wall on the given grid segment. The height of each wall column is the same,
 	 * dependent on the highest piece of path surrounding all columns together
-	 *
 	 * @param mazeMap for looking for wall coordinates
 	 * @param cell    segment to build the wall in
 	 */

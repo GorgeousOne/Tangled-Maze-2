@@ -5,6 +5,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
+/**
+ * A class that stores all messages and help pages of the plugin read from the language.yml.
+ */
 public class Message {
 	
 	public static Text
@@ -75,6 +78,7 @@ public class Message {
 		COMMAND_UNBUILD = createHelpText("/maze unbuild [maze part]", helps, "unbuild-command");
 		COMMAND_TELEPORT = createHelpText("/maze teleport", helps, "teleport-command");
 		COMMAND_SOLVE = createHelpText("/maze solve", helps, "solve-command");
+		
 		
 		ConfigurationSection infos = langConfig.getConfigurationSection("infos");
 		INFO_PLUGIN_RELOAD = createInfo("plugin-reload", infos);

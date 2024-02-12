@@ -6,7 +6,9 @@ import org.bukkit.World;
 import java.util.Arrays;
 
 /**
- * Class that stores 2D arrays with area types and terrain height of a maze, and a grid map
+ * A class for laying out the final design of a maze and to finish it off to be ready for building.
+ * It stores the locations of the maze blocks with their terrain height. Each location is assigned an area type
+ * if it is a wall or path. A grid map is used to store the maze layout for the path generation and path finding.
  */
 public class MazeMap {
 	

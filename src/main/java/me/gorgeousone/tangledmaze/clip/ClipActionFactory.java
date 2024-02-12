@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A factory for creating clip actions
+ * A factory class for creating clip actions for merging, cutting away or expanding clips.
  */
 public class ClipActionFactory {
 	
@@ -22,7 +22,8 @@ public class ClipActionFactory {
 	}
 	
 	/**
-	 * Creates a clip action for merging the given clip into the given maze
+	 * Creates a clip action for merging the given clip into the given maze.
+	 * Returns null if the clip and maze are not in the same world.
 	 */
 	public static ClipAction addClip(Clip maze, Clip clip) {
 		if (!maze.getWorld().equals(clip.getWorld())) {

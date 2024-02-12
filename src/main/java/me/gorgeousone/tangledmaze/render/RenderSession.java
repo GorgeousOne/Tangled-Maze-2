@@ -19,8 +19,8 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 /**
- * Stores layers of fake blocks to be displayed to a player. Layers with greater index will be displayed on top of
- * layer with a lower index. Each layer will be displayed with one type of block.
+ * A class to store fake blocks displayed to a player. Fake blocks are stored in layers,
+ * where the max index layer is rendered on top of the lower ones.
  */
 public class RenderSession {
 	

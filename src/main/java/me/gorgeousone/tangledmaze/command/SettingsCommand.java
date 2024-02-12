@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * The command to change build settings of a maze.
+ */
 public class SettingsCommand extends ArgCommand {
 	
 	private final SessionHandler sessionHandler;

@@ -222,7 +222,6 @@ public class GridMap {
 	
 	/**
 	 * Calculates the distance in blocks that a secondary exit has to be extended by for it to reach the nearest grid path
-	 *
 	 * @param exitLoc   current end location of the exit
 	 * @param facing    direction to extend towards
 	 * @param allowZero set false if returned distance must be greater than 0

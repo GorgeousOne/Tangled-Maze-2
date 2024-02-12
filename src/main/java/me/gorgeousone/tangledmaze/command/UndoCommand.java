@@ -8,6 +8,9 @@ import org.bukkit.command.CommandSender;
 
 import java.util.UUID;
 
+/**
+ * The command to undo the last clip action done to a maze.
+ */
 public class UndoCommand extends BaseCommand {
 	
 	private final SessionHandler sessionHandler;

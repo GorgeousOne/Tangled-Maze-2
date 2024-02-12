@@ -9,6 +9,10 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 
 import java.util.UUID;
 
+/**
+ * A listener to remove a player from renders and tools when they change worlds.
+ * Though nothing hinders players from using the tools in different worlds, they just won't have any effect...
+ */
 public class ChangeWorldListener implements Listener {
 	
 	private final ToolHandler toolHandler;

@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Stores all data used to build a maze for each player during their time online.
+ * A class that stores the maze data of players while they are building a maze.
  */
 public class SessionHandler {
 	

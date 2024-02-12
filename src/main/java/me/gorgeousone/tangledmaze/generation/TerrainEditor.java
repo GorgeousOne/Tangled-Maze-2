@@ -7,6 +7,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * A class to edit the terrain information of a maze map to improve the adaption of the maze to the terrain.
+ */
 public class TerrainEditor {
 	
 	/**

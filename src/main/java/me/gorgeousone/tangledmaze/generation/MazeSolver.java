@@ -26,7 +26,7 @@ public abstract class MazeSolver {
 		solutionPath.addAll(goals);
 		GridCell start = goals.remove(0);
 		List<Vec2> visited = new LinkedList<>(Arrays.asList(start.getGridPos()));
-		breadthSearch(gridMap, start.getGridPos(), null, goals, visited, solutionPath);
+		recursiveSearch(gridMap, start.getGridPos(), null, goals, visited, solutionPath);
 		
 		//add exit segments to path solution for rendering the blocks
 		for (ExitSegment exit : exits) {
@@ -35,7 +35,7 @@ public abstract class MazeSolver {
 		return solutionPath;
 	}
 	
-	private static boolean breadthSearch(
+	private static boolean recursiveSearch(
 			GridMap gridMap,
 			Vec2 currentPos,
 			Direction backDir,
@@ -55,7 +55,7 @@ public abstract class MazeSolver {
 			}
 			visited.add(neighborPos);
 			GridCell neighbor = gridMap.getCell(neighborPos);
-			boolean isNeighborSolution = breadthSearch(gridMap, neighborPos, dir.getOpposite(), goals, visited, solutionPath);
+			boolean isNeighborSolution = recursiveSearch(gridMap, neighborPos, dir.getOpposite(), goals, visited, solutionPath);
 			
 			if (goals.contains(neighbor) || isNeighborSolution) {
 				solutionPath.add(gridMap.getCell(currentPos));

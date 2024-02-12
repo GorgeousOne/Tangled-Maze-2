@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A class for storing data to edit a maze clip such expanding the clip or removing area.
+ * A class for storing changes that are made to a clip, so they can be undone or redone.
  */
 public class ClipAction {
 	

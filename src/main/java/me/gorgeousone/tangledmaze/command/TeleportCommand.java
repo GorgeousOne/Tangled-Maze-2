@@ -13,6 +13,9 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
+/**
+ * The command to teleport a player to the location of the maze they are currently editing.
+ */
 public class TeleportCommand extends BaseCommand {
 	
 	private final SessionHandler sessionHandler;

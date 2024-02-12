@@ -11,6 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * A class for storing the lapis vertices of a goldblock clip that is being created by a player.
+ * It fires events when the clip is completed or when a vertex is added or removed.
+ */
 public class ClipTool {
 	
 	private final UUID playerId;

@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * The command to remove the walls, floor or roof of a built maze.
+ */
 public class UnbuildMazeCommand extends ArgCommand {
 	
 	private final SessionHandler sessionHandler;

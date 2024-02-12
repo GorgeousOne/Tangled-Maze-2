@@ -11,6 +11,9 @@ import org.bukkit.command.CommandSender;
 
 import java.util.UUID;
 
+/**
+ * The command to remove a gold block clip from a redstone maze.
+ */
 public class CutClipCommand extends BaseCommand {
 	
 	private final SessionHandler sessionHandler;

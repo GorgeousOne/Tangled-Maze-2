@@ -78,7 +78,6 @@ public class GridCell {
 	
 	/**
 	 * Returns a set of directions in which the world x and z coordinate are border of the grid cell
-	 *
 	 * @param x world x coordinate inside a grid cell
 	 * @param z world z coordinate inside a grid cell
 	 * @return

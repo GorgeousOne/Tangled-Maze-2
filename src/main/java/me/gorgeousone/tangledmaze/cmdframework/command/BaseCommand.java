@@ -45,7 +45,6 @@ public abstract class BaseCommand {
 	
 	/**
 	 * Sets a permission required to execute the command
-	 *
 	 * @param permission name of permission
 	 */
 	public void setPermission(String permission) {
@@ -58,7 +57,6 @@ public abstract class BaseCommand {
 	
 	/**
 	 * Sets whether this command can be executed over console/command block or not.
-	 *
 	 * @param playerRequired true if only players are allowed to execute this command
 	 */
 	public void setPlayerRequired(boolean playerRequired) {
@@ -80,7 +78,6 @@ public abstract class BaseCommand {
 	/**
 	 * Executes the implemented functionality of this command if permissions and player requirements are met
 	 * Runs the callback after finishing, which might be asynchronously later.
-	 *
 	 * @param sender being that executed this command
 	 * @param args   further arguments input behind the command name
 	 */
@@ -109,7 +106,6 @@ public abstract class BaseCommand {
 	
 	/**
 	 * Executes the functionality of the command
-	 *
 	 * @param sender being that executed this command
 	 * @param args   further arguments input after the command name
 	 */

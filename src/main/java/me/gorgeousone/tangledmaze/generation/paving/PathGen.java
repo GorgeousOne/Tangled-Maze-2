@@ -91,7 +91,6 @@ public class PathGen {
 	
 	/**
 	 * Checks the 4 surrounding paths for available directions to create paths towards
-	 *
 	 * @return a list of available directions
 	 */
 	private static List<Direction> getAvailableDirs(GridCell pathEnd, GridMap gridMap) {
@@ -112,7 +111,6 @@ public class PathGen {
 	
 	/**
 	 * Creates path segment on the grid map and extends it if possible
-	 *
 	 * @return true if the path segment extended at least once
 	 */
 	private static boolean generatePathSegment(GridCell currentPathEnd,
@@ -131,7 +129,6 @@ public class PathGen {
 	
 	/**
 	 * Tries to extend the end segment of a path n times into a given direction
-	 *
 	 * @param pathEnd       segment to extend
 	 * @param facing        direction to extend towards
 	 * @param maxExtensions maximum times to extend the path
@@ -155,7 +152,6 @@ public class PathGen {
 	
 	/**
 	 * Sets the path type of the next 2 grid cells to PAVED in the given direction
-	 *
 	 * @return the latter new path segment
 	 */
 	private static GridCell pavePath(GridCell pathEnd, Direction facing, GridMap gridMap) {
@@ -177,7 +173,6 @@ public class PathGen {
 	/**
 	 * Connects the paths of the given path trees to each other trying to always find the longest path
 	 * between the exit of one tree to the exit of the other one.
-	 *
 	 * @param gridMap   to look up maze segments on
 	 * @param pathTrees to connect to each other
 	 */
@@ -213,7 +208,6 @@ public class PathGen {
 	/**
 	 * Finds pairs of maze segments next to each other where one segment is from one path tree
 	 * and the other segment from a different one.
-	 *
 	 * @param gridMap   to look up maze segments on
 	 * @param cells     all possible keys for pairs
 	 * @param treeLinks collection to add the pairs to
@@ -238,7 +232,6 @@ public class PathGen {
 	
 	/**
 	 * Returns the pair of maze segments that cover the greatest distance between two exits if they were connected.
-	 *
 	 * @param treeLinks pairs of segments to look up in
 	 */
 	private static Map.Entry<GridCell, GridCell> getMaxLengthLink(Set<Map.Entry<GridCell, GridCell>> treeLinks) {

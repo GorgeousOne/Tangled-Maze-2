@@ -18,6 +18,9 @@ import me.gorgeousone.tangledmaze.util.text.TextException;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * A class to handle the building and unbuilding of maze walls, floor and roof distributed over time.
+ */
 public class BuildHandler {
 	
 	private final JavaPlugin plugin;
@@ -28,6 +31,11 @@ public class BuildHandler {
 		this.sessionHandler = sessionHandler;
 	}
 	
+	/**
+	 * Starts the building process of maze walls, floor or roof.
+	 * @param callback a runnable that is called after the building process is finished
+	 * @throws TextException if the maze is not built yet
+	 */
 	public void buildMaze(Clip maze, MazeSettings settings, MazePart mazePart, Runnable callback) throws TextException {
 		if (mazePart != MazePart.WALLS && !sessionHandler.isBuilt(maze)) {
 			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
@@ -48,6 +56,9 @@ public class BuildHandler {
 		}).runTaskTimer(plugin, 0, 1);
 	}
 	
+	/**
+	 * Creates a collection of blocks for the given maze part and stores them in the backup.
+	 */
 	private void createBlockSegments(MazeBackup backup, MazePart mazePart, MazeMap mazeMap, MazeSettings settings) {
 		switch (mazePart) {
 			case WALLS:
@@ -62,6 +73,11 @@ public class BuildHandler {
 		}
 	}
 	
+	/**
+	 * Starts the unbuilding process of maze walls, floor or roof.
+	 * @param callback a runnable that is called after the unbuilding process is finished
+	 * @throws TextException if the maze is not built yet
+	 */
 	public void unbuildMaze(Clip maze, MazePart mazePart, Runnable callback) throws TextException {
 		if (!sessionHandler.isBuilt(maze)) {
 			throw new TextException(Message.INFO_MAZE_NOT_BUILT);

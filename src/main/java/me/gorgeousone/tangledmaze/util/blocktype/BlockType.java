@@ -7,7 +7,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 
 /**
- * A wrapper for block materials and their (block-) data to support copying blocks across all Minecraft versions.
+ * A wrapper class for block materials and their (block-) data to support copying blocks across legacy and aquatic Minecraft versions.
  */
 public abstract class BlockType {
 	
@@ -17,7 +17,6 @@ public abstract class BlockType {
 	
 	/**
 	 * Updates the state of this block with the information of the BlockType.
-	 *
 	 * @param block
 	 * @param applyPhysics
 	 * @return the previous type of the block

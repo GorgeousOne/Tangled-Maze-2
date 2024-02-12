@@ -2,6 +2,9 @@ package me.gorgeousone.tangledmaze.maze;
 
 import java.util.Arrays;
 
+/**
+ * An enum to distinguish between different properties of a maze.
+ */
 public enum MazeProperty {
 	WALL_HEIGHT(50, 2),
 	WALL_WIDTH(50, 1),

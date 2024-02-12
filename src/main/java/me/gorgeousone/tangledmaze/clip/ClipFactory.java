@@ -12,6 +12,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * A factory class for calculating the vertices for all different shapes of clips
+ * and for creating the clips based on the vertices.
+ */
 public class ClipFactory {
 	
 	/**

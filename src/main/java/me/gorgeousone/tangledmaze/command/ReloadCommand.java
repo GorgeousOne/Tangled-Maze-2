@@ -6,6 +6,9 @@ import me.gorgeousone.tangledmaze.data.Constants;
 import me.gorgeousone.tangledmaze.data.Message;
 import org.bukkit.command.CommandSender;
 
+/**
+ * The command to reload the config settings and the language file of the plugin.
+ */
 public class ReloadCommand extends BaseCommand {
 	
 	private final TangledMazePlugin tangledMazePlugin;

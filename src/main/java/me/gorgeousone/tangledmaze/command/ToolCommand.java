@@ -15,6 +15,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The command to switch between different maze editing tools and clip shapes.
+ */
 public class ToolCommand extends ArgCommand {
 	
 	private final ToolHandler toolHandler;
@@ -53,7 +56,6 @@ public class ToolCommand extends ArgCommand {
 	
 	/**
 	 * Tries to deserialize and set a ClipType
-	 *
 	 * @param clipArgument
 	 * @return true if clipArgument matched a ClipType
 	 */

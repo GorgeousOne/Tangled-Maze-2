@@ -23,8 +23,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Stores xz-coordinates representing a clipped area. Each coordinate is paired with a y-coordinate and
- * can also be marked as being a border block of the clip.
+ * A class for storing the layout of a redstone maze or a goldblock clip. It stores the fill of the
+ * clip by using key value pairs of xz coordinates and y-coordinates. The xy coordinates can also be marked
+ * as border of the clip and exits of the maze.
  */
 public class Clip {
 	
@@ -158,7 +159,6 @@ public class Clip {
 	
 	/**
 	 * Processes the changes stored in a {@link ClipAction} and calls an event
-	 *
 	 * @param action        changes container
 	 * @param saveToHistory will save the action to history for undoing later if set to true
 	 */

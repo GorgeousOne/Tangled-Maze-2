@@ -1,5 +1,8 @@
 package me.gorgeousone.tangledmaze.tool;
 
+/**
+ * An enum to distinguish between different maze editing tools.
+ */
 public enum ToolType {
 	EXIT_SETTER("exit setter", "exit", "entrance"),
 	BRUSH("brush", "brush", "eraser");
