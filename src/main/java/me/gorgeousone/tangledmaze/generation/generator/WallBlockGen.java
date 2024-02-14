@@ -6,6 +6,8 @@ import me.gorgeousone.tangledmaze.generation.GridCell;
 import me.gorgeousone.tangledmaze.generation.GridMap;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.generation.paving.PathType;
+import me.gorgeousone.tangledmaze.maze.MazeProperty;
+import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.util.BlockUtil;
 import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.Direction;
@@ -18,7 +20,7 @@ import java.util.Set;
 
 public class WallBlockGen extends BlockGen {
 	
-	public static BlockCollection genWalls(MazeMap mazeMap) {
+	public static BlockCollection genWalls(MazeMap mazeMap, MazeSettings settings, boolean areWallsHollow) {
 		GridMap gridMap = mazeMap.getPathMap();
 		BlockCollection walls = new BlockCollection();
 		
@@ -31,8 +33,12 @@ public class WallBlockGen extends BlockGen {
 				}
 			}
 		}
-		for (BlockVec block : hollowOutWall(mazeMap, gridMap)) {
-			walls.removeBlock(block);
+		if (areWallsHollow &&
+		    settings.getValue(MazeProperty.WALL_WIDTH) > 2 &&
+		    settings.getValue(MazeProperty.WALL_HEIGHT) > 2) {
+			for (BlockVec block : hollowOutWall(mazeMap, gridMap)) {
+				walls.removeBlock(block);
+			}
 		}
 		return walls;
 	}
@@ -70,7 +76,7 @@ public class WallBlockGen extends BlockGen {
 		Set<BlockVec> blocksToRemove = new HashSet<>();
 
 		for (int gridX = 0; gridX < gridMap.getWidth(); ++gridX) {
-			for (int gridZ = 0; gridZ < gridMap.getWidth(); ++gridZ) {
+			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {
 				if (gridMap.getPathType(gridX, gridZ) == PathType.PAVED) {
 					continue;
 				}
@@ -84,7 +90,7 @@ public class WallBlockGen extends BlockGen {
 							continue;
 						}
 						int minY = getMinHollowY(x, z, mazeMap);
-						int maxY = getMaxHollowY(x, z, new Vec2(gridX, gridZ), gridMap);
+						int maxY = getMaxHollowY(x, z, gridMap);
 
 						for (int y = minY; y < maxY; ++y) {
 							blocksToRemove.add(new BlockVec(x, y, z));
@@ -136,24 +142,24 @@ public class WallBlockGen extends BlockGen {
 
 		for (Vec2 neighbor : BlockUtil.getNeighbors(x, z, 1)) {
 			if (mazeMap.contains(neighbor)) {
-				minHollowY = Math.max(minHollowY, mazeMap.getY(neighbor) + 1);
+				minHollowY = Math.max(minHollowY, mazeMap.getY(neighbor) + 2);
 			}
 		}
 		return minHollowY;
 	}
 
-	private static int getMaxHollowY(int x, int z, Vec2 gridPos, GridMap gridMap) {
-//		Vec2 gridPos = gridMap.getGridPos(new Vec2(x, z));
+	private static int getMaxHollowY(int x, int z, GridMap gridMap) {
+		Vec2 gridPos = gridMap.getGridPos(new Vec2(x, z));
 		GridCell cell = gridMap.getCell(gridPos);
 		int maxHollowY = gridMap.getWallY(gridPos);
-		System.out.println(gridPos + ", " + gridMap.getGridPos(new Vec2(x, z)));
+		
 		for (Vec2 neighbor : BlockUtil.getNeighbors(x, z, 1)) {
 			if (cell.contains(neighbor)) {
 				continue;
 			}
 			Vec2 neighborGridPos = gridMap.getGridPos(neighbor);
 			if (gridMap.contains(neighborGridPos)) {
-				maxHollowY = Math.max(maxHollowY, gridMap.getWallY(neighborGridPos) - 1);
+				maxHollowY = Math.min(maxHollowY, gridMap.getWallY(neighborGridPos));
 			}
 		}
 		return maxHollowY;

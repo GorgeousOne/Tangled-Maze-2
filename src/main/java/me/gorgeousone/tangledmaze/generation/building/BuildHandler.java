@@ -45,7 +45,7 @@ public class BuildHandler {
 		backup.createMazeMapIfAbsent(settings);
 		MazeMap mazeMap = backup.getMazeMap();
 		
-		createBlockSegments(backup, mazePart, mazeMap, settings);
+		createBlockSegments(backup, mazePart, mazeMap, settings, areWallsHollow);
 		BlockCollection segments = backup.getPartBlockLocs(mazePart);
 		settings.computePaletteIfAbsent(mazePart);
 
@@ -59,7 +59,7 @@ public class BuildHandler {
 	/**
 	 * Creates a collection of blocks for the given maze part and stores them in the backup.
 	 */
-	private void createBlockSegments(MazeBackup backup, MazePart mazePart, MazeMap mazeMap, MazeSettings settings) {
+	private void createBlockSegments(MazeBackup backup, MazePart mazePart, MazeMap mazeMap, MazeSettings settings, boolean areWallsHollow) {
 		switch (mazePart) {
 			case WALLS:
 				backup.computeSegmentsIfAbsent(MazePart.WALLS, walls -> WallBlockGen.genWalls(mazeMap));

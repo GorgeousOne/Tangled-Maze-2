@@ -36,6 +36,7 @@ public class BuildMazeCommand extends ArgCommand {
 		addAlias("b");
 		addFlag("floor");
 		addFlag("roof");
+		addFlag("solid");
 		
 		this.toolHandler = toolHandler;
 		this.sessionHandler = sessionHandler;

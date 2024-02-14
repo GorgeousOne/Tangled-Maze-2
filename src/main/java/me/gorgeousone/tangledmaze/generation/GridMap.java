@@ -65,7 +65,10 @@ public class GridMap {
 	 */
 	public Vec2 getGridPos(Vec2 loc) {
 		Vec2 gridPos = loc.clone().sub(gridMin).floorDiv(gridMeshSize).mult(2);
-		gridPos.add(loc.clone().sub(gridMin).floorMod(gridMeshSize).floorDiv(pathWidth));
+		Vec2 offset = loc.clone().sub(gridMin).floorMod(gridMeshSize);
+		gridPos.add(
+				offset.getX() < pathWidth ? 0 : 1,
+				offset.getZ() < pathWidth ? 0 : 1);
 		return gridPos;
 	}
 	
