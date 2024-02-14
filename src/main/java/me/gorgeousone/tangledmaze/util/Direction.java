@@ -22,7 +22,7 @@ public enum Direction {
 	}
 	
 	/**
-	 * Returns true if the diretion's vector is pointing towards positive or negative (with it's x or z coordinate)
+	 * Returns true if the direction's vector is pointing towards positive (with it's x and z coordinate)
 	 */
 	public boolean isPositive() {
 		return facing.getZ() >= 0 && facing.getX() >= 0;

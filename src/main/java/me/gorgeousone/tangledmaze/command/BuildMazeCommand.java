@@ -36,6 +36,7 @@ public class BuildMazeCommand extends ArgCommand {
 		addAlias("b");
 		addFlag("floor");
 		addFlag("roof");
+		addFlag("solid");
 		
 		this.toolHandler = toolHandler;
 		this.sessionHandler = sessionHandler;
@@ -72,9 +73,11 @@ public class BuildMazeCommand extends ArgCommand {
 				return;
 			}
 		}
+		boolean areWallsHollow = !usedFlags.contains("solid");
+
 		try {
 			setAsync(sender);
-			buildHandler.buildMaze(maze, settings, mazePart, () -> finishAsync(sender));
+			buildHandler.buildMaze(maze, settings, mazePart, areWallsHollow, () -> finishAsync(sender));
 		} catch (TextException e) {
 			e.sendTextTo(sender);
 			finishAsync(sender);

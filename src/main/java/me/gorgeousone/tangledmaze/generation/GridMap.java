@@ -6,6 +6,7 @@ import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -64,7 +65,10 @@ public class GridMap {
 	 */
 	public Vec2 getGridPos(Vec2 loc) {
 		Vec2 gridPos = loc.clone().sub(gridMin).floorDiv(gridMeshSize).mult(2);
-		gridPos.add(loc.clone().sub(gridMin).floorMod(gridMeshSize).floorDiv(pathWidth));
+		Vec2 offset = loc.clone().sub(gridMin).floorMod(gridMeshSize);
+		gridPos.add(
+				offset.getX() < pathWidth ? 0 : 1,
+				offset.getZ() < pathWidth ? 0 : 1);
 		return gridPos;
 	}
 	
@@ -84,10 +88,10 @@ public class GridMap {
 	}
 	
 	public PathType getPathType(int gridX, int gridZ) {
-		if (!contains(gridX, gridZ)) {
-			return PathType.BLOCKED;
+		if (contains(gridX, gridZ)) {
+			return pathTypes[gridX][gridZ];
 		}
-		return pathTypes[gridX][gridZ];
+		return null;
 	}
 	
 	public void setPathType(Vec2 gridPos, PathType type) {
@@ -109,7 +113,8 @@ public class GridMap {
 	}
 	
 	/**
-	 * Returns the y height of a wall segment in the grid. Returns 0 if not set
+	 * Returns the collective y height for all wall columns in this cell
+	 * Returns 0 if not set
 	 */
 	public int getWallY(Vec2 gridPos) {
 		if (!contains(gridPos.getX(), gridPos.getZ())) {
@@ -175,9 +180,9 @@ public class GridMap {
 		ExitSegment rightTurn = new ExitSegment(exitEnd, right, pathWidth);
 		leftTurn.extend(getDistToPathGrid(leftTurn.getEnd(), left, true));
 		rightTurn.extend(getDistToPathGrid(rightTurn.getEnd(), right, true));
-		
-		boolean leftIsFree = getPathType(getGridPos(leftTurn.getEnd())) != PathType.BLOCKED;
-		boolean rightIsFree = getPathType(getGridPos(rightTurn.getEnd())) != PathType.BLOCKED;
+
+		boolean leftIsFree = Arrays.asList(PathType.PAVED, PathType.FREE).contains(getPathType(getGridPos(leftTurn.getEnd())));
+		boolean rightIsFree = Arrays.asList(PathType.PAVED, PathType.FREE).contains(getPathType(getGridPos(leftTurn.getEnd())));
 		
 		if (!leftIsFree && !rightIsFree) {
 			return;
@@ -263,8 +268,6 @@ public class GridMap {
 		
 		int gridWidth = 2 * (int) Math.ceil(1f * (mapMax.getX() - gridMin.getX()) / gridMeshSize);
 		int gridHeight = 2 * (int) Math.ceil(1f * (mapMax.getZ() - gridMin.getZ()) / gridMeshSize);
-		
-		
 		createGridCells(gridWidth, gridHeight);
 	}
 	

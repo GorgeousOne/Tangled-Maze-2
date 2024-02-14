@@ -34,17 +34,16 @@ public class FloorGen {
 				if (null == type) {
 					continue;
 				}
-				Vec2 column = new Vec2(x, z);
-				int maxFloorY = mazeMap.getY(column);
+				int maxFloorY = mazeMap.getY(x, z);
 				int minFloorY = maxFloorY;
 				
-				for (Vec2 neighbor : BlockUtil.getNeighbors(column.getX(), column.getZ(), 1)) {
+				for (Vec2 neighbor : BlockUtil.getNeighbors(x, z, 1)) {
 					if (mazeMap.contains(neighbor)) {
 						minFloorY = Math.min(minFloorY, mazeMap.getY(neighbor));
 					}
 				}
 				for (int y = minFloorY; y <= maxFloorY; ++y) {
-					path.addBlock(column.getX(), y, column.getZ());
+					path.addBlock(x, y, z);
 				}
 			}
 		}

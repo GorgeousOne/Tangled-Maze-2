@@ -47,8 +47,8 @@ public class GridCell {
 		return max.clone();
 	}
 	
-	public boolean contains(BlockVec block) {
-		return contains(block.getX(), block.getZ());
+	public boolean contains(Vec2 pos) {
+		return contains(pos.getX(), pos.getZ());
 	}
 	
 	public boolean contains(int x, int z) {

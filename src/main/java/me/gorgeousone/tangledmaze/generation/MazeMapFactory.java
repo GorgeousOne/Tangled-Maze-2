@@ -129,7 +129,6 @@ public class MazeMapFactory {
 		}
 		for (int gridX = 0; gridX < gridMap.getWidth(); ++gridX) {
 			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {
-				
 				gridMap.setWallY(gridX, gridZ, calcWallY(gridMap, new Vec2(gridX, gridZ), wallHeight));
 			}
 		}

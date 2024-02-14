@@ -89,7 +89,10 @@ public class MazeMap {
 	public int getY(Vec2 loc) {
 		return getY(loc.getX(), loc.getZ());
 	}
-	
+
+	/**
+	 * Returns the terrain y height of the maze's floor at a given x and z position
+	 */
 	public int getY(int x, int z) {
 		if (!contains(x, z)) {
 			throw new IllegalArgumentException("Position " + x + ", " + z + " out of maze map.");
