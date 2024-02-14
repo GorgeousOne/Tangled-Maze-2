@@ -36,7 +36,7 @@ public class BuildHandler {
 	 * @param callback a runnable that is called after the building process is finished
 	 * @throws TextException if the maze is not built yet
 	 */
-	public void buildMaze(Clip maze, MazeSettings settings, MazePart mazePart, Runnable callback) throws TextException {
+	public void buildMaze(Clip maze, MazeSettings settings, MazePart mazePart, boolean areWallsHollow, Runnable callback) throws TextException {
 		if (mazePart != MazePart.WALLS && !sessionHandler.isBuilt(maze)) {
 			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
 		}
@@ -62,7 +62,7 @@ public class BuildHandler {
 	private void createBlockSegments(MazeBackup backup, MazePart mazePart, MazeMap mazeMap, MazeSettings settings, boolean areWallsHollow) {
 		switch (mazePart) {
 			case WALLS:
-				backup.computeSegmentsIfAbsent(MazePart.WALLS, walls -> WallBlockGen.genWalls(mazeMap));
+				backup.computeSegmentsIfAbsent(MazePart.WALLS, walls -> WallBlockGen.genWalls(mazeMap, settings, areWallsHollow));
 				break;
 			case FLOOR:
 				backup.computeSegmentsIfAbsent(MazePart.FLOOR, floor -> FloorGen.genFloor(mazeMap));
