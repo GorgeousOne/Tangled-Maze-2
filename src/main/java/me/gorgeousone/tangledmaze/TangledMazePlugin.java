@@ -39,8 +39,8 @@ public final class TangledMazePlugin extends JavaPlugin {
 	private static final int resourceId = 59284;
 	private static final String resourceName = "tangled-maze-maze-generator";
 	private static final String updateInfoUrl = "https://pastebin.com/raw/BRJfXpPu";
-	private static TangledMazePlugin instance;
 	
+	private static TangledMazePlugin instance;
 	private SessionHandler sessionHandler;
 	private ToolHandler toolHandler;
 	private RenderHandler renderHandler;

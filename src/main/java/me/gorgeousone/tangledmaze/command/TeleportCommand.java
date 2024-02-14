@@ -54,4 +54,3 @@ public class TeleportCommand extends BaseCommand {
 		renderHandler.getPlayerRender(playerId).show();
 	}
 }
-

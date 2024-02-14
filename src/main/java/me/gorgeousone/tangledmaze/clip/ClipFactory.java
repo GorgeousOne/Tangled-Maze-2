@@ -207,5 +207,4 @@ public class ClipFactory {
 	private static float sign(Vec2 p0, Vec2 p1, Vec2 p2) {
 		return (p0.getX() - p2.getX()) * (p1.getZ() - p2.getZ()) - (p1.getX() - p2.getX()) * (p0.getZ() - p2.getZ());
 	}
-	
 }
