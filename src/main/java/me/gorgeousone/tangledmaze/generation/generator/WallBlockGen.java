@@ -72,9 +72,16 @@ public class WallBlockGen extends BlockGen {
 		}
 	}
 
+	/**
+	 * Removes the inside of the walls to make them hollow
+	 * @param mazeMap for looking for wall coordinates
+	 * @param gridMap
+	 * @return
+	 */
 	private static Set<BlockVec> hollowOutWall(MazeMap mazeMap, GridMap gridMap) {
 		Set<BlockVec> blocksToRemove = new HashSet<>();
 
+		// iterate over all grid cells
 		for (int gridX = 0; gridX < gridMap.getWidth(); ++gridX) {
 			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {
 				if (gridMap.getPathType(gridX, gridZ) == PathType.PAVED) {
@@ -84,6 +91,7 @@ public class WallBlockGen extends BlockGen {
 				Vec2 coreMin = surfaceMinMax.getKey();
 				Vec2 coreMax = surfaceMinMax.getValue();
 
+				// iterate over all blocks in the
 				for (int x = coreMin.getX(); x < coreMax.getX(); ++x) {
 					for (int z = coreMin.getZ(); z < coreMax.getZ(); ++z) {
 						if (!isSurrounded(x, z, mazeMap)) {
@@ -102,6 +110,10 @@ public class WallBlockGen extends BlockGen {
 		return blocksToRemove;
 	}
 
+	/**
+	 * Returns the minimum and maximum coordinates of the invisible wall core in the given grid cell,
+	 * which is 1 block bigger in directions where the wall is surrounded by other walls
+	 */
 	private static Map.Entry<Vec2, Vec2> getWallCoreMinMax(GridCell cell, GridMap gridMap) {
 		Vec2 gridPos = cell.getGridPos();
 		Vec2 min = cell.getMin();
@@ -123,6 +135,9 @@ public class WallBlockGen extends BlockGen {
 		return new AbstractMap.SimpleEntry<>(min, max);
 	}
 
+	/**
+	 * Returns true if an xz position on a maze map is surrounded by walls in all 8 directions
+	 */
 	private static boolean isSurrounded(int x, int z, MazeMap mazeMap) {
 		Vec2 point = new Vec2(x, z);
 
@@ -137,9 +152,15 @@ public class WallBlockGen extends BlockGen {
 		return true;
 	}
 
+	/**
+	 * Returns the minimum y coordinate of the hollow wall in the given xz position
+	 * in order to keep the floor covered (of neighboring floor blocks as well)
+	 */
 	private static int getMinHollowY(int x, int z, MazeMap mazeMap) {
+		// make hollow outs start at minimum 1 block deep inside the wall
 		int minHollowY = mazeMap.getY(x, z) + 2;
 
+		// make sure direct neighbors floor blocks are covered as well
 		for (Vec2 neighbor : BlockUtil.getNeighbors(x, z, 1)) {
 			if (mazeMap.contains(neighbor)) {
 				minHollowY = Math.max(minHollowY, mazeMap.getY(neighbor) + 2);
@@ -148,6 +169,11 @@ public class WallBlockGen extends BlockGen {
 		return minHollowY;
 	}
 
+
+	/**
+	 * Returns the maximum y coordinate of the hollow wall in the given xz position
+	 * in order to not tear holes in the wall if neighbor cell walls are lower
+	 */
 	private static int getMaxHollowY(int x, int z, GridMap gridMap) {
 		Vec2 gridPos = gridMap.getGridPos(new Vec2(x, z));
 		GridCell cell = gridMap.getCell(gridPos);
@@ -158,11 +184,11 @@ public class WallBlockGen extends BlockGen {
 				continue;
 			}
 			Vec2 neighborGridPos = gridMap.getGridPos(neighbor);
+
 			if (gridMap.contains(neighborGridPos)) {
 				maxHollowY = Math.min(maxHollowY, gridMap.getWallY(neighborGridPos));
 			}
 		}
 		return maxHollowY;
 	}
-
 }

@@ -113,7 +113,8 @@ public class GridMap {
 	}
 	
 	/**
-	 * Returns the y height of a wall segment in the grid. Returns 0 if not set
+	 * Returns the collective y height for all wall columns in this cell
+	 * Returns 0 if not set
 	 */
 	public int getWallY(Vec2 gridPos) {
 		if (!contains(gridPos.getX(), gridPos.getZ())) {
