@@ -6,11 +6,11 @@ import java.util.Arrays;
  * An enum to distinguish between different properties of a maze.
  */
 public enum MazeProperty {
-	WALL_HEIGHT(50, 2),
-	WALL_WIDTH(50, 1),
-	PATH_WIDTH(50, 1),
+	WALL_HEIGHT(128, 2),
+	WALL_WIDTH(64, 1),
+	PATH_WIDTH(64, 1),
 	CURLINESS(10, 3),
-	ROOF_WIDTH(50, 1);
+	ROOF_WIDTH(64, 1);
 	
 	private final int maxVal;
 	private final int defaultVal;
