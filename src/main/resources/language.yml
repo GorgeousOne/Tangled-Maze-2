@@ -9,7 +9,7 @@ help-pages:
         circle: create circles with the maze wand
         triangle: create triangles with the maze wand
         exit: set exits for the maze on the redstone border
-        brush: 'left click: expand the redstone border \nright click: shrink the border'
+        brush: click on the redstone border to expand/shrink single blocks, depending on your viewing direction
     settings-command: 'Change how your maze will be built later:'
     settings:
         wall-height: height of walls in blocks
