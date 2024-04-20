@@ -44,7 +44,7 @@ public abstract class MazeSolver {
 			List<GridCell> solutionPath) {
 		boolean isSolution = false;
 		
-		for (Direction dir : Direction.fourCardinals()) {
+		for (Direction dir : Direction.CARDINALS) {
 			if (dir == backDir) {
 				continue;
 			}

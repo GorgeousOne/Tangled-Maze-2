@@ -11,16 +11,15 @@ public enum Direction {
 	NORTH(new Vec2(0, -1)),
 	NORTH_EAST(new Vec2(1, -1));
 	
+	public static final Direction[] CARDINALS = {EAST, SOUTH, WEST, NORTH};
+	public static final Direction[] DIAGONALS = {SOUTH_EAST, SOUTH_WEST, NORTH_WEST, NORTH_EAST};
+	
 	private final Vec2 facing;
 
 	Direction(Vec2 facing) {
 		this.facing = facing;
 	}
 	
-	public static Direction[] fourCardinals() {
-		return new Direction[]{EAST, WEST, SOUTH, NORTH};
-	}
-
 	/**
 	 * Returns true if the direction's vector is pointing towards positive (with it's x and z coordinate)
 	 */

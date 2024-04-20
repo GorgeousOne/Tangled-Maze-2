@@ -4,7 +4,6 @@ import me.gorgeousone.tangledmaze.util.BlockUtil;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.MathUtil;
 import me.gorgeousone.tangledmaze.util.Vec2;
-import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 
 import java.util.Iterator;
@@ -20,7 +19,7 @@ public class ClipActionFactory {
 	
 	public static boolean canBeExit(Clip clip, Vec2 loc) {
 		ClipAction noChanges = new ClipAction(clip);
-		return sealsClipBorder(noChanges, loc, Direction.fourCardinals());
+		return sealsClipBorder(noChanges, loc, Direction.CARDINALS);
 	}
 	
 	/**
@@ -83,7 +82,7 @@ public class ClipActionFactory {
 	 */
 	private static void removeMazeExits(List<Vec2> exits, ClipAction changes) {
 		for (Vec2 exit : exits) {
-			if (!sealsClipBorder(changes, exit, Direction.fourCardinals())) {
+			if (!sealsClipBorder(changes, exit, Direction.CARDINALS)) {
 				changes.removeExit(exit);
 			}
 		}
@@ -163,9 +162,7 @@ public class ClipActionFactory {
 			return null;
 		}
 		double borderAngle = dir.getVec2().getMcAngle();
-		Bukkit.broadcastMessage(dir + " " + dir.getVec2() + " " + borderAngle);
 		double absDelta = Math.abs(getDeltaAngle(playerYaw, borderAngle));
-		Bukkit.broadcastMessage("player: " + (int) playerYaw + " d: " + (int) absDelta);
 
 		if (absDelta < 90) {
 			return addClip(maze, create3x3Square(maze, block));

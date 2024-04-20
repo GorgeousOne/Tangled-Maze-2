@@ -58,7 +58,7 @@ public class WallBlockGen extends BlockGen {
 		Vec2 gridPos = cell.getGridPos();
 		int maxFloorY = gridMap.getFloorY(gridPos);
 		
-		for (Direction facing : Direction.fourCardinals()) {
+		for (Direction facing : Direction.CARDINALS) {
 			Vec2 neighborCell = gridPos.clone().add(facing.getVec2());
 			
 			if (gridMap.contains(neighborCell)) {
@@ -119,7 +119,7 @@ public class WallBlockGen extends BlockGen {
 		Vec2 min = cell.getMin();
 		Vec2 max = cell.getMax();
 
-		for (Direction facing : Direction.fourCardinals()) {
+		for (Direction facing : Direction.CARDINALS) {
 			Vec2 facingVec = facing.getVec2();
 			Vec2 neighborPos = gridPos.clone().add(facingVec);
 

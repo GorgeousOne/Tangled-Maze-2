@@ -104,7 +104,7 @@ public class MazeMapFactory {
 	}
 	
 	private static Direction getExitFacing(Vec2 exit, MazeMap mazeMap) {
-		for (Direction dir : Direction.fourCardinals()) {
+		for (Direction dir : Direction.CARDINALS) {
 			Vec2 neighbor = exit.clone().add(dir.getVec2());
 			
 			if (mazeMap.getType(neighbor) == AreaType.FREE) {
@@ -158,7 +158,7 @@ public class MazeMapFactory {
 	private static int calcWallY(GridMap gridMap, Vec2 gridPos, int wallHeight) {
 		int maxFloorY = gridMap.getFloorY(gridPos) + wallHeight;
 		
-		for (Direction facing : Direction.fourCardinals()) {
+		for (Direction facing : Direction.CARDINALS) {
 			Vec2 neighborCell = gridPos.clone().add(facing.getVec2());
 			
 			if (gridMap.contains(neighborCell)) {
