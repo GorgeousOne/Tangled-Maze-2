@@ -19,16 +19,13 @@ public final class VersionUtil {
 	}
 	
 	private static String getProjectVersion() {
-		System.out.println("TODO fix project version load error");
-		return "1.12.2";
-
-//		try (InputStream inputStream = VersionUtil.class.getClassLoader().getResourceAsStream("project.properties")) {
-//			Properties properties = new Properties();
-//			properties.load(inputStream);
-//			return properties.getProperty("version");
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			return null;
-//		}
+		try (InputStream inputStream = VersionUtil.class.getClassLoader().getResourceAsStream("project.properties")) {
+			Properties properties = new Properties();
+			properties.load(inputStream);
+			return properties.getProperty("version");
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

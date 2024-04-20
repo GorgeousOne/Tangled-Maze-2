@@ -13,6 +13,7 @@ import java.util.List;
 
 public final class ItemUtil {
 
+	private static final String TAG_SELECTED = ChatColor.GRAY + " [Selected]";
 	private ItemUtil() {}
 
 	public static ItemStack nameItem(Material mat, String displayName, String... lore) {
@@ -58,14 +59,14 @@ public final class ItemUtil {
 		ItemMeta meta = item.getItemMeta();
 		meta.addEnchant(Enchantment.ARROW_INFINITE, 1, false);
 		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-		meta.setDisplayName(meta.getDisplayName() + " [Selected]");
+		meta.setDisplayName(meta.getDisplayName() + TAG_SELECTED);
 		item.setItemMeta(meta);
 	}
 
 	public static void removeMagicGlow(ItemStack item) {
 		ItemMeta meta = item.getItemMeta();
 		meta.removeEnchant(Enchantment.ARROW_INFINITE);
-		meta.setDisplayName(meta.getDisplayName().replace(" [Selected]", ""));
+		meta.setDisplayName(meta.getDisplayName().replace(TAG_SELECTED, ""));
 		item.setItemMeta(meta);
 	}
 }
