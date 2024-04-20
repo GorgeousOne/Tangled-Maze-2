@@ -11,14 +11,13 @@ public enum Direction {
 	NORTH(new Vec2(0, -1)),
 	NORTH_EAST(new Vec2(1, -1));
 	
-	private final Vec2 facing;
+	public static final Direction[] CARDINALS = {EAST, SOUTH, WEST, NORTH};
+	public static final Direction[] DIAGONALS = {SOUTH_EAST, SOUTH_WEST, NORTH_WEST, NORTH_EAST};
 	
+	private final Vec2 facing;
+
 	Direction(Vec2 facing) {
 		this.facing = facing;
-	}
-	
-	public static Direction[] fourCardinals() {
-		return new Direction[]{EAST, WEST, SOUTH, NORTH};
 	}
 	
 	/**
@@ -44,17 +43,26 @@ public enum Direction {
 	}
 	
 	public Direction getOpposite() {
-		int index = java.util.Arrays.asList(values()).indexOf(this);
-		return values()[(index + 4) % values().length];
+		return values()[(ordinal() + 4) % values().length];
 	}
 	
 	public Direction getRight() {
-		int index = java.util.Arrays.asList(values()).indexOf(this);
-		return values()[(index + 2) % values().length];
+		return values()[(ordinal() + 2) % values().length];
 	}
 	
 	public Direction getLeft() {
-		int index = java.util.Arrays.asList(values()).indexOf(this);
-		return values()[(index + 6) % values().length];
+		return values()[(ordinal() + 6) % values().length];
+	}
+
+	/**
+	 * Returns the direction that is in the middle of this direction and the other direction.
+	 * But it only works for directions that are exactly 90° apart.
+	 */
+	public Direction getStupidMiddle(Direction other) {
+		if (other == null) {
+			return this;
+		}
+		int diff = Math.floorMod(other.ordinal() - ordinal() + 4, 8) - 4;
+		return values()[Math.floorMod(ordinal() + diff / 2, 8)];
 	}
 }

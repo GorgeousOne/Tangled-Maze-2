@@ -8,6 +8,7 @@ import me.gorgeousone.tangledmaze.clip.ClipType;
 import me.gorgeousone.tangledmaze.data.ConfigSettings;
 import me.gorgeousone.tangledmaze.data.Constants;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
+import me.gorgeousone.tangledmaze.menu.UiHandler;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.render.RenderSession;
 import me.gorgeousone.tangledmaze.tool.ClipTool;
@@ -42,14 +43,16 @@ public class ClickListener implements Listener {
 	private final SessionHandler sessionHandler;
 	private final ToolHandler toolHandler;
 	private final RenderHandler renderHandler;
+	private final UiHandler uiHandler;
 	
 	public ClickListener(JavaPlugin plugin, SessionHandler sessionHandler,
 	                     ToolHandler toolHandler,
-	                     RenderHandler renderHandler) {
+	                     RenderHandler renderHandler, UiHandler uiHandler) {
 		this.plugin = plugin;
 		this.sessionHandler = sessionHandler;
 		this.toolHandler = toolHandler;
 		this.renderHandler = renderHandler;
+		this.uiHandler = uiHandler;
 	}
 	
 	/**
@@ -72,14 +75,18 @@ public class ClickListener implements Listener {
 			return;
 		}
 		event.setCancelled(true);
-		UUID playerId = player.getUniqueId();
+
+		if (!isLeftClick(event.getAction())) {
+			uiHandler.openMenu(player);
+			return;
+		}
 		Block tracedBlock = traceBlock(player, clickedBlock);
 		
 		if (tracedBlock == null) {
 			return;
 		}
-		handleWandClick(playerId, tracedBlock, isLeftClick(event.getAction()));
-		
+		handleWandClick(player, tracedBlock);
+
 		if (event.getClickedBlock() != null) {
 			updateClickedBlocks(player, event.getClickedBlock());
 		}
@@ -141,7 +148,8 @@ public class ClickListener implements Listener {
 		return clickedBlock;
 	}
 	
-	private void handleWandClick(UUID playerId, Block clickedBlock, boolean isLeftClick) {
+	private void handleWandClick(Player player, Block clickedBlock) {
+		UUID playerId = player.getUniqueId();
 		ClipTool clipTool = toolHandler.createClipToolIfAbsent(playerId);
 		Clip clip = sessionHandler.getClip(playerId);
 		Clip maze = sessionHandler.getMazeClip(playerId);
@@ -157,14 +165,13 @@ public class ClickListener implements Listener {
 				}
 				break;
 			case BRUSH:
-				if (isLeftClick) {
-					maze.processAction(ClipActionFactory.expandBorder(maze, clickedBlock), true);
-				} else {
-					maze.processAction(ClipActionFactory.eraseBorder(maze, clickedBlock), true);
-				}
+				double angle = player.getLocation().getYaw();
+				maze.processAction(ClipActionFactory.brushBorder(maze, clickedBlock, angle), true);
 				break;
 		}
 	}
+
+
 	
 	/**
 	 * Returns true if a maze redstone border was clicked and that no gold clip creation was in progress
@@ -177,8 +184,8 @@ public class ClickListener implements Listener {
 	}
 	
 	private void addVertexToClipTool(UUID playerId, ClipTool clipTool, Block clickedBlock) {
-		ClipType clipType = toolHandler.getOrCreateClipType(playerId);
-		
+		ClipType clipType = toolHandler.createClipTypeIfAbsent(playerId);
+
 		if (clipTool.getShape() != clipType) {
 			sessionHandler.removeClip(playerId, true);
 			toolHandler.resetClipTool(playerId);
@@ -196,7 +203,7 @@ public class ClickListener implements Listener {
 		Set<Vec2> updatedBlocks = new HashSet<>();
 		updatedBlocks.add(new Vec2(clickedBlock));
 		
-		for (Direction dir : Direction.fourCardinals()) {
+		for (Direction dir : Direction.CARDINALS) {
 			Vec2 facing = dir.getVec2();
 			updatedBlocks.add(new Vec2(clickedBlock.getRelative(facing.getX(), 0, facing.getZ())));
 		}

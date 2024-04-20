@@ -19,7 +19,6 @@ public final class VersionUtil {
 	}
 	
 	private static String getProjectVersion() {
-		
 		try (InputStream inputStream = VersionUtil.class.getClassLoader().getResourceAsStream("project.properties")) {
 			Properties properties = new Properties();
 			properties.load(inputStream);

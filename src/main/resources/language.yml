@@ -1,11 +1,13 @@
 help-pages:
     wand-command: Gives you a maze wand item. It works like a world edit wand but for mazes :P \nClick two blocks and continue with &e/maze start&a
     start-command: Converts your clipboard into a maze layout. Click on the border to place exits. Continue with &e/maze build&a
-    add-cut-command: Merges your clipboard with your maze layout or cuts it away from it.
+    add-command: Merges the area of your clipboard with your maze layout.
+    cut-command: Removes the area of your clipboard from your maze layout.
     tool-command: 'Switch between different tools for editing your maze layout:'
     tools:
         rectangle: create rectangles when clicking with the maze wand
         circle: create circles with the maze wand
+        triangle: create triangles with the maze wand
         exit: set exits for the maze on the redstone border
         brush: 'left click: expand the redstone border \nright click: shrink the border'
     settings-command: 'Change how your maze will be built later:'

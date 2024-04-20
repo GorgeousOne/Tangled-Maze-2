@@ -96,7 +96,7 @@ public class PathGen {
 	private static List<Direction> getAvailableDirs(GridCell pathEnd, GridMap gridMap) {
 		List<Direction> branches = new ArrayList<>();
 		
-		for (Direction facing : Direction.fourCardinals()) {
+		for (Direction facing : Direction.CARDINALS) {
 			Vec2 facingVec = facing.getVec2();
 			Vec2 newSeg1 = pathEnd.getGridPos().add(facingVec);
 			Vec2 newSeg2 = newSeg1.clone().add(facingVec);
@@ -217,7 +217,7 @@ public class PathGen {
 			Set<GridCell> cells,
 			Set<Map.Entry<GridCell, GridCell>> treeLinks) {
 		
-		Set<Vec2> facings = Arrays.stream(Direction.fourCardinals()).map(facing -> facing.getVec2().mult(2)).collect(Collectors.toSet());
+		Set<Vec2> facings = Arrays.stream(Direction.CARDINALS).map(facing -> facing.getVec2().mult(2)).collect(Collectors.toSet());
 		
 		for (GridCell cell : cells) {
 			for (Vec2 facing : facings) {

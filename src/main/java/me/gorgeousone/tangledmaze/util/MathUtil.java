@@ -14,4 +14,9 @@ public class MathUtil {
 		}
 		return true;
 	}
+
+	public static double floorMod(double d1, double d2) {
+		return d1 - d2 * Math.floor(d1 / d2);
+	}
+
 }

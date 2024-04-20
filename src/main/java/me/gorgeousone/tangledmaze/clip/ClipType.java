@@ -3,7 +3,7 @@ package me.gorgeousone.tangledmaze.clip;
 public enum ClipType {
 	RECTANGLE(2, "rectangle", "rect", "rectangle"),
 	ELLIPSE(2, "circle", "circle", "ellipse"),
-	TRIANGLE(3, "triangle", "triangle");
+	TRIANGLE(3, "triangle", "triangle", "tri");
 	
 	private final int vertexCount;
 	private final String name;

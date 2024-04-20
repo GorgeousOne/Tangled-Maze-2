@@ -84,7 +84,11 @@ public class Vec2 implements Comparable<Vec2> {
 		int deltaX = Double.compare(getX(), vec.getX());
 		return deltaX != 0 ? deltaX : Double.compare(getZ(), vec.getZ());
 	}
-	
+
+	public double getMcAngle() {
+		return Math.toDegrees(Math.atan2(-x, z));
+	}
+
 	@Override
 	public Vec2 clone() {
 		return new Vec2(x, z);

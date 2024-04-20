@@ -4,7 +4,6 @@ import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.ClipType;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
 import org.bukkit.Bukkit;
-import org.bukkit.event.Listener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +17,8 @@ public class ToolHandler {
 	private final SessionHandler sessionHandler;
 	private final Map<UUID, ToolType> playerToolTypes;
 	private final Map<UUID, ClipTool> playerClipTools;
+	// mapping of clip type each player uses currently
+	// separate to the type of the ClipTool itself because TODO find out
 	private final Map<UUID, ClipType> playerClipTypes;
 	
 	public ToolHandler(SessionHandler sessionHandler) {
@@ -33,8 +34,8 @@ public class ToolHandler {
 	}
 	
 	public ToolType createToolIfAbsent(UUID playerId) {
-		playerToolTypes.putIfAbsent(playerId, ToolType.EXIT_SETTER);
-		return playerToolTypes.get(playerId);
+		//dont return putIfAbsent, it returns null you idiot
+		return playerToolTypes.computeIfAbsent(playerId, id -> ToolType.EXIT_SETTER);
 	}
 	
 	public boolean setToolType(UUID playerId, ToolType newToolType) {
@@ -45,8 +46,7 @@ public class ToolHandler {
 	 * Returns existing player clip or creates a new one
 	 */
 	public ClipTool createClipToolIfAbsent(UUID playerId) {
-		playerClipTools.computeIfAbsent(playerId, function -> new ClipTool(playerId, ClipType.RECTANGLE));
-		return playerClipTools.get(playerId);
+		return playerClipTools.computeIfAbsent(playerId, function -> new ClipTool(playerId, ClipType.RECTANGLE));
 	}
 	
 	/**
@@ -61,7 +61,7 @@ public class ToolHandler {
 	}
 	
 	public boolean setClipType(UUID playerId, ClipType newClipType) {
-		ClipType oldClipType = getOrCreateClipType(playerId);
+		ClipType oldClipType = createClipTypeIfAbsent(playerId);
 		
 		if (oldClipType == newClipType) {
 			return false;
@@ -98,9 +98,8 @@ public class ToolHandler {
 		}
 	}
 	
-	public ClipType getOrCreateClipType(UUID playerId) {
-		playerClipTypes.putIfAbsent(playerId, ClipType.RECTANGLE);
-		return playerClipTypes.get(playerId);
+	public ClipType createClipTypeIfAbsent(UUID playerId) {
+		return playerClipTypes.computeIfAbsent(playerId, id -> ClipType.RECTANGLE);
 	}
 	
 	public void removePlayer(UUID playerId) {

@@ -39,4 +39,17 @@ public final class MaterialUtil {
 	public static boolean canBeReplaced(Material material) {
 		return !material.isSolid() || !Constants.NOT_REPLACEABLES.contains(material);
 	}
+
+	public static Material match(String... names) {
+		Material mat;
+
+		for (String name : names) {
+			mat = Material.matchMaterial(name);
+
+			if (mat != null) {
+				return mat;
+			}
+		}
+		return null;
+	}
 }

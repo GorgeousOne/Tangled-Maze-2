@@ -2,6 +2,7 @@ package me.gorgeousone.tangledmaze.clip;
 
 import me.gorgeousone.tangledmaze.util.BlockUtil;
 import me.gorgeousone.tangledmaze.util.Direction;
+import me.gorgeousone.tangledmaze.util.MathUtil;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.block.Block;
 
@@ -18,7 +19,7 @@ public class ClipActionFactory {
 	
 	public static boolean canBeExit(Clip clip, Vec2 loc) {
 		ClipAction noChanges = new ClipAction(clip);
-		return sealsClipBorder(noChanges, loc, Direction.fourCardinals());
+		return sealsClipBorder(noChanges, loc, Direction.CARDINALS);
 	}
 	
 	/**
@@ -81,7 +82,7 @@ public class ClipActionFactory {
 	 */
 	private static void removeMazeExits(List<Vec2> exits, ClipAction changes) {
 		for (Vec2 exit : exits) {
-			if (!sealsClipBorder(changes, exit, Direction.fourCardinals())) {
+			if (!sealsClipBorder(changes, exit, Direction.CARDINALS)) {
 				changes.removeExit(exit);
 			}
 		}
@@ -151,21 +152,33 @@ public class ClipActionFactory {
 		}
 	}
 	
-	public static ClipAction expandBorder(Clip maze, Block block) {
+	public static ClipAction brushBorder(Clip maze, Block block, double playerYaw) {
 		if (!maze.isBorderBlock(block)) {
 			return null;
 		}
-		return addClip(maze, create3x3Square(maze, block));
-	}
-	
-	public static ClipAction eraseBorder(Clip maze, Block block) {
-		if (!maze.isBorderBlock(block)) {
+		Direction dir = maze.getBorderFacing(new Vec2(block));
+
+		if (dir == null) {
 			return null;
+		}
+		double borderAngle = dir.getVec2().getMcAngle();
+		double absDelta = Math.abs(getDeltaAngle(playerYaw, borderAngle));
+
+		if (absDelta < 90) {
+			return addClip(maze, create3x3Square(maze, block));
 		}
 		return removeClip(maze, create3x3Square(maze, block));
 	}
-	
-	
+
+	/**
+	 * Returns the smallest angle between two angles in degrees, always between -180 and 180.
+	 */
+	private static double getDeltaAngle(double deg1, double deg2) {
+		double delta = deg2 - deg1;
+		delta = MathUtil.floorMod(delta + 180, 360) - 180;
+		return delta;
+	}
+
 	private static Clip create3x3Square(Clip maze, Block block) {
 		Clip square = new Clip(null, maze.getWorld());
 		int midX = block.getX();
