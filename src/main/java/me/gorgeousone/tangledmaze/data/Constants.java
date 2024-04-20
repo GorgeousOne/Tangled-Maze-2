@@ -20,7 +20,9 @@ public class Constants {
 			ChatColor.GREEN + "TM" +
 			ChatColor.DARK_GREEN + "] " +
 			ChatColor.YELLOW;
-	
+
+	public static final String UI_TITLE = "Maze Actions";
+
 	public static final Set<Material> TRANSPARENT_SOLIDS = new TreeSet<>();
 	public static final Set<Material> NOT_REPLACEABLES = new TreeSet<>();
 	

@@ -16,10 +16,9 @@ public class ChestUi {
 	private final Inventory inventory;
 	private final Map<Integer, Consumer<Player>> clickActions;
 
-	public ChestUi(int rows) {
+	public ChestUi(int rows, String title) {
 		this.rows = rows;
-		System.out.println("TODO rename maze menu");
-		this.inventory = Bukkit.createInventory(null, rows * 9, "%Maze Menu%");
+		this.inventory = Bukkit.createInventory(null, rows * 9, title);
 		this.clickActions = new HashMap<>();
 	}
 
@@ -41,6 +40,7 @@ public class ChestUi {
 
 	public void onClickSlot(Player player, int slot) {
 		if (clickActions.containsKey(slot)) {
+			player.closeInventory();
 			clickActions.get(slot).accept(player);
 		}
 	}

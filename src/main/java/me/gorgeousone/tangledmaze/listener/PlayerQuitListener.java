@@ -1,6 +1,7 @@
 package me.gorgeousone.tangledmaze.listener;
 
 import me.gorgeousone.tangledmaze.SessionHandler;
+import me.gorgeousone.tangledmaze.menu.UiHandler;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import org.bukkit.entity.Player;
@@ -18,13 +19,15 @@ public class PlayerQuitListener implements Listener {
 	private final SessionHandler sessionHandler;
 	private final RenderHandler renderHandler;
 	private final ToolHandler toolHandler;
-	
+	private final UiHandler uiHandler;
+
 	public PlayerQuitListener(SessionHandler sessionHandler,
 	                          RenderHandler renderHandler,
-	                          ToolHandler toolHandler) {
+	                          ToolHandler toolHandler, UiHandler uiHandler) {
 		this.sessionHandler = sessionHandler;
 		this.renderHandler = renderHandler;
 		this.toolHandler = toolHandler;
+		this.uiHandler = uiHandler;
 	}
 	
 	@EventHandler
@@ -35,5 +38,6 @@ public class PlayerQuitListener implements Listener {
 		sessionHandler.removePlayer(playerId);
 		renderHandler.removePlayer(playerId);
 		toolHandler.removePlayer(playerId);
+		uiHandler.remove(playerId);
 	}
 }

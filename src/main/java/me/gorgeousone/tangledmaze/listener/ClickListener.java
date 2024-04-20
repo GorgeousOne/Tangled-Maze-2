@@ -8,7 +8,7 @@ import me.gorgeousone.tangledmaze.clip.ClipType;
 import me.gorgeousone.tangledmaze.data.ConfigSettings;
 import me.gorgeousone.tangledmaze.data.Constants;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
-import me.gorgeousone.tangledmaze.menu.MenuHandler;
+import me.gorgeousone.tangledmaze.menu.UiHandler;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.render.RenderSession;
 import me.gorgeousone.tangledmaze.tool.ClipTool;
@@ -43,16 +43,16 @@ public class ClickListener implements Listener {
 	private final SessionHandler sessionHandler;
 	private final ToolHandler toolHandler;
 	private final RenderHandler renderHandler;
-	private final MenuHandler menuHandler;
+	private final UiHandler uiHandler;
 	
 	public ClickListener(JavaPlugin plugin, SessionHandler sessionHandler,
 	                     ToolHandler toolHandler,
-	                     RenderHandler renderHandler, MenuHandler menuHandler) {
+	                     RenderHandler renderHandler, UiHandler uiHandler) {
 		this.plugin = plugin;
 		this.sessionHandler = sessionHandler;
 		this.toolHandler = toolHandler;
 		this.renderHandler = renderHandler;
-		this.menuHandler = menuHandler;
+		this.uiHandler = uiHandler;
 	}
 	
 	/**
@@ -76,18 +76,18 @@ public class ClickListener implements Listener {
 		}
 		event.setCancelled(true);
 		UUID playerId = player.getUniqueId();
+
+		if (!isLeftClick(event.getAction())) {
+			uiHandler.openMenu(player);
+			return;
+		}
 		Block tracedBlock = traceBlock(player, clickedBlock);
 		
 		if (tracedBlock == null) {
 			return;
 		}
+		handleWandClick(playerId, tracedBlock);
 
-		if (isLeftClick(event.getAction())) {
-			handleWandClick(playerId, tracedBlock);
-		} else {
-			menuHandler.openMenu(player);
-			return;
-		}
 		if (event.getClickedBlock() != null) {
 			updateClickedBlocks(player, event.getClickedBlock());
 		}

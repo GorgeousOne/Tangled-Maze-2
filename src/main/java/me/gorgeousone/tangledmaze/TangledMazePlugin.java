@@ -23,7 +23,8 @@ import me.gorgeousone.tangledmaze.listener.BlockChangeListener;
 import me.gorgeousone.tangledmaze.listener.ChangeWorldListener;
 import me.gorgeousone.tangledmaze.listener.ClickListener;
 import me.gorgeousone.tangledmaze.listener.PlayerQuitListener;
-import me.gorgeousone.tangledmaze.menu.MenuHandler;
+import me.gorgeousone.tangledmaze.listener.UiListener;
+import me.gorgeousone.tangledmaze.menu.UiHandler;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import me.gorgeousone.tangledmaze.updatecheck.UpdateCheck;
@@ -46,7 +47,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 	private ToolHandler toolHandler;
 	private RenderHandler renderHandler;
 	private BuildHandler buildHandler;
-	private MenuHandler menuHandler;
+	private UiHandler uiHandler;
 	private ConfigSettings settings;
 	private ParentCommand mazeCmd;
 	
@@ -59,7 +60,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 		toolHandler = new ToolHandler(sessionHandler);
 		renderHandler = new RenderHandler(this, sessionHandler);
 		buildHandler = new BuildHandler(this, sessionHandler);
-		menuHandler = new MenuHandler(toolHandler);
+		uiHandler = new UiHandler(toolHandler);
 
 		registerListeners();
 		registerCommands();
@@ -106,10 +107,11 @@ public final class TangledMazePlugin extends JavaPlugin {
 	void registerListeners() {
 		PluginManager manager = Bukkit.getPluginManager();
 		manager.registerEvents(renderHandler, this);
-		manager.registerEvents(new ClickListener(this, sessionHandler, toolHandler, renderHandler, menuHandler), this);
-		manager.registerEvents(new PlayerQuitListener(sessionHandler, renderHandler, toolHandler), this);
+		manager.registerEvents(new ClickListener(this, sessionHandler, toolHandler, renderHandler, uiHandler), this);
+		manager.registerEvents(new PlayerQuitListener(sessionHandler, renderHandler, toolHandler, uiHandler), this);
 		manager.registerEvents(new BlockChangeListener(this, sessionHandler), this);
 		manager.registerEvents(new ChangeWorldListener(toolHandler, renderHandler), this);
+		manager.registerEvents(new UiListener(uiHandler), this);
 	}
 	
 	private void registerCommands() {
