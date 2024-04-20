@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 public class ChestUi {
 
+	private final String title;
 	private final int rows;
 	private final Inventory inventory;
 	private final Map<Integer, Consumer<Player>> clickActions;
@@ -25,6 +26,7 @@ public class ChestUi {
 
 
 	public ChestUi(int rows, String title) {
+		this.title = title;
 		this.rows = rows;
 		inventory = Bukkit.createInventory(null, rows * 9, title);
 		clickActions = new HashMap<>();
@@ -41,12 +43,12 @@ public class ChestUi {
 	}
 
 	public void toggleHighlight(int slot, boolean state) {
-		if (state) {
-			updateRadio(slot);
-			ItemUtil.addMagicGlow(inventory.getItem(slot));
-		} else {
-			ItemUtil.removeMagicGlow(inventory.getItem(slot));
-		}
+//		if (state) {
+//			updateRadio(slot);
+//			ItemUtil.addMagicGlow(inventory.getItem(slot));
+//		} else {
+//			ItemUtil.removeMagicGlow(inventory.getItem(slot));
+//		}
 	}
 
 	/**
@@ -77,5 +79,16 @@ public class ChestUi {
 
 	public void addRadio(int... slots) {
 		radioGroups.add(Arrays.stream(slots).boxed().collect(Collectors.toList()));
+	}
+
+	@Override
+	protected ChestUi clone() {
+		ChestUi clone = new ChestUi(rows, title);
+		clone.inventory.setContents(inventory.getContents());
+		clone.clickActions.putAll(clickActions);
+		clone.radioGroups.addAll(radioGroups);
+		clone.radioHighlights.putAll(radioHighlights);
+		return clone;
+
 	}
 }

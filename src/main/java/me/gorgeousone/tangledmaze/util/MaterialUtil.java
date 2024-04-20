@@ -40,10 +40,16 @@ public final class MaterialUtil {
 		return !material.isSolid() || !Constants.NOT_REPLACEABLES.contains(material);
 	}
 
-	public static Material match(String aquatic, String legacy) {
-		if (VersionUtil.IS_LEGACY_SERVER) {
-			return Material.valueOf(legacy);
+	public static Material match(String... names) {
+		Material mat;
+
+		for (String name : names) {
+			mat = Material.matchMaterial(name);
+
+			if (mat != null) {
+				return mat;
+			}
 		}
-		return Material.valueOf(aquatic);
+		return null;
 	}
 }

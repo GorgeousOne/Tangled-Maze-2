@@ -152,6 +152,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 	
 	private void loadLanguage() {
 		Message.loadLanguage(ConfigUtil.loadConfig("language", this));
+		uiHandler.reloadLanguage();
 	}
 	
 	private void checkForUpdates() {
