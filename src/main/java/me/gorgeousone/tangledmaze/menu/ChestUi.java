@@ -43,12 +43,12 @@ public class ChestUi {
 	}
 
 	public void toggleHighlight(int slot, boolean state) {
-//		if (state) {
-//			updateRadio(slot);
-//			ItemUtil.addMagicGlow(inventory.getItem(slot));
-//		} else {
-//			ItemUtil.removeMagicGlow(inventory.getItem(slot));
-//		}
+		if (state) {
+			updateRadio(slot);
+			ItemUtil.addMagicGlow(inventory.getItem(slot));
+		} else {
+			ItemUtil.removeMagicGlow(inventory.getItem(slot));
+		}
 	}
 
 	/**

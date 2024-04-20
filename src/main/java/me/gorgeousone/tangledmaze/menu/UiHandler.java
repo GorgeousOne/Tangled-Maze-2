@@ -62,6 +62,9 @@ public class UiHandler {
 		setItem(8, Material.ENDER_PEARL, Message.COMMAND_TELEPORT, p -> closeNExec(p, "tm tp"));
 		setItem(18, Material.REDSTONE_BLOCK, Message.COMMAND_START, p -> closeNExec(p, "tm start"));
 		setItem(19, Material.EMERALD_BLOCK, Message.COMMAND_SOLVE, p -> closeNExec(p, "tm solve"));
+		setItem(20, MaterialUtil.match("OAK_LEAVES", "LEAVES"), Message.COMMAND_BUILD, p -> closeNExec(p, "tm build"));
+		setItem(21, Material.TNT, Message.COMMAND_UNBUILD, p -> closeNExec(p, "tm unbuild"));
+
 		setItem(25, Material.IRON_PICKAXE, Message.COMMAND_ADD, p -> closeNExec(p, "tm add"));
 		setItem(26, Material.SHEARS, Message.COMMAND_CUT, p -> closeNExec(p, "tm cut"));
 
