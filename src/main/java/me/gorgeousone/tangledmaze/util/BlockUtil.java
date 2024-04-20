@@ -11,15 +11,6 @@ import java.util.Set;
 
 public class BlockUtil {
 	
-	public static final BlockFace[] DIRECT_FACES = {
-			BlockFace.UP,
-			BlockFace.DOWN,
-			BlockFace.NORTH,
-			BlockFace.SOUTH,
-			BlockFace.EAST,
-			BlockFace.WEST
-	};
-	
 	public static int getSurfaceY(World world, Vec2 loc, int y) {
 		return getSurface(world.getBlockAt(loc.getX(), y, loc.getZ())).getY();
 	}
@@ -70,17 +61,6 @@ public class BlockUtil {
 			}
 		}
 		return neighbors;
-	}
-	
-	public static Set<BlockVec> getNeighborBlocks(int x, int y, int z) {
-		return new HashSet<>(Arrays.asList(
-				new BlockVec(x - 1, y, z),
-				new BlockVec(x + 1, y, z),
-				new BlockVec(x, y - 1, z),
-				new BlockVec(x, y + 1, z),
-				new BlockVec(x, y, z - 1),
-				new BlockVec(x, y, z + 1)
-		));
 	}
 	
 	public static int getWorldMinHeight(World world) {

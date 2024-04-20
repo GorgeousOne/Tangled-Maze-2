@@ -75,7 +75,6 @@ public class ClickListener implements Listener {
 			return;
 		}
 		event.setCancelled(true);
-		UUID playerId = player.getUniqueId();
 
 		if (!isLeftClick(event.getAction())) {
 			uiHandler.openMenu(player);
@@ -86,7 +85,7 @@ public class ClickListener implements Listener {
 		if (tracedBlock == null) {
 			return;
 		}
-		handleWandClick(playerId, tracedBlock);
+		handleWandClick(player, tracedBlock);
 
 		if (event.getClickedBlock() != null) {
 			updateClickedBlocks(player, event.getClickedBlock());
@@ -149,7 +148,8 @@ public class ClickListener implements Listener {
 		return clickedBlock;
 	}
 	
-	private void handleWandClick(UUID playerId, Block clickedBlock) {
+	private void handleWandClick(Player player, Block clickedBlock) {
+		UUID playerId = player.getUniqueId();
 		ClipTool clipTool = toolHandler.createClipToolIfAbsent(playerId);
 		Clip clip = sessionHandler.getClip(playerId);
 		Clip maze = sessionHandler.getMazeClip(playerId);
@@ -165,14 +165,13 @@ public class ClickListener implements Listener {
 				}
 				break;
 			case BRUSH:
-//				if (isLeftClick) {
-					maze.processAction(ClipActionFactory.expandBorder(maze, clickedBlock), true);
-//				} else {
-//					maze.processAction(ClipActionFactory.eraseBorder(maze, clickedBlock), true);
-//				}
+				double angle = player.getLocation().getYaw();
+				maze.processAction(ClipActionFactory.brushBorder(maze, clickedBlock, angle), true);
 				break;
 		}
 	}
+
+
 	
 	/**
 	 * Returns true if a maze redstone border was clicked and that no gold clip creation was in progress

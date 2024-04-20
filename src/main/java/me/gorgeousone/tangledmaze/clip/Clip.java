@@ -5,10 +5,12 @@ import me.gorgeousone.tangledmaze.event.ClipUpdateEvent;
 import me.gorgeousone.tangledmaze.event.MazeExitSetEvent;
 import me.gorgeousone.tangledmaze.event.MazeStateChangeEvent;
 import me.gorgeousone.tangledmaze.util.BlockUtil;
+import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -152,43 +154,62 @@ public class Clip {
 		Vec2 blockLoc = new Vec2(block);
 		return borderContains(blockLoc) && block.getY() == getY(blockLoc);
 	}
-	
+
+	public Direction getBorderFacing(Vec2 border) {
+		if (!borderContains(border)) {
+			return null;
+		}
+		Direction borderFacing = null;
+
+		for (Direction facing : Direction.fourCardinals()) {
+			Vec2 facingLoc = border.clone().add(facing.getVec2());
+
+			if (!contains(facingLoc)) {
+				borderFacing = facing.getStupidMiddle(borderFacing);
+			}
+		}
+		return borderFacing;
+	}
+
 	public boolean exitsContain(Vec2 loc) {
 		return exits.contains(loc);
 	}
-	
+
 	/**
 	 * Processes the changes stored in a {@link ClipAction} and calls an event
 	 * @param action        changes container
 	 * @param saveToHistory will save the action to history for undoing later if set to true
 	 */
 	public void processAction(ClipAction action, boolean saveToHistory) {
+		if (action == null) {
+			return;
+		}
 		removeBorder(action.getRemovedBorder());
 		removeFill(action.getRemovedFill().keySet());
 		add(action.getAddedFill());
 		addBorder(action.getAddedBorder());
 		exits.removeAll(action.getRemovedExits());
-		
+
 		if (saveToHistory) {
 			actionHistory.push(action);
 		}
 		Bukkit.getPluginManager().callEvent(new ClipActionProcessEvent(this, action));
 	}
-	
+
 	public void toggleExit(Block block) {
 		Vec2 exitLoc = new Vec2(block);
 		int exitY = block.getY();
-		
+
 		if (exits.contains(exitLoc)) {
 			removeExit(exitLoc);
 		} else {
 			addExit(exitLoc, exitY);
 		}
 	}
-	
+
 	private void addExit(Vec2 loc, int y) {
 		MazeExitSetEvent exitSetEvent = new MazeExitSetEvent(this);
-		
+
 		if (!exits.isEmpty()) {
 			exitSetEvent.removeMainExit(exits.get(0));
 		}
@@ -197,13 +218,13 @@ public class Clip {
 		exitSetEvent.addMainExit(loc, y);
 		Bukkit.getPluginManager().callEvent(exitSetEvent);
 	}
-	
+
 	private void removeExit(Vec2 loc) {
 		MazeExitSetEvent exitSetEvent = new MazeExitSetEvent(this);
 		int index = exits.indexOf(loc);
 		exits.remove(index);
 		exitSetEvent.removeExit(loc);
-		
+
 		if (index == 0) {
 			exitSetEvent.removeMainExit(loc);
 			if (!exits.isEmpty()) {
@@ -212,15 +233,15 @@ public class Clip {
 		}
 		Bukkit.getPluginManager().callEvent(exitSetEvent);
 	}
-	
+
 	public void updateLoc(Vec2 loc, int newY) {
 		fill.put(loc, newY);
-		
+
 		if (borderContains(loc)) {
 			Bukkit.getPluginManager().callEvent(new ClipUpdateEvent(this, loc, newY));
 		}
 	}
-	
+
 	/**
 	 * Recalculates y-coordinates of all locations in the clip
 	 */

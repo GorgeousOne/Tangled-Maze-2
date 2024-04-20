@@ -2,7 +2,9 @@ package me.gorgeousone.tangledmaze.clip;
 
 import me.gorgeousone.tangledmaze.util.BlockUtil;
 import me.gorgeousone.tangledmaze.util.Direction;
+import me.gorgeousone.tangledmaze.util.MathUtil;
 import me.gorgeousone.tangledmaze.util.Vec2;
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 
 import java.util.Iterator;
@@ -151,21 +153,35 @@ public class ClipActionFactory {
 		}
 	}
 	
-	public static ClipAction expandBorder(Clip maze, Block block) {
+	public static ClipAction brushBorder(Clip maze, Block block, double playerYaw) {
 		if (!maze.isBorderBlock(block)) {
 			return null;
 		}
-		return addClip(maze, create3x3Square(maze, block));
-	}
-	
-	public static ClipAction eraseBorder(Clip maze, Block block) {
-		if (!maze.isBorderBlock(block)) {
+		Direction dir = maze.getBorderFacing(new Vec2(block));
+
+		if (dir == null) {
 			return null;
+		}
+		double borderAngle = dir.getVec2().getMcAngle();
+		Bukkit.broadcastMessage(dir + " " + dir.getVec2() + " " + borderAngle);
+		double absDelta = Math.abs(getDeltaAngle(playerYaw, borderAngle));
+		Bukkit.broadcastMessage("player: " + (int) playerYaw + " d: " + (int) absDelta);
+
+		if (absDelta < 90) {
+			return addClip(maze, create3x3Square(maze, block));
 		}
 		return removeClip(maze, create3x3Square(maze, block));
 	}
-	
-	
+
+	/**
+	 * Returns the smallest angle between two angles in degrees, always between -180 and 180.
+	 */
+	private static double getDeltaAngle(double deg1, double deg2) {
+		double delta = deg2 - deg1;
+		delta = MathUtil.floorMod(delta + 180, 360) - 180;
+		return delta;
+	}
+
 	private static Clip create3x3Square(Clip maze, Block block) {
 		Clip square = new Clip(null, maze.getWorld());
 		int midX = block.getX();
