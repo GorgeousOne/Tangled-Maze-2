@@ -75,8 +75,7 @@ public class SessionHandler {
 	}
 	
 	public MazeSettings getSettings(UUID playerId) {
-		mazeSettings.computeIfAbsent(playerId, setting -> new MazeSettings());
-		return mazeSettings.get(playerId);
+		return mazeSettings.computeIfAbsent(playerId, setting -> new MazeSettings());
 	}
 	
 	public void setSettings(UUID playerId, MazeSettings settings) {

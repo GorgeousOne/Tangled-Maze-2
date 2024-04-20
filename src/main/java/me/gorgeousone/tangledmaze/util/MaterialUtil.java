@@ -39,4 +39,11 @@ public final class MaterialUtil {
 	public static boolean canBeReplaced(Material material) {
 		return !material.isSolid() || !Constants.NOT_REPLACEABLES.contains(material);
 	}
+
+	public static Material match(String aquatic, String legacy) {
+		if (VersionUtil.IS_LEGACY_SERVER) {
+			return Material.valueOf(legacy);
+		}
+		return Material.valueOf(aquatic);
+	}
 }

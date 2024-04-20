@@ -8,6 +8,7 @@ import me.gorgeousone.tangledmaze.clip.ClipType;
 import me.gorgeousone.tangledmaze.data.ConfigSettings;
 import me.gorgeousone.tangledmaze.data.Constants;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
+import me.gorgeousone.tangledmaze.menu.MenuHandler;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.render.RenderSession;
 import me.gorgeousone.tangledmaze.tool.ClipTool;
@@ -42,14 +43,16 @@ public class ClickListener implements Listener {
 	private final SessionHandler sessionHandler;
 	private final ToolHandler toolHandler;
 	private final RenderHandler renderHandler;
+	private final MenuHandler menuHandler;
 	
 	public ClickListener(JavaPlugin plugin, SessionHandler sessionHandler,
 	                     ToolHandler toolHandler,
-	                     RenderHandler renderHandler) {
+	                     RenderHandler renderHandler, MenuHandler menuHandler) {
 		this.plugin = plugin;
 		this.sessionHandler = sessionHandler;
 		this.toolHandler = toolHandler;
 		this.renderHandler = renderHandler;
+		this.menuHandler = menuHandler;
 	}
 	
 	/**
@@ -78,8 +81,13 @@ public class ClickListener implements Listener {
 		if (tracedBlock == null) {
 			return;
 		}
-		handleWandClick(playerId, tracedBlock, isLeftClick(event.getAction()));
-		
+
+		if (isLeftClick(event.getAction())) {
+			handleWandClick(playerId, tracedBlock);
+		} else {
+			menuHandler.openMenu(player);
+			return;
+		}
 		if (event.getClickedBlock() != null) {
 			updateClickedBlocks(player, event.getClickedBlock());
 		}
@@ -141,7 +149,7 @@ public class ClickListener implements Listener {
 		return clickedBlock;
 	}
 	
-	private void handleWandClick(UUID playerId, Block clickedBlock, boolean isLeftClick) {
+	private void handleWandClick(UUID playerId, Block clickedBlock) {
 		ClipTool clipTool = toolHandler.createClipToolIfAbsent(playerId);
 		Clip clip = sessionHandler.getClip(playerId);
 		Clip maze = sessionHandler.getMazeClip(playerId);
@@ -157,11 +165,11 @@ public class ClickListener implements Listener {
 				}
 				break;
 			case BRUSH:
-				if (isLeftClick) {
+//				if (isLeftClick) {
 					maze.processAction(ClipActionFactory.expandBorder(maze, clickedBlock), true);
-				} else {
-					maze.processAction(ClipActionFactory.eraseBorder(maze, clickedBlock), true);
-				}
+//				} else {
+//					maze.processAction(ClipActionFactory.eraseBorder(maze, clickedBlock), true);
+//				}
 				break;
 		}
 	}
