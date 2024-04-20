@@ -185,8 +185,8 @@ public class ClickListener implements Listener {
 	}
 	
 	private void addVertexToClipTool(UUID playerId, ClipTool clipTool, Block clickedBlock) {
-		ClipType clipType = toolHandler.getOrCreateClipType(playerId);
-		
+		ClipType clipType = toolHandler.createClipTypeIfAbsent(playerId);
+
 		if (clipTool.getShape() != clipType) {
 			sessionHandler.removeClip(playerId, true);
 			toolHandler.resetClipTool(playerId);

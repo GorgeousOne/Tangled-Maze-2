@@ -51,44 +51,38 @@ public class UiHandler {
 
 	public void openMenu(Player player) {
 		UUID playerId = player.getUniqueId();
-		ChestUi ui = commandUis.computeIfAbsent(playerId, menu -> createCmdUi());
+		ChestUi ui = commandUis.computeIfAbsent(playerId, menu -> createCmdUi(playerId));
+
+		ui.toggleHighlight(toolHandler.createClipTypeIfAbsent(playerId).ordinal(), true);
+		ui.toggleHighlight(toolHandler.createToolIfAbsent(playerId).ordinal() + 4, true);
+
 		ui.open(player);
 	}
 
-	private ChestUi createCmdUi() {
+	private ChestUi createCmdUi(UUID playerId) {
 		ChestUi ui = new ChestUi(3, Constants.UI_TITLE);
-		ui.setItem(0, itemClipRect, player -> {
-			player.performCommand("tm tool rectangle");
-		});
-		ui.setItem(1, itemClipCirc, player -> {
-			player.performCommand("tm tool circle");
-		});
-		ui.setItem(2, itemClipTri, player -> {
-			player.performCommand("tm tool triangle");
-		});
-		ui.setItem(4, itemToolExit, player -> {
-			player.performCommand("tm tool exit");
-		});
-		ui.setItem(5, itemToolBrush, player -> {
-			player.performCommand("tm tool brush");
-		});
-		ui.setItem(8, itemTp, player -> {
-			player.performCommand("tm tp");
-		});
-		ui.setItem(18, itemMazeStart, player -> {
-			player.performCommand("tm start");
-		});
-		ui.setItem(19, itemMazeSolve, player -> {
-			player.performCommand("tm solve");
-		});
-		ui.setItem(25, itemClipAdd, player -> {
-			player.performCommand("tm add");
-		});
-		ui.setItem(26, itemClipCut, player -> {
-			player.performCommand("tm cut");
-		});
+		ui.setItem(0, itemClipRect, p -> execNClose(p, "tm tool rectangle"));
+		ui.setItem(1, itemClipCirc, p -> execNClose(p, "tm tool circle"));
+		ui.setItem(2, itemClipTri, p -> execNClose(p, "tm tool triangle"));
+
+		ui.setItem(4, itemToolExit, p -> execNClose(p, "tm tool exit"));
+		ui.setItem(5, itemToolBrush, p -> execNClose(p, "tm tool brush"));
+
+		ui.addRadio(0, 1, 2);
+		ui.addRadio(4, 5);
+
+		ui.setItem(8, itemTp, p -> execNClose(p, "tm tp"));
+		ui.setItem(18, itemMazeStart, p -> execNClose(p, "tm start"));
+		ui.setItem(19, itemMazeSolve, p -> execNClose(p, "tm solve"));
+		ui.setItem(25, itemClipAdd, p -> execNClose(p, "tm add"));
+		ui.setItem(26, itemClipCut, p -> execNClose(p, "tm cut"));
 
 		return ui;
+	}
+
+	private void execNClose(Player player, String command) {
+		player.closeInventory();
+		player.performCommand(command);
 	}
 
 	public void handleClick(Player player, int slot) {
