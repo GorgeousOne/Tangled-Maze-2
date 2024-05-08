@@ -1,8 +1,9 @@
 package me.gorgeousone.tangledmaze.loot;
 
+import fr.black_eyes.lootchest.Config;
 import fr.black_eyes.lootchest.Lootchest;
 import fr.black_eyes.lootchest.Main;
-import me.gorgeousone.tangledmaze.SessionHandler;
+import fr.black_eyes.lootchest.Utils;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.Direction;
@@ -13,22 +14,26 @@ import me.gorgeousone.tangledmaze.util.text.TextException;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.file.FileConfiguration;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class LootHandler {
 
-	private final SessionHandler sessionHandler;
 	private final Main lootChestPlugin;
 	private final Map<BlockFace, Integer> legacyDirIds;
+	private Method lootChestCreateChest;
 
-	public LootHandler(SessionHandler sessionHandler, Main lootChestPlugin) {
-		this.sessionHandler = sessionHandler;
+	public LootHandler(Main lootChestPlugin) {
 		this.lootChestPlugin = lootChestPlugin;
 		this.legacyDirIds = new HashMap<>();
 
@@ -36,31 +41,79 @@ public class LootHandler {
 		legacyDirIds.put(BlockFace.SOUTH, 3);
 		legacyDirIds.put(BlockFace.WEST, 4);
 		legacyDirIds.put(BlockFace.EAST, 5);
+
+		hackyHackLootChest();
+	}
+
+	private void hackyHackLootChest() {
+		try {
+			lootChestCreateChest = Lootchest.class.getDeclaredMethod("createChest", Block.class, Location.class);
+			lootChestCreateChest.setAccessible(true);
+		} catch (NoSuchMethodException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public boolean chestExists(String chestName) {
 		return lootChestPlugin.getLootChest().containsKey(chestName);
 	}
 
-	public Map<BlockVec, String> placeChests(MazeMap mazeMap, Map<String, Integer> chestAmounts) throws TextException {
-		List<String> chestList = listChests(chestAmounts);
+	public Map<String, BlockVec> spawnChests(MazeMap mazeMap, Map<String, Integer> chestAmounts, Collection<BlockVec> existingChests) throws TextException {
+		List<String> chestPrefabList = listChests(chestAmounts);
 		Map<Vec2, Direction> wallDirs = LootChestLocator.findRoomWallCells(mazeMap);
 		List<Vec2> walls = new ArrayList<>(wallDirs.keySet());
 
-		Collections.shuffle(chestList);
+		Collections.shuffle(chestPrefabList);
 		Collections.shuffle(walls);
+		Map<String, BlockVec> lootLocations = new HashMap<>();
 
-		while (!chestList.isEmpty() && !walls.isEmpty()) {
-			String name = chestList.remove(0);
+		while (!chestPrefabList.isEmpty() && !walls.isEmpty()) {
+			String prefabName = chestPrefabList.remove(0);
 			Vec2 wall = walls.remove(0);
 
 			Direction dir = wallDirs.get(wall);
 			removeNeighbors(walls, wall);
-			spawnLootChest(name, wall.toLocation(mazeMap.getWorld(), mazeMap.getY(wall) + 1), dir.getFace());
+			spawnLootChest(prefabName, wall.toLocation(mazeMap.getWorld(), mazeMap.getY(wall) + 1), dir.getFace());
+
 		}
 		//write all chests to the config and save the file
 		lootChestPlugin.getConfigFiles().saveData();
-		return null;
+		return lootLocations;
+	}
+
+	public void respawnChests(Set<String> chestNames) {
+		Config lootChestConfig = Config.getInstance();
+		Boolean saveSetting = lootChestConfig.save_Chest_Locations_At_Every_Spawn;
+		lootChestConfig.save_Chest_Locations_At_Every_Spawn = false;
+
+		try {
+			for (String chestName : chestNames) {
+				Lootchest chest = lootChestPlugin.getLootChest().get(chestName);
+
+				if (chest != null) {
+					Location chestPos = chest.getActualLocation();
+					lootChestCreateChest.invoke(chest, chestPos.getBlock(), chestPos);
+				}
+			}
+		} catch (InvocationTargetException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+		lootChestConfig.save_Chest_Locations_At_Every_Spawn = saveSetting;
+
+		if (lootChestConfig.save_Chest_Locations_At_Every_Spawn) {
+			lootChestPlugin.getUtils().updateData();
+		}
+	}
+
+	public void removeChests(Set<String> chestNames) {
+		FileConfiguration dataConfig = lootChestPlugin.getConfigFiles().getData();
+
+		for (String chestName : chestNames) {
+			Lootchest lc = lootChestPlugin.getLootChest().get(chestName);
+			dataConfig.set("chests." + chestName, null);
+			Utils.deleteChest(lc);
+		}
+		lootChestPlugin.getConfigFiles().saveData();
 	}
 
 	private List<String> listChests(Map<String, Integer> chestAmounts) {

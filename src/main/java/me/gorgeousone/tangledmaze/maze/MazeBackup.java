@@ -5,6 +5,7 @@ import me.gorgeousone.tangledmaze.generation.BlockCollection;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.generation.MazeMapFactory;
 import me.gorgeousone.tangledmaze.util.BlockUtil;
+import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.VersionUtil;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockLocType;
 
@@ -26,12 +27,14 @@ public class MazeBackup {
 	private MazeMap mazeMap;
 	private final Map<MazePart, BlockCollection> partBlockLocs;
 	private final Map<MazePart, Set<BlockLocType>> partBlocksTypes;
-	
+	private final Map<String, BlockVec> lootLocations;
+
 	public MazeBackup(Clip maze, MazeSettings settings) {
 		this.maze = maze;
 		this.settings = settings;
 		partBlockLocs = new HashMap<>();
 		partBlocksTypes = new HashMap<>();
+		lootLocations = new HashMap<>();
 	}
 	
 	public Clip getMaze() {
@@ -59,7 +62,7 @@ public class MazeBackup {
 	public BlockCollection getPartBlockLocs(MazePart mazePart) {
 		return partBlockLocs.get(mazePart);
 	}
-	
+
 	public void computeSegmentsIfAbsent(MazePart mazePart, Function<MazePart, BlockCollection> mappingFunction) {
 		partBlockLocs.computeIfAbsent(mazePart, mappingFunction);
 	}
@@ -98,5 +101,17 @@ public class MazeBackup {
 		partBlockLocs.clear();
 		partBlocksTypes.clear();
 		mazeMap = null;
+	}
+
+	public void addLoot(Map<String, BlockVec> chestLocations) {
+		lootLocations.putAll(chestLocations);
+	}
+
+	public void removeLoot() {
+		lootLocations.clear();
+	}
+
+	public Map<String, BlockVec> getLootLocations() {
+		return new HashMap<>(lootLocations);
 	}
 }
