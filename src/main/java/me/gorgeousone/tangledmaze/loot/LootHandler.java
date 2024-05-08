@@ -8,6 +8,7 @@ import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.generation.GridCell;
+import me.gorgeousone.tangledmaze.generation.GridMap;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.maze.MazeBackup;
 import me.gorgeousone.tangledmaze.util.BlockVec;
@@ -78,7 +79,16 @@ public class LootHandler {
 		}
 		MazeBackup backup = sessionHandler.getBackup(maze);
 		MazeMap mazeMap = backup.getMazeMap();
-		Set<Vec2> existingpawns = backup.getLootLocations().values().stream().map(BlockVec::toVec2).collect(Collectors.toSet());
+		GridMap gridMap = mazeMap.getPathMap();
+
+		//list all locations blocked by already placed chests
+		Set<Vec2> existingSpawns = backup.getLootLocations().values().stream()
+				.map(BlockVec::toVec2)
+				.collect(Collectors.toSet());
+		//add maze exits where loot also should not be spawned
+		existingSpawns.addAll(gridMap.getExits().stream()
+				.map(e -> gridMap.getGridPos(e.getMin()))
+				.collect(Collectors.toList()));
 
 		List<String> chestPrefabList = listChests(chestAmounts);
 		Collections.shuffle(chestPrefabList);
@@ -92,8 +102,8 @@ public class LootHandler {
 		Map<Vec2, Direction> chestSpawns = LootChestLocator.findChestSpawns(
 				chestPrefabList.size(),
 				availableCells,
-				mazeMap.getPathMap(),
-				existingpawns);
+				gridMap,
+				existingSpawns);
 
 		Map<String, BlockVec> addedChests = new HashMap<>();
 
@@ -172,12 +182,6 @@ public class LootHandler {
 		}
 		Collections.shuffle(chestList);
 		return chestList;
-	}
-
-	private void removeNeighbors(List<Vec2> positions, Vec2 pos) {
-		for (Direction dir : Direction.CARDINALS) {
-			positions.remove(pos.clone().add(dir.getVec2()));
-		}
 	}
 
 	private String spawnLootChest(String chestPrefabName, Location location, BlockFace facing) {

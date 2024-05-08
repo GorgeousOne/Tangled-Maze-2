@@ -67,21 +67,8 @@ public class Room {
 	}
 
 	public boolean borderContains(int gridX, int gridZ) {
-		return gridX == gridMin.getX() || gridX == gridMax.getX() ||
-				gridZ == gridMin.getZ() || gridZ == gridMax.getZ();
-	}
-
-	public Direction getWallFacing(Vec2 gridPos) {
-		if (gridPos.getZ() == gridMin.getZ()) {
-			return Direction.NORTH;
-		} else if (gridPos.getZ() == gridMax.getZ() - 1) {
-			return Direction.SOUTH;
-		} else if (gridPos.getX() == gridMin.getX()) {
-			return Direction.WEST;
-		} else if (gridPos.getX() == gridMax.getX() - 1) {
-			return Direction.EAST;
-		}
-		return null;
+		return gridX == gridMin.getX() || gridX == gridMax.getX() - 1 ||
+				gridZ == gridMin.getZ() || gridZ == gridMax.getZ() - 1;
 	}
 
 	public void floodFillRoom(GridCell startCell, GridMap gridMap) {

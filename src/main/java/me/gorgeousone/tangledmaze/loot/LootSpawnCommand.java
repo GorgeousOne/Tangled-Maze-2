@@ -65,9 +65,6 @@ public class LootSpawnCommand extends ArgCommand {
 		if (!isLootInHallways && !isLootInDeadEnds && !isLootInRooms) {
 			isLootInHallways = isLootInDeadEnds = isLootInRooms = true;
 		}
-		sender.sendMessage("hall " + isLootInHallways);
-		sender.sendMessage("dead " + isLootInDeadEnds);
-		sender.sendMessage("room " + isLootInRooms);
 		try {
 			chestAmounts = deserializeLootChestPrefabs(argValues);
 			addedChests = lootHandler.spawnChests(maze, chestAmounts, isLootInHallways, isLootInDeadEnds, isLootInRooms);
@@ -75,6 +72,7 @@ public class LootSpawnCommand extends ArgCommand {
 			e.sendTextTo(sender);
 			return;
 		}
+		//TODO jsonfy
 		sender.sendMessage("Placed " + addedChests.size() + " chests");
 	}
 
@@ -119,6 +117,11 @@ public class LootSpawnCommand extends ArgCommand {
 	@Override
 	public List<String> getTabList(String[] stringArgs) {
 		List<String> tabList = super.getTabList(stringArgs);
+
+		if (!isAvailable) {
+			return tabList;
+		}
+		List<String> chestNames = lootHandler.getChestNames();
 
 		if (!tabList.isEmpty()) {
 			return tabList;

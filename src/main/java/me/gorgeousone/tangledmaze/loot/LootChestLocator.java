@@ -31,12 +31,12 @@ public class LootChestLocator {
 
 		for (int x = 0; x < gridMap.getWidth(); ++x) {
 			for (int z = 0; z < gridMap.getHeight(); ++z) {
-				if (!isPath(x, z) || gridMap.getPathType(x, z) != PathType.PAVED) {
+				if (isWall(x, z) || gridMap.getPathType(x, z) != PathType.PAVED) {
 					continue;
 				}
-				boolean isRoom = isAnyRoomBorder(rooms, x, z);
+				boolean isRoom = isAnyRoom(rooms, x, z);
 
-				if (!isLootInRooms && isRoom) {
+				if (isRoom && (!isLootInRooms || !isAnyRoomBorder(rooms, x, z))) {
 					continue;
 				}
 				boolean isDeadEnd = !isRoom && gridMap.isDeadEnd(x, z);
@@ -44,10 +44,7 @@ public class LootChestLocator {
 				if (!isLootInDeadEnds && isDeadEnd) {
 					continue;
 				}
-				if (isDeadEnd) {
-					System.out.println("dead " + x + " " + z);
-				}
-				if (!isLootInHallways && (isRoom || isDeadEnd)) {
+				if (!isLootInHallways && !isRoom && !isDeadEnd) {
 					continue;
 				}
 				availableCells.add(gridMap.getCell(x, z));
@@ -62,12 +59,8 @@ public class LootChestLocator {
 		Map<Vec2, Direction> spawns = new HashMap<>();
 		int spawnAttempts = 1000;
 
-		System.out.println("check" + availableCells.size());
 		while (spawnAttempts > 0 && spawns.size() < chestCount && !availableCells.isEmpty()) {
 			--spawnAttempts;
-			if (spawnAttempts % 100 == 0) {
-				System.out.println("attempt " + spawnAttempts);
-			}
 			GridCell cell = availableCells.get(RND.nextInt(availableCells.size()));
 			List<Direction> wallDirs = gridMap.getWallDirs(cell);
 			Map<Vec2, Direction> blocks = new HashMap<>();
@@ -90,11 +83,12 @@ public class LootChestLocator {
 		return spawns;
 	}
 
-	/**
-	 * Returns true if the grid position is neither a junction (even, even) nor a wall (odd, odd)
-	 */
-	private static boolean isPath(int gridX, int gridZ) {
-		return gridX % 2 == 1 ^ gridZ % 2 == 1;
+	private static boolean isWall(int gridX, int gridZ) {
+		return gridX % 2 == 1 && gridZ % 2 == 1;
+	}
+
+	private static boolean isAnyRoom(List<Room> rooms, int gridX, int gridZ) {
+		return rooms.stream().anyMatch(r -> r.contains(gridX, gridZ));
 	}
 
 	private static boolean isAnyRoomBorder(List<Room> rooms, int gridX, int gridZ) {

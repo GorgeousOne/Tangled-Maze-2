@@ -340,7 +340,7 @@ public class GridMap {
 		List<Direction> wallDirs = new ArrayList<>();
 
 		for (Direction dir : Direction.CARDINALS) {
-			if (getPathType(gridPos.clone().add(dir.getVec2())) == PathType.BLOCKED) {
+			if (getPathType(gridPos.clone().add(dir.getVec2())) != PathType.PAVED) {
 				wallDirs.add(dir);
 			}
 		}
@@ -348,13 +348,11 @@ public class GridMap {
 	}
 
 	public boolean isDeadEnd(int x, int z) {
-		if (getPathType(x, z) != PathType.PAVED) {
-			return false;
-		}
 		int pathNeighbors = 0;
 
 		for (Direction dir : Direction.CARDINALS) {
-			if (getPathType(x + dir.getX(), z + dir.getZ()) == PathType.PAVED) {
+			PathType pathType = getPathType(x + dir.getX(), z + dir.getZ());
+			if (pathType == PathType.PAVED || pathType == PathType.ROOM) {
 				++pathNeighbors;
 			}
 		}
