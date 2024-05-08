@@ -115,11 +115,12 @@ public class GridCell {
 		return facings;
 	}
 
-	public List<Vec2> getWalls(Direction direction) {
-		Vec2 iter = direction.isPositive() ? min.clone() : max.clone().add(-1, -1);
-		Vec2 step = direction.getVec2();
+	public List<Vec2> getWalls(Direction dir) {
+		Vec2 iter = dir.isPositive() ? max.clone().add(-1, -1) : min.clone();
+		Direction ortho = dir.isCollinearX() ? dir.getLeft() : dir.getRight();
+		Vec2 step = ortho.getVec2();
 		Vec2 cellSize = max.clone().sub(min);
-		int limit = direction.isCollinearX() ? cellSize.getX() : cellSize.getZ();
+		int limit = dir.isCollinearX() ? cellSize.getZ() : cellSize.getX();
 		List<Vec2> walls = new ArrayList<>();
 
 		for (int i = 0; i < limit; ++i) {

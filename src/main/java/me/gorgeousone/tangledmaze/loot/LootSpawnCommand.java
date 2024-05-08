@@ -7,13 +7,10 @@ import me.gorgeousone.tangledmaze.cmdframework.argument.ArgValue;
 import me.gorgeousone.tangledmaze.cmdframework.argument.Argument;
 import me.gorgeousone.tangledmaze.cmdframework.command.ArgCommand;
 import me.gorgeousone.tangledmaze.data.Message;
-import me.gorgeousone.tangledmaze.maze.MazeBackup;
 import me.gorgeousone.tangledmaze.util.BlockVec;
-import me.gorgeousone.tangledmaze.util.MaterialUtil;
 import me.gorgeousone.tangledmaze.util.MathUtil;
 import me.gorgeousone.tangledmaze.util.text.Placeholder;
 import me.gorgeousone.tangledmaze.util.text.TextException;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -66,7 +63,7 @@ public class LootSpawnCommand extends ArgCommand {
 			isLootInHallways = isLootInDeadEnds = isLootInRooms = true;
 		}
 		try {
-			chestAmounts = deserializeLootChestPrefabs(argValues);
+			chestAmounts = deserializeLootChestNames(argValues);
 			addedChests = lootHandler.spawnChests(maze, chestAmounts, isLootInHallways, isLootInDeadEnds, isLootInRooms);
 		} catch (TextException e) {
 			e.sendTextTo(sender);
@@ -83,7 +80,7 @@ public class LootSpawnCommand extends ArgCommand {
 	 * @return the BlockPalette created from the strings
 	 * @throws TextException if the strings are not in the correct format
 	 */
-	public Map<String, Integer> deserializeLootChestPrefabs(List<ArgValue> stringArgs) throws TextException {
+	public Map<String, Integer> deserializeLootChestNames(List<ArgValue> stringArgs) throws TextException {
 		Map<String, Integer> chestAmounts = new HashMap<>();
 
 		for (ArgValue input : stringArgs) {
@@ -142,7 +139,6 @@ public class LootSpawnCommand extends ArgCommand {
 		} else {
 			return chestNames;
 		}
-
 		for (String chestName : chestNames) {
 			tabList.add(factorString + chestName);
 		}

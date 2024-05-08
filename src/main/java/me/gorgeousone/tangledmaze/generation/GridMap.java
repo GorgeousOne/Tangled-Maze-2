@@ -340,7 +340,8 @@ public class GridMap {
 		List<Direction> wallDirs = new ArrayList<>();
 
 		for (Direction dir : Direction.CARDINALS) {
-			if (getPathType(gridPos.clone().add(dir.getVec2())) != PathType.PAVED) {
+			PathType pathType = getPathType(gridPos.clone().add(dir.getVec2()));
+			if (pathType == PathType.BLOCKED || pathType == PathType.FREE) {
 				wallDirs.add(dir);
 			}
 		}
