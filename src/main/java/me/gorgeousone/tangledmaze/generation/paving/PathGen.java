@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
  * between 1 and curliness.
  * Then a new random start/open end is picked and the process is repeated until no more
  * paths can be placed.
- * The tree like path structures originating from each start are then connected to
- * each other at points where they paths next to each other can be linked, forming one big tree,
+ * The tree like path structures originating from each start are then being connected
+ * at points where the paths next to each other can be linked, forming one big tree,
  * until all trees are connected. The connections are made so that the path from
  * one start to another is as long as possible.
  */
@@ -39,14 +39,17 @@ public class PathGen {
 		
 		PathTree currentTree = openPathTrees.get(0);
 		int linkedSegmentCount = 1;
+		//keeps track of which path segments were longer than one piece
 		boolean lastSegmentWasExtended = false;
 		GridCell currentPathEnd;
-		
+
+		//adds path segments as long as free space is available
 		while (!openPathTrees.isEmpty()) {
-			//continues generating at last path end or picks random after n connected segments
+			//continues adding segments to the last path end
 			if (linkedSegmentCount <= maxLinkedSegmentCount) {
 				currentPathEnd = currentTree.getLastEnd();
 				linkedSegmentCount++;
+			//picks new random path end after n connected segments
 			} else {
 				currentTree = getSmallestTree(openPathTrees);
 				currentPathEnd = currentTree.getRndEnd();
@@ -57,17 +60,22 @@ public class PathGen {
 			if (availableDirs.size() < 2) {
 				currentTree.removeEnd(currentPathEnd);
 				linkedSegmentCount = 1;
-				
+
+				//removes a path tree if no path segments can be added anymore
 				if (currentTree.isComplete()) {
 					openPathTrees.remove(currentTree);
+					//makes linked segment count restart next iteration
 					linkedSegmentCount = maxLinkedSegmentCount + 1;
 				}
+				//skips path generation if no direction is available
 				if (availableDirs.isEmpty()) {
 					continue;
 				}
 			}
-			lastSegmentWasExtended = generatePathSegment(currentPathEnd, availableDirs, gridMap, curliness, lastSegmentWasExtended);
+			//alternates between generating long and short segments
+			lastSegmentWasExtended = generatePathSegment(currentPathEnd, availableDirs, gridMap, curliness, !lastSegmentWasExtended);
 		}
+		//connects trees from individual exits to one big maze
 		linkPathTrees(gridMap, pathTrees);
 	}
 	
@@ -117,11 +125,11 @@ public class PathGen {
 	                                           List<Direction> availableDirs,
 	                                           GridMap gridMap,
 	                                           int curliness,
-	                                           boolean lastSegmentWasExtended) {
+	                                           boolean tryExtendSegment) {
 		Direction rndFacing = availableDirs.get(RANDOM.nextInt(availableDirs.size()));
 		GridCell newPathEnd = pavePath(currentPathEnd, rndFacing, gridMap);
 		
-		if (!lastSegmentWasExtended && curliness > 1) {
+		if (tryExtendSegment && curliness > 1) {
 			return extendPath(newPathEnd, rndFacing, RANDOM.nextInt(curliness - 1) + 1, gridMap);
 		}
 		return false;
@@ -132,6 +140,7 @@ public class PathGen {
 	 * @param pathEnd       segment to extend
 	 * @param facing        direction to extend towards
 	 * @param maxExtensions maximum times to extend the path
+	 * @return true if segment could be extended, otherwise false
 	 */
 	private static boolean extendPath(GridCell pathEnd, Direction facing, int maxExtensions, GridMap gridMap) {
 		Vec2 facingVec = facing.getVec2();
