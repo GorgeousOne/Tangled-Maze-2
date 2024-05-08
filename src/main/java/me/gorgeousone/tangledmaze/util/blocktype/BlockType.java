@@ -45,11 +45,14 @@ public abstract class BlockType {
 	public static BlockType get(BlockState state) {
 		return isLegacyServer ? new BlockTypeLegacy(state) : new BlockTypeAquatic(state);
 	}
-	
+
 	public static BlockType get(String serialized) {
 		return get(serialized, false);
 	}
-	
+
+	public static BlockType get(String serialized, String legacySerialized) {
+		return isLegacyServer ? new BlockTypeLegacy(legacySerialized) : new BlockTypeAquatic(serialized, false);
+	}
 	public static BlockType get(String serialized, boolean randomizeFacing) {
 		return isLegacyServer ? new BlockTypeLegacy(serialized) : new BlockTypeAquatic(serialized, randomizeFacing);
 	}
