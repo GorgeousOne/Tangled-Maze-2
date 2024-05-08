@@ -13,38 +13,38 @@ import java.util.Set;
 
 public class Room {
 
-	private final Vec2 cellStart;
-	private final Vec2 cellSize;
+	private final Vec2 gridMin;
+	private final Vec2 gridMax;
 	private final Set<Vec2> roomCells;
 
-	public Room(Vec2 cellStart, Vec2 cellSize) {
-		this.cellStart = cellStart;
-		this.cellSize = cellSize;
+	public Room(Vec2 gridPos, Vec2 gridSize) {
+		this.gridMin = gridPos.clone();
+		this.gridMax = gridPos.clone().add(gridSize);
 		roomCells = new HashSet<>();
 		listCells();
 	}
 
 	private void listCells() {
-		for (int x = cellStart.getX(); x < cellStart.getX() + cellSize.getX(); x += 2) {
-			for (int z = cellStart.getZ(); z < cellStart.getZ() + cellSize.getZ(); z += 2) {
+		for (int x = gridMin.getX(); x < gridMax.getX(); x += 2) {
+			for (int z = gridMin.getZ(); z < gridMax.getZ(); z += 2) {
 				roomCells.add(new Vec2(x, z));
 			}
 		}
 	}
 
-	public Vec2 getCellStart() {
-		return cellStart;
+	public Vec2 getGridMin() {
+		return gridMin;
 	}
 
-	public Vec2 getCellSize() {
-		return cellSize;
+	public Vec2 getGridMax() {
+		return gridMax;
 	}
 
 	public boolean contains(Vec2 gridPos) {
-		return gridPos.getX() >= cellStart.getX() &&
-		       gridPos.getZ() >= cellStart.getZ() &&
-		       gridPos.getX() < cellStart.getX() + cellSize.getX() &&
-		       gridPos.getZ() < cellStart.getZ() + cellSize.getZ();
+		return gridPos.getX() >= gridMin.getX() &&
+		       gridPos.getZ() >= gridMin.getZ() &&
+		       gridPos.getX() < gridMax.getX() &&
+		       gridPos.getZ() < gridMax.getZ();
 	}
 
 	public void floodFillRoom(GridCell startCell, GridMap gridMap) {
@@ -78,9 +78,9 @@ public class Room {
 	 * Mark the cells of a room as ROOM type on the grid map.
 	 */
 	public void markRoom(GridMap gridMap, PathType pathType) {
-		Bukkit.broadcastMessage("mark " + cellStart);
-		for (int x = cellStart.getX(); x < cellStart.getX() + cellSize.getX(); ++x) {
-			for (int z = cellStart.getZ(); z < cellStart.getZ() + cellSize.getZ(); ++z) {
+		Bukkit.broadcastMessage("mark " + gridMin);
+		for (int x = gridMin.getX(); x < gridMax.getX(); ++x) {
+			for (int z = gridMin.getZ(); z < gridMax.getZ(); ++z) {
 				gridMap.setPathType(x, z, pathType);
 			}
 		}

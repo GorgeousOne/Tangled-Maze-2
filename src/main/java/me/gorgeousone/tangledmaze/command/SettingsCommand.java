@@ -39,13 +39,13 @@ public class SettingsCommand extends ArgCommand {
 			Message.ERROR_INVALID_SETTING.sendTo(sender, new Placeholder("setting", settingName));
 			return;
 		}
-		int inputValue = argValues.get(1).getInt();
 		MazeSettings settings = sessionHandler.getSettings(playerId);
-		settings.setValue(property, inputValue);
+		int inputValue = argValues.get(1).getInt();
+		int outputValue = settings.setValue(property, inputValue);
 		
 		Message.INFO_SETTING_CHANGE.sendTo(
 				sender,
 				new Placeholder("setting", property.textName()),
-				new Placeholder("value", settings.getValue(property)));
+				new Placeholder("value", outputValue));
 	}
 }

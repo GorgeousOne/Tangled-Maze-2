@@ -4,7 +4,6 @@ import me.gorgeousone.tangledmaze.generation.GridMap;
 import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.util.Vec2;
-import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,8 +20,8 @@ public class RoomGen {
 		int pathWidth = settings.getValue(MazeProperty.PATH_WIDTH);
 		int wallWidth = settings.getValue(MazeProperty.WALL_WIDTH);
 
-		int cellsMin = calcCellsMin(8, pathWidth, wallWidth);
-		int cellsMax = calcCellsMin(40, pathWidth, wallWidth);
+		int cellsMin = calcCellsMin(7, pathWidth, wallWidth);
+		int cellsMax = settings.getValue(MazeProperty.ROOM_SIZE);
 
 		//list free conjunctions to start at
 		Set<Vec2> freeCells = new HashSet<>();
@@ -44,7 +43,6 @@ public class RoomGen {
 		int spawnedRooms = 0;
 		int spawnAttempts = 1000;
 		List<Vec2> freeCellsList = new ArrayList<>(freeCells);
-		List<Room> rooms = new ArrayList<>();
 
 		while (spawnedRooms < roomCount && spawnAttempts > 0) {
 			--spawnAttempts;
@@ -58,8 +56,8 @@ public class RoomGen {
 	}
 
 	/**
-	 * Calculates how many cells a room must span to reach a minimum length of blocks.
-	 * @return amount of cells, minimum 3 (path | wall | path)
+	 * Calculates the minimum amount of cells a room should have to be considered a room.
+	 * @param blocksMin minimum length of a room in blocks ingame, like a 3x3 blocks room would be quite small
 	 */
 	private static int calcCellsMin(int blocksMin, int pathWidth, int wallWidth) {
 		int cellSize = 3;
@@ -73,16 +71,22 @@ public class RoomGen {
 	}
 
 	private static Room spawnRoom(GridMap gridMap, List<Vec2> freeCells, int cellsMin, int cellsMax) {
-		int sizeX = rndRoomSize(cellsMin, cellsMax);
-		int sizeZ = rndRoomSize(cellsMin, cellsMax);
+		int size1 = rndRoomSize(cellsMin, cellsMax);
+		//cellsMin + (cellsMax - cellsMin) - (size1 - cellsMin)
+		int size2 = rndRoomSize(cellsMin, cellsMin + cellsMax - size1);
+
+		boolean rndOrientation = RANDOM.nextBoolean();
+		Vec2 cellSize = new Vec2(
+				rndOrientation ? size1 : size2,
+				rndOrientation ? size2 : size1);
+
 		Vec2 rndCell = freeCells.get(RANDOM.nextInt(freeCells.size()));
-		boolean isFree = isRoomFree(gridMap, rndCell.getX(), rndCell.getZ(), sizeX, sizeZ);
+		boolean isFree = isRoomFree(gridMap, rndCell.getX(), rndCell.getZ(), cellSize.getX(), cellSize.getZ());
 
 		if (!isFree) {
 			return null;
 		}
-		Room room = new Room(rndCell, new Vec2(sizeX, sizeZ));
-		Bukkit.broadcastMessage("Room at " + gridMap.getCell(rndCell).getMin() + gridMap.getCell(rndCell.clone().add(sizeX-1, sizeZ-1)).getMax());
+		Room room = new Room(rndCell, cellSize);
 		room.markRoom(gridMap, PathType.ROOM);
 		return room;
 	}
