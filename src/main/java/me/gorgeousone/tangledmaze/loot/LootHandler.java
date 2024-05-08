@@ -7,6 +7,7 @@ import fr.black_eyes.lootchest.Utils;
 import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.data.Message;
+import me.gorgeousone.tangledmaze.generation.GridCell;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.maze.MazeBackup;
 import me.gorgeousone.tangledmaze.util.BlockVec;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class LootHandler {
 
@@ -65,31 +67,42 @@ public class LootHandler {
 		return lootChestPlugin.getLootChest().containsKey(chestName);
 	}
 
-	public Map<String, BlockVec> spawnChests(Clip maze, Map<String, Integer> chestAmounts) throws TextException {
+	public Map<String, BlockVec> spawnChests(
+			Clip maze,
+			Map<String, Integer> chestAmounts,
+			boolean isLootInHallways,
+			boolean isLootInDeadEnds,
+			boolean isLootInRooms) throws TextException {
 		if (!sessionHandler.isBuilt(maze)) {
 			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
 		}
 		MazeBackup backup = sessionHandler.getBackup(maze);
 		MazeMap mazeMap = backup.getMazeMap();
+		Set<Vec2> existingpawns = backup.getLootLocations().values().stream().map(BlockVec::toVec2).collect(Collectors.toSet());
 
 		List<String> chestPrefabList = listChests(chestAmounts);
-		Map<Vec2, Direction> wallDirs = LootChestLocator.findRoomWallCells(mazeMap);
-		List<Vec2> walls = new ArrayList<>(wallDirs.keySet());
-
 		Collections.shuffle(chestPrefabList);
-		Collections.shuffle(walls);
+
+		List<GridCell> availableCells = LootChestLocator.getAvailableCells(
+				mazeMap,
+				isLootInHallways,
+				isLootInDeadEnds,
+				isLootInRooms);
+
+		Map<Vec2, Direction> chestSpawns = LootChestLocator.findChestSpawns(
+				chestPrefabList.size(),
+				availableCells,
+				mazeMap.getPathMap(),
+				existingpawns);
+
 		Map<String, BlockVec> addedChests = new HashMap<>();
 
-		while (!chestPrefabList.isEmpty() && !walls.isEmpty()) {
+		for (Vec2 pos : chestSpawns.keySet()) {
 			String prefabName = chestPrefabList.remove(0);
-			Vec2 wall = walls.remove(0);
-			int blockY = mazeMap.getY(wall) + 1;
-
-			Direction dir = wallDirs.get(wall);
-			removeNeighbors(walls, wall);
-
-			String copyName = spawnLootChest(prefabName, wall.toLocation(mazeMap.getWorld(), blockY), dir.getFace());
-			addedChests.put(copyName, new BlockVec(wall, blockY));
+			int blockY = mazeMap.getY(pos) + 1;
+			Direction dir = chestSpawns.get(pos);
+			String copyName = spawnLootChest(prefabName, pos.toLocation(mazeMap.getWorld(), blockY), dir.getFace());
+			addedChests.put(copyName, new BlockVec(pos, blockY));
 		}
 		//write all chests to the config and save the file
 		lootChestPlugin.getConfigFiles().saveData();

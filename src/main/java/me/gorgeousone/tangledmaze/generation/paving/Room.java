@@ -58,10 +58,17 @@ public class Room {
 	}
 
 	public boolean contains(Vec2 gridPos) {
-		return gridPos.getX() >= gridMin.getX() &&
-		       gridPos.getZ() >= gridMin.getZ() &&
-		       gridPos.getX() < gridMax.getX() &&
-		       gridPos.getZ() < gridMax.getZ();
+		return contains(gridPos.getX(), gridPos.getZ());
+	}
+
+	public boolean contains(int gridX, int gridZ) {
+		return gridX >= gridMin.getX() && gridX < gridMax.getX() &&
+				gridZ >= gridMin.getZ() && gridZ < gridMax.getZ();
+	}
+
+	public boolean borderContains(int gridX, int gridZ) {
+		return gridX == gridMin.getX() || gridX == gridMax.getX() ||
+				gridZ == gridMin.getZ() || gridZ == gridMax.getZ();
 	}
 
 	public Direction getWallFacing(Vec2 gridPos) {

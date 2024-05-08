@@ -23,28 +23,37 @@ public enum Direction {
 		this.dirVec = dirVec;
 		this.face = face;
 	}
-	
+
+	public int getX() {
+		return dirVec.getX();
+	}
+
+	public int getZ(){
+		return dirVec.getZ();
+	}
+
+	public Vec2 getVec2() {
+		return dirVec.clone();
+	}
+
 	/**
 	 * Returns true if the direction's vector is pointing towards positive (with it's x and z coordinate)
 	 */
 	public boolean isPositive() {
 		return dirVec.getZ() >= 0 && dirVec.getX() >= 0;
 	}
-	
+
 	/**
 	 * Returns if the x coordinate of the direction's vector is not 0
 	 */
 	public boolean isCollinearX() {
 		return dirVec.getZ() == 0;
 	}
-	
+
 	public boolean isCollinearZ() {
 		return dirVec.getX() == 0;
 	}
-	
-	public Vec2 getVec2() {
-		return dirVec.clone();
-	}
+
 	
 	public Direction getOpposite() {
 		return values()[(ordinal() + 4) % values().length];

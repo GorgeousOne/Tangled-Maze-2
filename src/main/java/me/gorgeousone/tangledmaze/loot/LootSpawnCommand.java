@@ -34,6 +34,9 @@ public class LootSpawnCommand extends ArgCommand {
 	public LootSpawnCommand(SessionHandler sessionHandler, LootHandler lootHandler, boolean isAvailable) {
 		super("spawn");
 		addArg(new Argument("x*chest...", ArgType.STRING));
+		addFlag("hallways");
+		addFlag("deadends");
+		addFlag("rooms");
 
 		this.sessionHandler = sessionHandler;
 		this.lootHandler = lootHandler;
@@ -55,10 +58,19 @@ public class LootSpawnCommand extends ArgCommand {
 		}
 		Map<String, Integer> chestAmounts;
 		Map<String, BlockVec> addedChests;
+		boolean isLootInHallways = usedFlags.contains("hallways");
+		boolean isLootInDeadEnds = usedFlags.contains("deadends");
+		boolean isLootInRooms = usedFlags.contains("rooms");
 
+		if (!isLootInHallways && !isLootInDeadEnds && !isLootInRooms) {
+			isLootInHallways = isLootInDeadEnds = isLootInRooms = true;
+		}
+		sender.sendMessage("hall " + isLootInHallways);
+		sender.sendMessage("dead " + isLootInDeadEnds);
+		sender.sendMessage("room " + isLootInRooms);
 		try {
 			chestAmounts = deserializeLootChestPrefabs(argValues);
-			addedChests = lootHandler.spawnChests(maze, chestAmounts);
+			addedChests = lootHandler.spawnChests(maze, chestAmounts, isLootInHallways, isLootInDeadEnds, isLootInRooms);
 		} catch (TextException e) {
 			e.sendTextTo(sender);
 			return;
