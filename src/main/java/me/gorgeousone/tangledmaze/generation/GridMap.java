@@ -2,6 +2,7 @@ package me.gorgeousone.tangledmaze.generation;
 
 import me.gorgeousone.tangledmaze.generation.paving.ExitSegment;
 import me.gorgeousone.tangledmaze.generation.paving.PathType;
+import me.gorgeousone.tangledmaze.generation.paving.Room;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
@@ -33,6 +34,8 @@ public class GridMap {
 	
 	private final List<ExitSegment> exits;
 	private final List<GridCell> pathStarts;
+	private final List<Room> rooms;
+
 	
 	public GridMap(Vec2 mapMin,
 	               Vec2 mapMax,
@@ -45,6 +48,7 @@ public class GridMap {
 		gridMeshSize = pathWidth + wallWidth;
 		exits = new ArrayList<>();
 		pathStarts = new ArrayList<>();
+		rooms = new ArrayList<>();
 	}
 	
 	public int getWidth() {
@@ -210,6 +214,23 @@ public class GridMap {
 		Vec2 endGridPos = getGridPos(chosenTurn.getEnd());
 		setPathType(endGridPos, PathType.PAVED);
 		pathStarts.add(getCell(endGridPos));
+	}
+
+	public void addRoom(Room room) {
+		rooms.add(room);
+	}
+
+	public Room findRoom(Vec2 gridPos) {
+		for (Room room : rooms) {
+			if (room.contains(gridPos)) {
+				return room;
+			}
+		}
+		return null;
+	}
+
+	public List<Room> getRooms() {
+		return new ArrayList<>(rooms);
 	}
 	
 	/**

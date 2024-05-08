@@ -4,11 +4,10 @@ import me.gorgeousone.tangledmaze.generation.GridCell;
 import me.gorgeousone.tangledmaze.generation.GridMap;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Room {
 
@@ -35,11 +34,12 @@ public class Room {
 		       gridPos.getZ() < cellStart.getZ() + cellSize.getZ();
 	}
 
-	public void floodFillRoom(PathTree pathTree, GridCell startCell, GridMap gridMap) {
+	public void floodFillRoom(GridCell startCell, GridMap gridMap) {
+		PathTree pathTree = startCell.getTree();
 		List<Vec2> openEnds = new ArrayList<>();
 		openEnds.add(startCell.getGridPos());
 
-		while(!openEnds.isEmpty()) {
+		while (!openEnds.isEmpty()) {
 			Vec2 gridPos = openEnds.remove(0);
 			GridCell cell = gridMap.getCell(gridPos);
 
@@ -64,6 +64,7 @@ public class Room {
 	 * Mark the cells of a room as ROOM type on the grid map.
 	 */
 	public void markRoom(GridMap gridMap, PathType pathType) {
+		Bukkit.broadcastMessage("mark " + cellStart);
 		for (int x = cellStart.getX(); x < cellStart.getX() + cellSize.getX(); ++x) {
 			for (int z = cellStart.getZ(); z < cellStart.getZ() + cellSize.getZ(); ++z) {
 				gridMap.setPathType(x, z, pathType);

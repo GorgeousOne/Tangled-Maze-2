@@ -4,6 +4,7 @@ import me.gorgeousone.tangledmaze.generation.GridMap;
 import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.util.Vec2;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,7 +16,7 @@ public class RoomGen {
 
 	private final static Random RANDOM = new Random();
 
-	public static List<Room> genRooms(GridMap gridMap, MazeSettings settings) {
+	public static void genRooms(GridMap gridMap, MazeSettings settings) {
 		int roomCount = settings.getValue(MazeProperty.ROOM_COUNT);
 		int pathWidth = settings.getValue(MazeProperty.PATH_WIDTH);
 		int wallWidth = settings.getValue(MazeProperty.WALL_WIDTH);
@@ -50,11 +51,10 @@ public class RoomGen {
 			Room room = spawnRoom(gridMap, freeCellsList, cellsMin, cellsMax);
 
 			if (room != null) {
-				rooms.add(room);
+				gridMap.addRoom(room);
 				spawnedRooms += 1;
 			}
 		}
-		return rooms;
 	}
 
 	/**
@@ -82,6 +82,7 @@ public class RoomGen {
 			return null;
 		}
 		Room room = new Room(rndCell, new Vec2(sizeX, sizeZ));
+		Bukkit.broadcastMessage("Room at " + gridMap.getCell(rndCell).getMin() + gridMap.getCell(rndCell.clone().add(sizeX-1, sizeZ-1)).getMax());
 		room.markRoom(gridMap, PathType.ROOM);
 		return room;
 	}

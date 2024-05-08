@@ -101,8 +101,8 @@ public class MazeMapFactory {
 			}
 		}
 		mazeMap.setGridMap(gridMap);
-		List<Room> rooms = RoomGen.genRooms(gridMap, settings);
-		PathGen.genPaths(gridMap, settings.getValue(MazeProperty.CURLINESS), rooms);
+		RoomGen.genRooms(gridMap, settings);
+		PathGen.genPaths(gridMap, settings.getValue(MazeProperty.CURLINESS));
 		copyPathsOntoMazeMap(gridMap, mazeMap);
 	}
 	
@@ -177,8 +177,9 @@ public class MazeMapFactory {
 		}
 		for (int gridX = 0; gridX < gridMap.getWidth(); ++gridX) {
 			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {
-				
-				if (gridMap.getPathType(gridX, gridZ) == PathType.PAVED) {
+				PathType pathType = gridMap.getPathType(gridX, gridZ);
+
+				if (pathType == PathType.PAVED || pathType == PathType.ROOM) {
 					GridCell cell = gridMap.getCell(gridX, gridZ);
 					mazeMap.setType(cell.getMin(), cell.getMax(), AreaType.PATH);
 				}

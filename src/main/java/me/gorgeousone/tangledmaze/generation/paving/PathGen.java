@@ -33,7 +33,7 @@ public class PathGen {
 	private static final Random RANDOM = new Random();
 	private static final int maxLinkedSegmentCount = 4;
 
-	public static void genPaths(GridMap gridMap, int curliness, List<Room> rooms) {
+	public static void genPaths(GridMap gridMap, int curliness) {
 		List<PathTree> pathTrees = createPathTrees(gridMap.getPathStarts());
 		List<PathTree> openPathTrees = new ArrayList<>(pathTrees);
 		
@@ -132,10 +132,21 @@ public class PathGen {
 		Direction rndFacing = availableDirs.get(RANDOM.nextInt(availableDirs.size()));
 		GridCell newPathEnd = pavePath(currentPathEnd, rndFacing, gridMap);
 
-		if (tryExtendSegment && curliness > 1) {
-			return extendPath(newPathEnd, rndFacing, RANDOM.nextInt(curliness - 1) + 1, gridMap);
+		if (!tryExtendSegment && curliness == 1) {
+			return false;
 		}
-		return false;
+		GridCell extendedPathEnd = extendPath(newPathEnd, rndFacing, curliness, gridMap);
+		boolean wasExtended = !newPathEnd.equals(extendedPathEnd);
+
+		if (gridMap.getPathType(extendedPathEnd.getGridPos()) != PathType.ROOM) {
+			return wasExtended;
+		}
+		Room room = gridMap.findRoom(extendedPathEnd.getGridPos());
+
+		if (room != null) {
+			room.floodFillRoom(extendedPathEnd, gridMap);
+		}
+		return wasExtended;
 	}
 	
 	/**
@@ -145,9 +156,9 @@ public class PathGen {
 	 * @param pathEnd       segment to extend
 	 * @param facing        direction to extend towards
 	 * @param maxExtensions maximum times to extend the path
-	 * @return true if segment could be extended, otherwise false
+	 * @return the extended or unextended path segment
 	 */
-	private static boolean extendPath(GridCell pathEnd, Direction facing, int maxExtensions, GridMap gridMap) {
+	private static GridCell extendPath(GridCell pathEnd, Direction facing, int maxExtensions, GridMap gridMap) {
 		Vec2 facingVec = facing.getVec2();
 		
 		for (int i = 0; i < maxExtensions; ++i) {
@@ -156,7 +167,7 @@ public class PathGen {
 			PathType pathType2 = gridMap.getPathType(extension2);
 
 			if (pathType2 != PathType.FREE && pathType2 != PathType.ROOM || gridMap.getPathType(extension1) != PathType.FREE) {
-				return i != 0;
+				return pathEnd;
 			}
 			pathEnd = pavePath(pathEnd, facing, gridMap);
 
@@ -164,9 +175,9 @@ public class PathGen {
 				break;
 			}
 		}
-		return true;
+		return pathEnd;
 	}
-	
+
 	/**
 	 * Sets the path type of the next 2 grid cells to PAVED in the given direction
 	 * @return the latter new path segment

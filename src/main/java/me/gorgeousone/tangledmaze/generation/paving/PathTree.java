@@ -101,8 +101,7 @@ public class PathTree {
 	}
 	
 	/**
-	 * @param seg1
-	 * @param seg2
+	 *
 	 */
 	private void balanceTree(GridCell seg1, GridCell seg2) {
 		int exitDist1 = getExitDist(seg1);
