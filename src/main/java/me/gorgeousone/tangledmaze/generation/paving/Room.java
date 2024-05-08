@@ -7,16 +7,29 @@ import me.gorgeousone.tangledmaze.util.Vec2;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Room {
 
 	private final Vec2 cellStart;
 	private final Vec2 cellSize;
+	private final Set<Vec2> roomCells;
 
 	public Room(Vec2 cellStart, Vec2 cellSize) {
 		this.cellStart = cellStart;
 		this.cellSize = cellSize;
+		roomCells = new HashSet<>();
+		listCells();
+	}
+
+	private void listCells() {
+		for (int x = cellStart.getX(); x < cellStart.getX() + cellSize.getX(); x += 2) {
+			for (int z = cellStart.getZ(); z < cellStart.getZ() + cellSize.getZ(); z += 2) {
+				roomCells.add(new Vec2(x, z));
+			}
+		}
 	}
 
 	public Vec2 getCellStart() {
@@ -37,9 +50,10 @@ public class Room {
 	public void floodFillRoom(GridCell startCell, GridMap gridMap) {
 		PathTree pathTree = startCell.getTree();
 		List<Vec2> openEnds = new ArrayList<>();
+		Set<Vec2> unvisitedCells = new HashSet<>(roomCells);
 		openEnds.add(startCell.getGridPos());
 
-		while (!openEnds.isEmpty()) {
+		while (!unvisitedCells.isEmpty() && !openEnds.isEmpty()) {
 			Vec2 gridPos = openEnds.remove(0);
 			GridCell cell = gridMap.getCell(gridPos);
 
@@ -47,13 +61,13 @@ public class Room {
 				Vec2 facingVec = facing.getVec2();
 				Vec2 newPos1 = gridPos.add(facingVec);
 				Vec2 newPos2 = newPos1.clone().add(facingVec);
-				PathType pathType2 = gridMap.getPathType(newPos2);
 
-				if (pathType2 == PathType.ROOM) {
+				if (unvisitedCells.contains(newPos2)) {
 					GridCell roomCell = gridMap.getCell(newPos1);
 					pathTree.addSegment(roomCell, cell);
 					pathTree.addSegment(gridMap.getCell(newPos2), roomCell);
 					openEnds.add(newPos2);
+					unvisitedCells.remove(newPos2);
 				}
 			}
 		}
@@ -71,5 +85,4 @@ public class Room {
 			}
 		}
 	}
-
 }

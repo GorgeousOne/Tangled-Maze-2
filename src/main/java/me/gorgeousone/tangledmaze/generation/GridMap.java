@@ -78,22 +78,31 @@ public class GridMap {
 				offset.getZ() < pathWidth ? 0 : 1);
 		return gridPos;
 	}
-	
+
+	public GridCell getCell(GridCell cell, Direction direction) {
+		Vec2 neighborPos = cell.getGridPos().add(direction.getVec2());
+		return getCell(neighborPos);
+	}
+
 	public GridCell getCell(Vec2 gridPos) {
 		return getCell(gridPos.getX(), gridPos.getZ());
 	}
-	
+
 	public GridCell getCell(int gridX, int gridZ) {
 		if (contains(gridX, gridZ)) {
 			return gridCells[gridX][gridZ];
 		}
 		return null;
 	}
-	
+
 	public PathType getPathType(Vec2 gridPos) {
 		return getPathType(gridPos.getX(), gridPos.getZ());
 	}
-	
+
+	public PathType getPathType(GridCell cell) {
+		return getPathType(cell.getGridPos());
+	}
+
 	public PathType getPathType(int gridX, int gridZ) {
 		if (contains(gridX, gridZ)) {
 			return pathTypes[gridX][gridZ];
@@ -104,7 +113,11 @@ public class GridMap {
 	public void setPathType(Vec2 gridPos, PathType type) {
 		setPathType(gridPos.getX(), gridPos.getZ(), type);
 	}
-	
+
+	public void setPathType(GridCell cell, PathType type) {
+		setPathType(cell.getGridPos(), type);
+	}
+
 	/**
 	 * Returns the maximum floor height for the whole grid cell
 	 */

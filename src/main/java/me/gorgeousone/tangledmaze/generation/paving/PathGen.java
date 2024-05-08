@@ -130,7 +130,9 @@ public class PathGen {
 	                                           int curliness,
 	                                           boolean tryExtendSegment) {
 		Direction rndFacing = availableDirs.get(RANDOM.nextInt(availableDirs.size()));
-		GridCell newPathEnd = pavePath(currentPathEnd, rndFacing, gridMap);
+		GridCell pathConnection = gridMap.getCell(currentPathEnd, rndFacing);
+		GridCell newPathEnd = gridMap.getCell(pathConnection, rndFacing);
+		pavePath(currentPathEnd, pathConnection, newPathEnd, gridMap);
 
 		if (!tryExtendSegment && curliness == 1) {
 			return false;
@@ -138,12 +140,13 @@ public class PathGen {
 		GridCell extendedPathEnd = extendPath(newPathEnd, rndFacing, curliness, gridMap);
 		boolean wasExtended = !newPathEnd.equals(extendedPathEnd);
 
-		if (gridMap.getPathType(extendedPathEnd.getGridPos()) != PathType.ROOM) {
+		if (gridMap.getPathType(extendedPathEnd) != PathType.ROOM) {
 			return wasExtended;
 		}
+		System.out.println("Ended in room at " + extendedPathEnd.getGridPos());
 		Room room = gridMap.findRoom(extendedPathEnd.getGridPos());
-
 		if (room != null) {
+			System.out.println("Yep lets fill that room");
 			room.floodFillRoom(extendedPathEnd, gridMap);
 		}
 		return wasExtended;
@@ -159,43 +162,49 @@ public class PathGen {
 	 * @return the extended or unextended path segment
 	 */
 	private static GridCell extendPath(GridCell pathEnd, Direction facing, int maxExtensions, GridMap gridMap) {
-		Vec2 facingVec = facing.getVec2();
-		
+		GridCell newEnd = pathEnd;
+
 		for (int i = 0; i < maxExtensions; ++i) {
-			Vec2 extension1 = pathEnd.getGridPos().add(facingVec);
-			Vec2 extension2 = extension1.clone().add(facingVec);
+			GridCell extension1 = gridMap.getCell(newEnd, facing);
+
+			if (extension1 == null) {
+				return newEnd;
+			}
+			GridCell extension2 = gridMap.getCell(extension1, facing);
+
+			if (extension2 == null) {
+				return newEnd;
+			}
 			PathType pathType2 = gridMap.getPathType(extension2);
 
 			if (pathType2 != PathType.FREE && pathType2 != PathType.ROOM || gridMap.getPathType(extension1) != PathType.FREE) {
-				return pathEnd;
+				return newEnd;
 			}
-			pathEnd = pavePath(pathEnd, facing, gridMap);
+			pavePath(newEnd, extension1, extension2, gridMap);
+			newEnd = extension2;
 
-			if (pathType2 != PathType.ROOM) {
+			if (pathType2 == PathType.ROOM) {
 				break;
 			}
 		}
-		return pathEnd;
+		return newEnd;
 	}
 
 	/**
 	 * Sets the path type of the next 2 grid cells to PAVED in the given direction
 	 * @return the latter new path segment
 	 */
-	private static GridCell pavePath(GridCell pathEnd, Direction facing, GridMap gridMap) {
-		Vec2 facingVec = facing.getVec2();
-		Vec2 newPath1 = pathEnd.getGridPos().add(facingVec);
-		Vec2 newPath2 = newPath1.clone().add(facingVec);
-		
+	private static void pavePath(GridCell pathEnd, GridCell newPath1, GridCell newPath2, GridMap gridMap) {
 		gridMap.setPathType(newPath1, PathType.PAVED);
-		gridMap.setPathType(newPath2, PathType.PAVED);
-		
+
+		if (gridMap.getPathType(newPath2) != PathType.ROOM) {
+			gridMap.setPathType(newPath2, PathType.PAVED);
+		} else {
+			System.out.println("Encountered room " + newPath2.getGridPos());
+		}
 		PathTree tree = pathEnd.getTree();
-		GridCell newSegment1 = gridMap.getCell(newPath1);
-		GridCell newSegment2 = gridMap.getCell(newPath2);
-		tree.addSegment(newSegment1, pathEnd);
-		tree.addSegment(newSegment2, newSegment1);
-		return newSegment2;
+		tree.addSegment(newPath1, pathEnd);
+		tree.addSegment(newPath2, newPath1);
 	}
 	
 	/**

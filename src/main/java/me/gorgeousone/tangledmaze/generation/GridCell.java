@@ -22,7 +22,7 @@ public class GridCell {
 	private transient GridCell parent;
 	
 	public GridCell(Vec2 min, Vec2 size, Vec2 gridPos) {
-		this.min = min;
+		this.min = min.clone();
 		this.max = min.clone().add(size);
 		this.gridPos = gridPos;
 	}
