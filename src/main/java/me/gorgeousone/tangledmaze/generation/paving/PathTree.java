@@ -36,7 +36,11 @@ public class PathTree {
 	public boolean isComplete() {
 		return openEnds.isEmpty();
 	}
-	
+
+	/**
+	 * Adds a new path segment to the tree with the previous path segment as parent.
+	 * Also adds junction segments to the list of open ends / junctions to explore.
+	 */
 	public void addSegment(GridCell cell, GridCell parent) {
 		cell.setTree(this);
 		cell.setParent(parent);
@@ -61,11 +65,10 @@ public class PathTree {
 	public Set<GridCell> getJunctions() {
 		return junctions;
 	}
-	
-	public int getMaxExitDist() {
-		return maxExitDist;
-	}
-	
+
+	/**
+	 * Returns the distance from the given cell to the root / exit of the tree.
+	 */
 	public int getExitDist(GridCell cell) {
 		int dist = 0;
 		while (cell.hasParent()) {

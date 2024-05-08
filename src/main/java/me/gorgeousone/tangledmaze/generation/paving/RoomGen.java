@@ -13,12 +13,13 @@ import java.util.Set;
 
 public class RoomGen {
 
-	private static Random rnd;
+	private final static Random RANDOM = new Random();
 
-	public static List<Room> genRooms(GridMap gridMap, int roomCount, MazeSettings settings) {
-
+	public static List<Room> genRooms(GridMap gridMap, MazeSettings settings) {
+		int roomCount = settings.getValue(MazeProperty.ROOM_COUNT);
 		int pathWidth = settings.getValue(MazeProperty.PATH_WIDTH);
 		int wallWidth = settings.getValue(MazeProperty.WALL_WIDTH);
+
 		int cellsMin = calcCellsMin(8, pathWidth, wallWidth);
 		int cellsMax = calcCellsMin(40, pathWidth, wallWidth);
 
@@ -74,18 +75,19 @@ public class RoomGen {
 	private static Room spawnRoom(GridMap gridMap, List<Vec2> freeCells, int cellsMin, int cellsMax) {
 		int sizeX = rndRoomSize(cellsMin, cellsMax);
 		int sizeZ = rndRoomSize(cellsMin, cellsMax);
-		Vec2 rndCell = freeCells.get(rnd.nextInt(freeCells.size()));
+		Vec2 rndCell = freeCells.get(RANDOM.nextInt(freeCells.size()));
 		boolean isFree = isRoomFree(gridMap, rndCell.getX(), rndCell.getZ(), sizeX, sizeZ);
 
 		if (!isFree) {
 			return null;
 		}
-		markRoom(gridMap, rndCell.getX(), rndCell.getZ(), sizeX, sizeZ);
-		return new Room(rndCell, new Vec2(sizeX, sizeZ));
+		Room room = new Room(rndCell, new Vec2(sizeX, sizeZ));
+		room.markRoom(gridMap, PathType.ROOM);
+		return room;
 	}
 
 	private static int rndRoomSize(int cellsMin, int cellsMax) {
-		return cellsMin + rnd.nextInt((cellsMax - cellsMin) / 2) * 2;
+		return cellsMin + RANDOM.nextInt((cellsMax - cellsMin) / 2) * 2;
 	}
 
 	/**
@@ -102,14 +104,4 @@ public class RoomGen {
 		return true;
 	}
 
-	/**
-	 * Mark the cells of a room as ROOM type on the grid map.
-	 */
-	private static void markRoom(GridMap gridMap, int startX, int startZ, int sizeX, int sizeZ) {
-		for (int x = startX; x < startX + sizeX; ++x) {
-			for (int z = startZ; z < startZ + sizeZ; ++z) {
-				gridMap.setPathType(x, z, PathType.ROOM);
-			}
-		}
-	}
 }

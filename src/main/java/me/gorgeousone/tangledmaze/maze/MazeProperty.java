@@ -10,7 +10,8 @@ public enum MazeProperty {
 	WALL_WIDTH(64, 1),
 	PATH_WIDTH(64, 1),
 	CURLINESS(10, 3),
-	ROOF_WIDTH(64, 1);
+	ROOF_WIDTH(64, 1),
+	ROOM_COUNT(100, 3);
 	
 	private final int maxVal;
 	private final int defaultVal;

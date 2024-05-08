@@ -11,6 +11,9 @@ import java.util.List;
 
 /**
  * A class that divides the area of a maze map into a grid of cells with path type, floor ys and wall ys for each cell.
+ * The size of the grid cells in blocks vary depending on the path width and wall width.
+ * Junction, connecting path and wall cells form a plaid pattern.
+ * (junctions: path width x path width, paths: wall x path / path x wall, walls: wall x wall).
  */
 public class GridMap {
 	

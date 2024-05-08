@@ -33,7 +33,7 @@ public class PathGen {
 	private static final Random RANDOM = new Random();
 	private static final int maxLinkedSegmentCount = 4;
 
-	public static void genPaths(GridMap gridMap, int curliness) {
+	public static void genPaths(GridMap gridMap, int curliness, List<Room> rooms) {
 		List<PathTree> pathTrees = createPathTrees(gridMap.getPathStarts());
 		List<PathTree> openPathTrees = new ArrayList<>(pathTrees);
 		
@@ -106,11 +106,14 @@ public class PathGen {
 		
 		for (Direction facing : Direction.CARDINALS) {
 			Vec2 facingVec = facing.getVec2();
-			Vec2 newSeg1 = pathEnd.getGridPos().add(facingVec);
-			Vec2 newSeg2 = newSeg1.clone().add(facingVec);
-			
-			if (gridMap.getPathType(newSeg1) == PathType.FREE &&
-			    gridMap.getPathType(newSeg2) == PathType.FREE) {
+			Vec2 newSegment1 = pathEnd.getGridPos().add(facingVec);
+			Vec2 newSegment2 = newSegment1.clone().add(facingVec);
+			PathType pathType2 = gridMap.getPathType(newSegment2);
+
+			if (pathType2 != PathType.FREE && pathType2 != PathType.ROOM) {
+				continue;
+			}
+			if (gridMap.getPathType(newSegment1) == PathType.FREE) {
 				branches.add(facing);
 			}
 		}
@@ -128,7 +131,7 @@ public class PathGen {
 	                                           boolean tryExtendSegment) {
 		Direction rndFacing = availableDirs.get(RANDOM.nextInt(availableDirs.size()));
 		GridCell newPathEnd = pavePath(currentPathEnd, rndFacing, gridMap);
-		
+
 		if (tryExtendSegment && curliness > 1) {
 			return extendPath(newPathEnd, rndFacing, RANDOM.nextInt(curliness - 1) + 1, gridMap);
 		}
@@ -136,7 +139,9 @@ public class PathGen {
 	}
 	
 	/**
-	 * Tries to extend the end segment of a path n times into a given direction
+	 * Tries to extend the end segment of a path n times into a given direction.
+	 * Stops extending before the path hits a wall or another path.
+	 * Also stops extending after a paths enters a room.
 	 * @param pathEnd       segment to extend
 	 * @param facing        direction to extend towards
 	 * @param maxExtensions maximum times to extend the path
@@ -148,12 +153,15 @@ public class PathGen {
 		for (int i = 0; i < maxExtensions; ++i) {
 			Vec2 extension1 = pathEnd.getGridPos().add(facingVec);
 			Vec2 extension2 = extension1.clone().add(facingVec);
-			
-			if (gridMap.getPathType(extension1) == PathType.FREE &&
-			    gridMap.getPathType(extension2) == PathType.FREE) {
-				pathEnd = pavePath(pathEnd, facing, gridMap);
-			} else {
+			PathType pathType2 = gridMap.getPathType(extension2);
+
+			if (pathType2 != PathType.FREE && pathType2 != PathType.ROOM || gridMap.getPathType(extension1) != PathType.FREE) {
 				return i != 0;
+			}
+			pathEnd = pavePath(pathEnd, facing, gridMap);
+
+			if (pathType2 != PathType.ROOM) {
+				break;
 			}
 		}
 		return true;
