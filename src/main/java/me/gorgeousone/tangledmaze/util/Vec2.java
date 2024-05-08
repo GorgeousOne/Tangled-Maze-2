@@ -6,6 +6,12 @@ import org.bukkit.block.Block;
 
 import java.util.Objects;
 
+/**
+ * TODO run a performance test to see if it would be better to make this class immutable.
+ * Talking about all the for loops with Direction#getVec2() and GridCell#getGridPos()
+ * I guess this is surely not the bottleneck but it itches my brain
+ */
+
 public class Vec2 implements Comparable<Vec2> {
 	
 	private int x;
@@ -87,6 +93,16 @@ public class Vec2 implements Comparable<Vec2> {
 
 	public double getMcAngle() {
 		return Math.toDegrees(Math.atan2(-x, z));
+	}
+
+	public int sqrDist(Vec2 other) {
+		int dx = x - other.x;
+		int dz = z - other.z;
+		return dx * dx + dz * dz;
+	}
+
+	public int manhattanDist(Vec2 other) {
+		return Math.abs(x - other.x) + Math.abs(z - other.z);
 	}
 
 	@Override

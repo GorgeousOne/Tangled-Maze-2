@@ -6,14 +6,18 @@ import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class MazeSolver {
-	
-	public static List<GridCell> findSolvingPath(GridMap gridMap) {
-		List<GridCell> solutionPath = new LinkedList<>();
+
+	/**
+	 * Returns Set of grid ells forming a path between all exits of a maze
+	 */
+	public static Set<GridCell> findSolvingPath(GridMap gridMap) {
+		Set<GridCell> solutionPath = new HashSet<>();
 		List<ExitSegment> exits = gridMap.getExits();
 
 		if (exits.size() < 2) {
@@ -22,43 +26,48 @@ public abstract class MazeSolver {
 		List<GridCell> goals = exits.stream()
 				.map(e -> gridMap.getCell(gridMap.getGridPos(e.getEnd())))
 				.collect(Collectors.toList());
-		
+
 		solutionPath.addAll(goals);
 		GridCell start = goals.remove(0);
-		List<Vec2> visited = new LinkedList<>(Arrays.asList(start.getGridPos()));
-		recursiveSearch(gridMap, start.getGridPos(), null, goals, visited, solutionPath);
-		
+		Set<GridCell> visited = new HashSet<>(Arrays.asList(start));
+		recursiveSearch(gridMap, start, null, new HashSet<>(goals), visited, solutionPath);
+
 		//add exit segments to path solution for rendering the blocks
+		int i = 0;
 		for (ExitSegment exit : exits) {
-			solutionPath.add(new GridCell(exit.getMin(), exit.getMax().clone().sub(exit.getMin()), null));
+			--i;
+			solutionPath.add(new GridCell(exit.getMin(), exit.getMax().clone().sub(exit.getMin()), new Vec2(0, i)));
 		}
 		return solutionPath;
 	}
-	
+
+	/**
+	 * Recursively walks path tree to reach all goals
+	 * and collects the path when returning from the recursive calls.
+	 */
 	private static boolean recursiveSearch(
 			GridMap gridMap,
-			Vec2 currentPos,
-			Direction backDir,
-			List<GridCell> goals,
-			List<Vec2> visited,
-			List<GridCell> solutionPath) {
+			GridCell currentCell,
+			Direction lastDir,
+			Set<GridCell> goals,
+			Set<GridCell> visited,
+			Set<GridCell> solutionPath) {
 		boolean isSolution = false;
-		
-		for (Direction dir : Direction.CARDINALS) {
-			if (dir == backDir) {
+		//iterate same direction as before if possible, to avoid zigzagging inside rooms
+		Direction[] dirs = lastDir == null ? Direction.CARDINALS : new Direction[] {lastDir, lastDir.getLeft(), lastDir.getRight()};
+
+		for (Direction dir : dirs) {
+			GridCell neighbor = gridMap.getCell(currentCell, dir);
+
+			if (visited.contains(neighbor) || gridMap.getPathType(neighbor) != PathType.PAVED) {
 				continue;
 			}
-			Vec2 neighborPos = currentPos.clone().add(dir.getVec2());
+			visited.add(neighbor);
+			boolean isNeighborSolution = recursiveSearch(gridMap, neighbor, dir, goals, visited, solutionPath);
 			
-			if (gridMap.getPathType(neighborPos) != PathType.PAVED || visited.contains(neighborPos)) {
-				continue;
-			}
-			visited.add(neighborPos);
-			GridCell neighbor = gridMap.getCell(neighborPos);
-			boolean isNeighborSolution = recursiveSearch(gridMap, neighborPos, dir.getOpposite(), goals, visited, solutionPath);
-			
-			if (goals.contains(neighbor) || isNeighborSolution) {
-				solutionPath.add(gridMap.getCell(currentPos));
+			if (isNeighborSolution || goals.contains(neighbor)) {
+				goals.remove(neighbor);
+				solutionPath.add(currentCell);
 				isSolution = true;
 			}
 		}

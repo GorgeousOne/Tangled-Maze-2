@@ -4,6 +4,7 @@ import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.generation.paving.ExitSegment;
 import me.gorgeousone.tangledmaze.generation.paving.PathGen;
 import me.gorgeousone.tangledmaze.generation.paving.PathType;
+import me.gorgeousone.tangledmaze.generation.paving.RoomGen;
 import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.util.BlockUtil;
@@ -99,6 +100,7 @@ public class MazeMapFactory {
 			}
 		}
 		mazeMap.setGridMap(gridMap);
+		RoomGen.genRooms(gridMap, settings);
 		PathGen.genPaths(gridMap, settings.getValue(MazeProperty.CURLINESS));
 		copyPathsOntoMazeMap(gridMap, mazeMap);
 	}
@@ -174,8 +176,9 @@ public class MazeMapFactory {
 		}
 		for (int gridX = 0; gridX < gridMap.getWidth(); ++gridX) {
 			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {
-				
-				if (gridMap.getPathType(gridX, gridZ) == PathType.PAVED) {
+				PathType pathType = gridMap.getPathType(gridX, gridZ);
+
+				if (pathType == PathType.PAVED || pathType == PathType.ROOM) {
 					GridCell cell = gridMap.getCell(gridX, gridZ);
 					mazeMap.setType(cell.getMin(), cell.getMax(), AreaType.PATH);
 				}

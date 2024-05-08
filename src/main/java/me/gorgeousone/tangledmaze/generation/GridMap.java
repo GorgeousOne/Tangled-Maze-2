@@ -2,6 +2,7 @@ package me.gorgeousone.tangledmaze.generation;
 
 import me.gorgeousone.tangledmaze.generation.paving.ExitSegment;
 import me.gorgeousone.tangledmaze.generation.paving.PathType;
+import me.gorgeousone.tangledmaze.generation.paving.Room;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
@@ -11,6 +12,9 @@ import java.util.List;
 
 /**
  * A class that divides the area of a maze map into a grid of cells with path type, floor ys and wall ys for each cell.
+ * The size of the grid cells in blocks vary depending on the path width and wall width.
+ * Junction, connecting path and wall cells form a plaid pattern.
+ * (junctions: path width x path width, paths: wall x path / path x wall, walls: wall x wall).
  */
 public class GridMap {
 	
@@ -30,6 +34,8 @@ public class GridMap {
 	
 	private final List<ExitSegment> exits;
 	private final List<GridCell> pathStarts;
+	private final List<Room> rooms;
+
 	
 	public GridMap(Vec2 mapMin,
 	               Vec2 mapMax,
@@ -42,6 +48,7 @@ public class GridMap {
 		gridMeshSize = pathWidth + wallWidth;
 		exits = new ArrayList<>();
 		pathStarts = new ArrayList<>();
+		rooms = new ArrayList<>();
 	}
 	
 	public int getWidth() {
@@ -53,7 +60,7 @@ public class GridMap {
 	}
 	
 	public List<ExitSegment> getExits() {
-		return exits;
+		return new ArrayList<>(exits);
 	}
 	
 	public List<GridCell> getPathStarts() {
@@ -71,22 +78,31 @@ public class GridMap {
 				offset.getZ() < pathWidth ? 0 : 1);
 		return gridPos;
 	}
-	
+
+	public GridCell getCell(GridCell cell, Direction direction) {
+		Vec2 neighborPos = cell.getGridPos().add(direction.getVec2());
+		return getCell(neighborPos);
+	}
+
 	public GridCell getCell(Vec2 gridPos) {
 		return getCell(gridPos.getX(), gridPos.getZ());
 	}
-	
+
 	public GridCell getCell(int gridX, int gridZ) {
 		if (contains(gridX, gridZ)) {
 			return gridCells[gridX][gridZ];
 		}
 		return null;
 	}
-	
+
 	public PathType getPathType(Vec2 gridPos) {
 		return getPathType(gridPos.getX(), gridPos.getZ());
 	}
-	
+
+	public PathType getPathType(GridCell cell) {
+		return getPathType(cell.getGridPos());
+	}
+
 	public PathType getPathType(int gridX, int gridZ) {
 		if (contains(gridX, gridZ)) {
 			return pathTypes[gridX][gridZ];
@@ -97,7 +113,11 @@ public class GridMap {
 	public void setPathType(Vec2 gridPos, PathType type) {
 		setPathType(gridPos.getX(), gridPos.getZ(), type);
 	}
-	
+
+	public void setPathType(GridCell cell, PathType type) {
+		setPathType(cell.getGridPos(), type);
+	}
+
 	/**
 	 * Returns the maximum floor height for the whole grid cell
 	 */
@@ -207,6 +227,23 @@ public class GridMap {
 		Vec2 endGridPos = getGridPos(chosenTurn.getEnd());
 		setPathType(endGridPos, PathType.PAVED);
 		pathStarts.add(getCell(endGridPos));
+	}
+
+	public void addRoom(Room room) {
+		rooms.add(room);
+	}
+
+	public Room findRoom(Vec2 gridPos) {
+		for (Room room : rooms) {
+			if (room.contains(gridPos)) {
+				return room;
+			}
+		}
+		return null;
+	}
+
+	public List<Room> getRooms() {
+		return new ArrayList<>(rooms);
 	}
 	
 	/**

@@ -13,6 +13,7 @@ import me.gorgeousone.tangledmaze.render.RenderSession;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -53,18 +54,8 @@ public class SolveMazeCommand extends BaseCommand {
 			Message.INFO_MAZE_SINGLE_EXIT.sendTo(sender);
 			return;
 		}
-		List<GridCell> solution = MazeSolver.findSolvingPath(mazeMap.getPathMap());
+		Set<GridCell> solution = MazeSolver.findSolvingPath(mazeMap.getPathMap());
 		RenderSession render = renderHandler.getPlayerRender(playerId);
 		renderHandler.displayMazeSolution(render, backup.getMazeMap(), solution);
 	}
-	
-//	private int estimatePathLength(List<GridCell> path) {
-//		int length = 0;
-//
-//		for (GridCell cell : path) {
-//			Vec2 size = cell.getMax().sub(cell.getMin());
-//			length += Math.max(size.getX(), size.getZ());
-//		}
-//		return length;
-//	}
 }

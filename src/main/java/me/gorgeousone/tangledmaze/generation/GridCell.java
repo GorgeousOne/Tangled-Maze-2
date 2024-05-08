@@ -1,7 +1,6 @@
 package me.gorgeousone.tangledmaze.generation;
 
 import me.gorgeousone.tangledmaze.generation.paving.PathTree;
-import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
@@ -22,7 +21,7 @@ public class GridCell {
 	private transient GridCell parent;
 	
 	public GridCell(Vec2 min, Vec2 size, Vec2 gridPos) {
-		this.min = min;
+		this.min = min.clone();
 		this.max = min.clone().add(size);
 		this.gridPos = gridPos;
 	}
@@ -80,7 +79,6 @@ public class GridCell {
 	 * Returns a set of directions in which the world x and z coordinate are border of the grid cell
 	 * @param x world x coordinate inside a grid cell
 	 * @param z world z coordinate inside a grid cell
-	 * @return
 	 */
 	public Set<Direction> getWallFacings(int x, int z) {
 		Set<Direction> facings = new HashSet<>();
@@ -133,10 +131,10 @@ public class GridCell {
 	
 	@Override
 	public String toString() {
-		return "GridCell{" +
-		       "gridPos=" + gridPos +
+		return "[" +
+		       "grid=" + gridPos +
 		       ", min=" + min +
 		       ", max=" + max +
-		       '}';
+		       ']';
 	}
 }

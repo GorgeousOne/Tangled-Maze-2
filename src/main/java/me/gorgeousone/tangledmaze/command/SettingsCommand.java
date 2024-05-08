@@ -25,7 +25,7 @@ public class SettingsCommand extends ArgCommand {
 	public SettingsCommand(SessionHandler sessionHandler) {
 		super("setting");
 		addArg(new Argument("setting", ArgType.STRING, MazeProperty.commandNames()));
-		addArg(new Argument("integer", ArgType.INTEGER));
+		addArg(new Argument("integer", ArgType.INTEGER).setDefault("-1"));
 		this.sessionHandler = sessionHandler;
 	}
 	
@@ -39,13 +39,21 @@ public class SettingsCommand extends ArgCommand {
 			Message.ERROR_INVALID_SETTING.sendTo(sender, new Placeholder("setting", settingName));
 			return;
 		}
-		int inputValue = argValues.get(1).getInt();
 		MazeSettings settings = sessionHandler.getSettings(playerId);
-		settings.setValue(property, inputValue);
-		
+		int inputValue = argValues.get(1).getInt();
+
+		if (inputValue == -1) {
+			int currentValue = settings.getValue(property);
+			Message.INFO_SETTING_INFO.sendTo(
+					sender,
+					new Placeholder("setting", property.textName()),
+					new Placeholder("value", currentValue));
+			return;
+		}
+		int outputValue = settings.setValue(property, inputValue);
 		Message.INFO_SETTING_CHANGE.sendTo(
 				sender,
 				new Placeholder("setting", property.textName()),
-				new Placeholder("value", settings.getValue(property)));
+				new Placeholder("value", outputValue));
 	}
 }

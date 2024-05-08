@@ -19,6 +19,7 @@ public class PathTree {
 	private final Set<GridCell> junctions;
 	
 	private int maxExitDist;
+	private int size;
 	
 	public PathTree() {
 		openEnds = new ArrayList<>();
@@ -27,7 +28,7 @@ public class PathTree {
 	}
 	
 	public int size() {
-		return cells.size();
+		return size;
 	}
 	
 	/**
@@ -36,18 +37,32 @@ public class PathTree {
 	public boolean isComplete() {
 		return openEnds.isEmpty();
 	}
-	
+
+
 	public void addSegment(GridCell cell, GridCell parent) {
+		addSegment(cell, parent, true, true);
+	}
+
+	/**
+	 * Adds a new path segment to the tree with the previous path segment as parent.
+	 * Also adds junction segments to the list of open ends / junctions to explore.
+	 * @param canBeJunction set false, if this cell should not be counted as a junction (e.g. inside rooms)
+	 * @param incrementSize set false, if this cell should not be counted as part of the tree (e.g. room elements)
+	 */
+	public void addSegment(GridCell cell, GridCell parent, boolean canBeJunction, boolean incrementSize) {
 		cell.setTree(this);
 		cell.setParent(parent);
 		cells.add(cell);
-		
+
 		int exitDist = getExitDist(cell);
 		maxExitDist = Math.max(exitDist, maxExitDist);
-		
-		if (cell.gridX() % 2 == 0 && cell.gridZ() % 2 == 0) {
+
+		if (canBeJunction && cell.gridX() % 2 == 0 && cell.gridZ() % 2 == 0) {
 			junctions.add(cell);
 			openEnds.add(0, cell);
+		}
+		if (incrementSize) {
+			++size;
 		}
 	}
 	
@@ -61,14 +76,20 @@ public class PathTree {
 	public Set<GridCell> getJunctions() {
 		return junctions;
 	}
-	
-	public int getMaxExitDist() {
-		return maxExitDist;
-	}
-	
+
+	/**
+	 * Returns the distance from the given cell to the root / exit of the tree.
+	 */
 	public int getExitDist(GridCell cell) {
 		int dist = 0;
 		while (cell.hasParent()) {
+			if (dist > 100000) {
+				throw new IllegalStateException(
+						"Exit distance exceeded infinite loop limit near:" +
+								"\ncell " + cell +
+								"\nparent cell " + cell.getParent() +
+								"\ngrandparent cell " + cell.getParent().getParent());
+			}
 			++dist;
 			cell = cell.getParent();
 		}
@@ -98,8 +119,8 @@ public class PathTree {
 	}
 	
 	/**
-	 * @param seg1
-	 * @param seg2
+	 * Upon merging two trees, this method updates the parents of cells around the merge point
+	 * to keep the distance to the nearest exit of the tree as small as possible.
 	 */
 	private void balanceTree(GridCell seg1, GridCell seg2) {
 		int exitDist1 = getExitDist(seg1);

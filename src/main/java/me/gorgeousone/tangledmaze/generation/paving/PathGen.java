@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
  * between 1 and curliness.
  * Then a new random start/open end is picked and the process is repeated until no more
  * paths can be placed.
- * The tree like path structures originating from each start are then connected to
- * each other at points where they paths next to each other can be linked, forming one big tree,
+ * The tree like path structures originating from each start are then being connected
+ * at points where the paths next to each other can be linked, forming one big tree,
  * until all trees are connected. The connections are made so that the path from
  * one start to another is as long as possible.
  */
@@ -39,14 +39,17 @@ public class PathGen {
 		
 		PathTree currentTree = openPathTrees.get(0);
 		int linkedSegmentCount = 1;
+		//keeps track of which path segments were longer than one piece
 		boolean lastSegmentWasExtended = false;
 		GridCell currentPathEnd;
-		
+
+		//adds path segments as long as free space is available
 		while (!openPathTrees.isEmpty()) {
-			//continues generating at last path end or picks random after n connected segments
+			//continues adding segments to the last path end
 			if (linkedSegmentCount <= maxLinkedSegmentCount) {
 				currentPathEnd = currentTree.getLastEnd();
 				linkedSegmentCount++;
+			//picks new random path end after n connected segments
 			} else {
 				currentTree = getSmallestTree(openPathTrees);
 				currentPathEnd = currentTree.getRndEnd();
@@ -57,17 +60,22 @@ public class PathGen {
 			if (availableDirs.size() < 2) {
 				currentTree.removeEnd(currentPathEnd);
 				linkedSegmentCount = 1;
-				
+
+				//removes a path tree if no path segments can be added anymore
 				if (currentTree.isComplete()) {
 					openPathTrees.remove(currentTree);
+					//makes linked segment count restart next iteration
 					linkedSegmentCount = maxLinkedSegmentCount + 1;
 				}
+				//skips path generation if no direction is available
 				if (availableDirs.isEmpty()) {
 					continue;
 				}
 			}
-			lastSegmentWasExtended = generatePathSegment(currentPathEnd, availableDirs, gridMap, curliness, lastSegmentWasExtended);
+			//alternates between generating long and short segments
+			lastSegmentWasExtended = generatePathSegment(currentPathEnd, availableDirs, gridMap, curliness, !lastSegmentWasExtended);
 		}
+		//connects trees from individual exits to one big maze
 		linkPathTrees(gridMap, pathTrees);
 	}
 	
@@ -98,11 +106,14 @@ public class PathGen {
 		
 		for (Direction facing : Direction.CARDINALS) {
 			Vec2 facingVec = facing.getVec2();
-			Vec2 newSeg1 = pathEnd.getGridPos().add(facingVec);
-			Vec2 newSeg2 = newSeg1.clone().add(facingVec);
-			
-			if (gridMap.getPathType(newSeg1) == PathType.FREE &&
-			    gridMap.getPathType(newSeg2) == PathType.FREE) {
+			Vec2 newSegment1 = pathEnd.getGridPos().add(facingVec);
+			Vec2 newSegment2 = newSegment1.clone().add(facingVec);
+			PathType pathType2 = gridMap.getPathType(newSegment2);
+
+			if (pathType2 != PathType.FREE && pathType2 != PathType.ROOM) {
+				continue;
+			}
+			if (gridMap.getPathType(newSegment1) == PathType.FREE) {
 				branches.add(facing);
 			}
 		}
@@ -117,57 +128,79 @@ public class PathGen {
 	                                           List<Direction> availableDirs,
 	                                           GridMap gridMap,
 	                                           int curliness,
-	                                           boolean lastSegmentWasExtended) {
+	                                           boolean tryExtendSegment) {
 		Direction rndFacing = availableDirs.get(RANDOM.nextInt(availableDirs.size()));
-		GridCell newPathEnd = pavePath(currentPathEnd, rndFacing, gridMap);
-		
-		if (!lastSegmentWasExtended && curliness > 1) {
-			return extendPath(newPathEnd, rndFacing, RANDOM.nextInt(curliness - 1) + 1, gridMap);
+		GridCell pathConnection = gridMap.getCell(currentPathEnd, rndFacing);
+		GridCell newPathEnd = gridMap.getCell(pathConnection, rndFacing);
+		pavePath(currentPathEnd, pathConnection, newPathEnd, gridMap);
+
+		if (!tryExtendSegment && curliness == 1) {
+			return false;
 		}
-		return false;
+		GridCell extendedPathEnd = extendPath(newPathEnd, rndFacing, curliness, gridMap);
+		boolean wasExtended = !newPathEnd.equals(extendedPathEnd);
+
+		if (gridMap.getPathType(extendedPathEnd) != PathType.ROOM) {
+			return wasExtended;
+		}
+		Room room = gridMap.findRoom(extendedPathEnd.getGridPos());
+		if (room != null) {
+			room.floodFillRoom(extendedPathEnd, gridMap);
+		}
+		return wasExtended;
 	}
 	
 	/**
-	 * Tries to extend the end segment of a path n times into a given direction
+	 * Tries to extend the end segment of a path n times into a given direction.
+	 * Stops extending before the path hits a wall or another path.
+	 * Also stops extending after a paths enters a room.
 	 * @param pathEnd       segment to extend
 	 * @param facing        direction to extend towards
 	 * @param maxExtensions maximum times to extend the path
+	 * @return the extended or unextended path segment
 	 */
-	private static boolean extendPath(GridCell pathEnd, Direction facing, int maxExtensions, GridMap gridMap) {
-		Vec2 facingVec = facing.getVec2();
-		
+	private static GridCell extendPath(GridCell pathEnd, Direction facing, int maxExtensions, GridMap gridMap) {
+		GridCell newEnd = pathEnd;
+
 		for (int i = 0; i < maxExtensions; ++i) {
-			Vec2 extension1 = pathEnd.getGridPos().add(facingVec);
-			Vec2 extension2 = extension1.clone().add(facingVec);
-			
-			if (gridMap.getPathType(extension1) == PathType.FREE &&
-			    gridMap.getPathType(extension2) == PathType.FREE) {
-				pathEnd = pavePath(pathEnd, facing, gridMap);
-			} else {
-				return i != 0;
+			GridCell extension1 = gridMap.getCell(newEnd, facing);
+
+			if (extension1 == null) {
+				return newEnd;
+			}
+			GridCell extension2 = gridMap.getCell(extension1, facing);
+
+			if (extension2 == null) {
+				return newEnd;
+			}
+			PathType pathType2 = gridMap.getPathType(extension2);
+
+			if (pathType2 != PathType.FREE && pathType2 != PathType.ROOM || gridMap.getPathType(extension1) != PathType.FREE) {
+				return newEnd;
+			}
+			pavePath(newEnd, extension1, extension2, gridMap);
+			newEnd = extension2;
+
+			if (pathType2 == PathType.ROOM) {
+				break;
 			}
 		}
-		return true;
+		return newEnd;
 	}
-	
+
 	/**
 	 * Sets the path type of the next 2 grid cells to PAVED in the given direction
 	 * @return the latter new path segment
 	 */
-	private static GridCell pavePath(GridCell pathEnd, Direction facing, GridMap gridMap) {
-		Vec2 facingVec = facing.getVec2();
-		Vec2 newPath1 = pathEnd.getGridPos().add(facingVec);
-		Vec2 newPath2 = newPath1.clone().add(facingVec);
-		
+	private static void pavePath(GridCell pathEnd, GridCell newPath1, GridCell newPath2, GridMap gridMap) {
 		gridMap.setPathType(newPath1, PathType.PAVED);
-		gridMap.setPathType(newPath2, PathType.PAVED);
-		
+
+		if (gridMap.getPathType(newPath2) != PathType.ROOM) {
+			gridMap.setPathType(newPath2, PathType.PAVED);
+		}
 		PathTree tree = pathEnd.getTree();
-		GridCell newSegment1 = gridMap.getCell(newPath1);
-		GridCell newSegment2 = gridMap.getCell(newPath2);
-		tree.addSegment(newSegment1, pathEnd);
-		tree.addSegment(newSegment2, newSegment1);
-		return newSegment2;
+		tree.addSegment(newPath1, pathEnd);
+		tree.addSegment(newPath2, newPath1);
 	}
 	
 	/**

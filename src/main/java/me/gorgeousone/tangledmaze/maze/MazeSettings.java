@@ -25,7 +25,12 @@ public class MazeSettings {
 	}
 	
 	public int setValue(MazeProperty property, int newValue) {
-		newValue = Math.max(1, Math.min(property.getMax(), newValue));
+		newValue = Math.max(property.getMin(), Math.min(property.getMax(), newValue));
+
+		//TODO replace with maze property increment value? :D
+		if (property == MazeProperty.ROOM_SIZE) {
+			newValue = newValue % 2 == 0 ? newValue + 1 : newValue;
+		}
 		properties.put(property, newValue);
 		return newValue;
 	}
