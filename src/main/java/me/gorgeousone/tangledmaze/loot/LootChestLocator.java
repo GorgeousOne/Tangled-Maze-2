@@ -100,5 +100,6 @@ public class LootChestLocator {
 		for (Direction dir : Direction.CARDINALS) {
 			occupied.add(spawn.clone().add(dir.getVec2()));
 		}
+		occupied.add(spawn);
 	}
 }
