@@ -29,7 +29,7 @@ public class Room {
 
 	private void listCells() {
 		for (int x = gridMin.getX(); x < gridMax.getX(); ++x) {
-			for (int z = gridMin.getZ(); z < gridMax.getZ(); ++x) {
+			for (int z = gridMin.getZ(); z < gridMax.getZ(); ++z) {
 				Vec2 gridPos = new Vec2(x, z);
 				pathCells.add(gridPos);
 

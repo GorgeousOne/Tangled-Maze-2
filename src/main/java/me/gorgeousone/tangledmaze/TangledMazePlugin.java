@@ -8,6 +8,7 @@ import me.gorgeousone.tangledmaze.command.BuildMazeCommand;
 import me.gorgeousone.tangledmaze.command.CutClipCommand;
 import me.gorgeousone.tangledmaze.command.GetWandCommand;
 import me.gorgeousone.tangledmaze.command.HelpCommand;
+import me.gorgeousone.tangledmaze.command.SpawnLootCommand;
 import me.gorgeousone.tangledmaze.command.ReloadCommand;
 import me.gorgeousone.tangledmaze.command.SettingsCommand;
 import me.gorgeousone.tangledmaze.command.SolveMazeCommand;
@@ -38,6 +39,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.logging.Logger;
+
 public final class TangledMazePlugin extends JavaPlugin {
 
 	private static final int resourceId = 59284;
@@ -65,6 +68,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 		buildHandler = new BuildHandler(this, sessionHandler);
 		uiHandler = new UiHandler(toolHandler);
 
+		hookLootChestPlugin();
 		registerListeners();
 		registerCommands();
 
@@ -132,11 +136,12 @@ public final class TangledMazePlugin extends JavaPlugin {
 		mazeCmd.addChild(new CutClipCommand(sessionHandler, toolHandler));
 		mazeCmd.addChild(new UndoCommand(sessionHandler));
 		mazeCmd.addChild(new SettingsCommand(sessionHandler));
-		mazeCmd.addChild(new BuildMazeCommand(sessionHandler, buildHandler, toolHandler));
+		mazeCmd.addChild(new BuildMazeCommand(sessionHandler, buildHandler, toolHandler, lootHandler));
 		mazeCmd.addChild(new UnbuildMazeCommand(sessionHandler, buildHandler));
 		mazeCmd.addChild(new TeleportCommand(sessionHandler, renderHandler));
 		mazeCmd.addChild(new SolveMazeCommand(sessionHandler, renderHandler));
 
+		mazeCmd.addChild(new SpawnLootCommand(sessionHandler, lootHandler, lootHandler != null));
 		CommandHandler cmdHandler = new CommandHandler(this);
 		cmdHandler.registerCommand(mazeCmd);
 	}
@@ -162,12 +167,14 @@ public final class TangledMazePlugin extends JavaPlugin {
 		new UpdateCheck(this, resourceId, resourceName, updateInfoUrl).run();
 	}
 
-	private void hookLootChest() {
+	private void hookLootChestPlugin() {
+		Logger logger = Bukkit.getLogger();
 		if (Bukkit.getServer().getPluginManager().getPlugin("LootChest") != null) {
 			Main lootChestPlugin = Main.getInstance();
-			lootHandler = new LootHandler(lootChestPlugin);
+			lootHandler = new LootHandler(sessionHandler, lootChestPlugin);
+			logger.info("LootChest detected");
 		} else {
-			
+			logger.info("LootChest not found");
 		}
 	}
 }

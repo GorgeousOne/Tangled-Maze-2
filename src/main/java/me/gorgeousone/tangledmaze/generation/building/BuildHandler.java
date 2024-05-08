@@ -40,8 +40,7 @@ public class BuildHandler {
 		if (mazePart != MazePart.WALLS && !sessionHandler.isBuilt(maze)) {
 			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
 		}
-		sessionHandler.backupMaze(maze, settings);
-		MazeBackup backup = sessionHandler.getBackup(maze);
+		MazeBackup backup = sessionHandler.backupMaze(maze, settings);
 		backup.createMazeMapIfAbsent(settings);
 		MazeMap mazeMap = backup.getMazeMap();
 		

@@ -56,35 +56,35 @@ public class Vec2 implements Comparable<Vec2> {
 	public Vec2 sub(Vec2 other) {
 		return sub(other.x, other.z);
 	}
-	
+
 	public Vec2 sub(int dx, int dz) {
 		x -= dx;
 		z -= dz;
 		return this;
 	}
-	
+
 	public Location toLocation(World world, int y) {
 		return new Location(world, x, y, z);
 	}
-	
+
 	public Vec2 mult(int scalar) {
 		x *= scalar;
 		z *= scalar;
 		return this;
 	}
-	
+
 	public Vec2 floorDiv(int scalar) {
 		x = Math.floorDiv(x, scalar);
 		z = Math.floorDiv(z, scalar);
 		return this;
 	}
-	
+
 	public Vec2 floorMod(int scalar) {
 		x = Math.floorMod(x, scalar);
 		z = Math.floorMod(z, scalar);
 		return this;
 	}
-	
+
 	@Override
 	public int compareTo(Vec2 vec) {
 		int deltaX = Double.compare(getX(), vec.getX());
@@ -109,7 +109,7 @@ public class Vec2 implements Comparable<Vec2> {
 	public Vec2 clone() {
 		return new Vec2(x, z);
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -122,12 +122,12 @@ public class Vec2 implements Comparable<Vec2> {
 		return x == vec.x &&
 		       z == vec.z;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(x, z);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "[" + "x=" + x + ", z=" + z + ']';
