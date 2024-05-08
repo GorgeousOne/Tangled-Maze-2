@@ -208,8 +208,7 @@ public class ClickListener implements Listener {
 		updatedBlocks.add(new Vec2(clickedBlock));
 
 		for (Direction dir : Direction.CARDINALS) {
-			Vec2 facing = dir.getVec2();
-			updatedBlocks.add(new Vec2(clickedBlock.getRelative(facing.getX(), 0, facing.getZ())));
+			updatedBlocks.add(new Vec2(clickedBlock.getRelative(dir.getX(), 0, dir.getZ())));
 		}
 		new BukkitRunnable() {
 			@Override

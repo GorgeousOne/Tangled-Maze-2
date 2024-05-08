@@ -11,7 +11,7 @@ public enum MazeProperty {
 	PATH_WIDTH(1, 64),
 	CURLINESS(3, 10),
 	ROOF_WIDTH(1, 64),
-	ROOM_COUNT(3, 100),
+	ROOM_COUNT(3, 100, 0),
 	ROOM_SIZE(15, 32, 3);
 	
 	private final int maxVal;

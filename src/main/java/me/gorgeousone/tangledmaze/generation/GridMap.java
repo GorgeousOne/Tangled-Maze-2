@@ -17,26 +17,25 @@ import java.util.List;
  * (junctions: path width x path width, paths: wall x path / path x wall, walls: wall x wall).
  */
 public class GridMap {
-	
+
 	private final Vec2 mapMin;
 	private final Vec2 mapMax;
 	private final int pathWidth;
 	private final int wallWidth;
 	private final int gridMeshSize;
-	
+
 	private Vec2 gridMin;
 	private Vec2 gridOffset;
 	private GridCell[][] gridCells;
-	
+
 	private PathType[][] pathTypes;
 	private int[][] floorYs;
 	private int[][] wallYs;
-	
+
 	private final List<ExitSegment> exits;
 	private final List<GridCell> pathStarts;
 	private final List<Room> rooms;
 
-	
 	public GridMap(Vec2 mapMin,
 	               Vec2 mapMax,
 	               int pathWidth,
@@ -50,23 +49,23 @@ public class GridMap {
 		pathStarts = new ArrayList<>();
 		rooms = new ArrayList<>();
 	}
-	
+
 	public int getWidth() {
 		return gridCells.length;
 	}
-	
+
 	public int getHeight() {
 		return gridCells[0].length;
 	}
-	
+
 	public List<ExitSegment> getExits() {
 		return new ArrayList<>(exits);
 	}
-	
+
 	public List<GridCell> getPathStarts() {
 		return pathStarts;
 	}
-	
+
 	/**
 	 * Returns the grid coordinates of the grid cell that is located at this world location
 	 */
@@ -109,7 +108,7 @@ public class GridMap {
 		}
 		return null;
 	}
-	
+
 	public void setPathType(Vec2 gridPos, PathType type) {
 		setPathType(gridPos.getX(), gridPos.getZ(), type);
 	}
@@ -127,11 +126,11 @@ public class GridMap {
 		}
 		return floorYs[gridPos.getX()][gridPos.getZ()];
 	}
-	
+
 	public void setFloorY(int gridX, int gridZ, int y) {
 		floorYs[gridX][gridZ] = y;
 	}
-	
+
 	/**
 	 * Returns the collective y height for all wall columns in this cell
 	 * Returns 0 if not set
@@ -142,30 +141,27 @@ public class GridMap {
 		}
 		return wallYs[gridPos.getX()][gridPos.getZ()];
 	}
-	
+
 	/**
 	 * Sets the top y coordinate of a grid...
-	 * @param gridX
-	 * @param gridZ
-	 * @param y
 	 */
 	public void setWallY(int gridX, int gridZ, int y) {
 		wallYs[gridX][gridZ] = y;
 	}
-	
+
 	public void setPathType(int gridX, int gridZ, PathType type) {
 		pathTypes[gridX][gridZ] = type;
 	}
-	
+
 	public boolean contains(Vec2 gridPos) {
 		return contains(gridPos.getX(), gridPos.getZ());
 	}
-	
+
 	public boolean contains(int gridX, int gridZ) {
 		return gridX >= 0 && gridX < getWidth() &&
-		       gridZ >= 0 && gridZ < getHeight();
+				gridZ >= 0 && gridZ < getHeight();
 	}
-	
+
 	/**
 	 * Sets the entrance segment of the grid map and calculates all the grid properties based on that
 	 */
@@ -174,15 +170,15 @@ public class GridMap {
 		ExitSegment entrance = new ExitSegment(entranceStart, facing, pathWidth);
 		entrance.extend(wallWidth);
 		exits.add(entrance);
-		
+
 		Vec2 entranceEnd = entrance.getEnd();
 		calculateGridProperties(entranceEnd);
-		
+
 		Vec2 entranceGridPos = getGridPos(entranceEnd);
 		setPathType(entranceGridPos, PathType.PAVED);
 		pathStarts.add(getCell(entranceGridPos));
 	}
-	
+
 	/**
 	 * Creates an exit segment extending to the next grid cell.
 	 * Then optionally creates a left or right turn in order to perfectly end on a path conjunction
@@ -191,11 +187,11 @@ public class GridMap {
 		Vec2 exitStart = calculateExitStart(exitBlockLoc, facing, pathWidth);
 		ExitSegment exit = new ExitSegment(exitStart, facing, pathWidth);
 		exit.extend(getDistToPathGrid(exit.getEnd(), facing, false));
-		
+
 		Vec2 exitEnd = exit.getEnd();
 		Direction left = facing.getLeft();
 		Direction right = facing.getRight();
-		
+
 		ExitSegment leftTurn = new ExitSegment(exitEnd, left, pathWidth);
 		ExitSegment rightTurn = new ExitSegment(exitEnd, right, pathWidth);
 		leftTurn.extend(getDistToPathGrid(leftTurn.getEnd(), left, true));
@@ -203,17 +199,17 @@ public class GridMap {
 
 		boolean leftIsFree = Arrays.asList(PathType.PAVED, PathType.FREE).contains(getPathType(getGridPos(leftTurn.getEnd())));
 		boolean rightIsFree = Arrays.asList(PathType.PAVED, PathType.FREE).contains(getPathType(getGridPos(leftTurn.getEnd())));
-		
+
 		if (!leftIsFree && !rightIsFree) {
 			return;
 		}
 		ExitSegment chosenTurn;
-		
+
 		if (leftIsFree && rightIsFree) {
 			boolean chooseLeft = leftTurn.length() > rightTurn.length();
 			chosenTurn = chooseLeft ? leftTurn : rightTurn;
 			ExitSegment otherTurn = chooseLeft ? rightTurn : leftTurn;
-			
+
 			//places a blocked path at tje opposite side of chosen turn
 			//to prevent path generator to connect a second path to the exit
 			if (otherTurn.length() > otherTurn.width() && otherTurn.length() < 2 * otherTurn.width() + 1) {
@@ -245,14 +241,14 @@ public class GridMap {
 	public List<Room> getRooms() {
 		return new ArrayList<>(rooms);
 	}
-	
+
 	/**
 	 * Calculates the location of the exit segment start so that any exits bigger than 1 block are always
 	 * aligned towards the right of the selected exit block, independent of faced direction.
 	 */
 	private Vec2 calculateExitStart(Vec2 exitBlockLoc, Direction facing, int exitWidth) {
 		Vec2 exitStart = exitBlockLoc.clone();
-		
+
 		if (!facing.isPositive()) {
 			exitStart.sub(0, exitWidth - 1);
 		}
@@ -261,9 +257,10 @@ public class GridMap {
 		}
 		return exitStart;
 	}
-	
+
 	/**
 	 * Calculates the distance in blocks that a secondary exit has to be extended by for it to reach the nearest grid path
+	 *
 	 * @param exitLoc   current end location of the exit
 	 * @param facing    direction to extend towards
 	 * @param allowZero set false if returned distance must be greater than 0
@@ -271,7 +268,7 @@ public class GridMap {
 	private int getDistToPathGrid(Vec2 exitLoc, Direction facing, boolean allowZero) {
 		int gridShift;
 		int exitCoord;
-		
+
 		if (facing.isCollinearX()) {
 			gridShift = gridOffset.getX();
 			exitCoord = exitLoc.getX();
@@ -281,7 +278,7 @@ public class GridMap {
 		}
 		int gridMeshSize = pathWidth + wallWidth;
 		int gridDist = Math.floorMod(exitCoord - gridShift, gridMeshSize);
-		
+
 		if (facing.isPositive()) {
 			gridDist = (gridMeshSize - gridDist) % gridMeshSize;
 		}
@@ -290,7 +287,7 @@ public class GridMap {
 		}
 		return gridDist;
 	}
-	
+
 	/**
 	 * Calculates position and count of rows and columns of the path grid
 	 */
@@ -298,22 +295,22 @@ public class GridMap {
 		gridOffset = new Vec2(
 				pathStart.getX() % gridMeshSize,
 				pathStart.getZ() % gridMeshSize);
-		
+
 		gridMin = mapMin.clone().sub(gridOffset);
 		gridMin.floorDiv(gridMeshSize).mult(gridMeshSize);
 		gridMin.add(gridOffset);
-		
+
 		int gridWidth = 2 * (int) Math.ceil(1f * (mapMax.getX() - gridMin.getX()) / gridMeshSize);
 		int gridHeight = 2 * (int) Math.ceil(1f * (mapMax.getZ() - gridMin.getZ()) / gridMeshSize);
 		createGridCells(gridWidth, gridHeight);
 	}
-	
+
 	private void createGridCells(int gridWidth, int gridHeight) {
 		gridCells = new GridCell[gridWidth][gridHeight];
 		pathTypes = new PathType[gridWidth][gridHeight];
 		floorYs = new int[gridWidth][gridHeight];
 		wallYs = new int[gridWidth][gridHeight];
-		
+
 		for (int gridX = 0; gridX < getWidth(); ++gridX) {
 			for (int gridZ = 0; gridZ < getHeight(); ++gridZ) {
 				gridCells[gridX][gridZ] = createGridSegment(gridX, gridZ);
@@ -321,10 +318,10 @@ public class GridMap {
 			}
 		}
 	}
-	
+
 	private GridCell createGridSegment(int gridX, int gridZ) {
 		Vec2 segmentStart = gridMin.clone();
-		
+
 		segmentStart.add(
 				(gridX / 2) * gridMeshSize,
 				(gridZ / 2) * gridMeshSize);
@@ -334,7 +331,31 @@ public class GridMap {
 		Vec2 segmentSize = new Vec2(
 				gridX % 2 == 0 ? pathWidth : wallWidth,
 				gridZ % 2 == 0 ? pathWidth : wallWidth);
-		
+
 		return new GridCell(segmentStart, segmentSize, new Vec2(gridX, gridZ));
+	}
+
+	public List<Direction> getWallDirs(GridCell cell) {
+		Vec2 gridPos = cell.getGridPos();
+		List<Direction> wallDirs = new ArrayList<>();
+
+		for (Direction dir : Direction.CARDINALS) {
+			if (getPathType(gridPos.clone().add(dir.getVec2())) != PathType.PAVED) {
+				wallDirs.add(dir);
+			}
+		}
+		return wallDirs;
+	}
+
+	public boolean isDeadEnd(int x, int z) {
+		int pathNeighbors = 0;
+
+		for (Direction dir : Direction.CARDINALS) {
+			PathType pathType = getPathType(x + dir.getX(), z + dir.getZ());
+			if (pathType == PathType.PAVED || pathType == PathType.ROOM) {
+				++pathNeighbors;
+			}
+		}
+		return pathNeighbors == 1;
 	}
 }

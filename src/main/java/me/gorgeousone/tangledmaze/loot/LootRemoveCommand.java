@@ -39,6 +39,7 @@ public class LootRemoveCommand extends BaseCommand {
 			return;
 		}
 		int removedChestCount = lootHandler.removeChests(maze);
+		//TODO jsonfy
 		sender.sendMessage("remove " + removedChestCount + " chests");
 	}
 }
