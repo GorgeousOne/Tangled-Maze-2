@@ -27,6 +27,7 @@ infos:
     maze-wand-usage: Click two blocks with the and use /maze start to continue.
     tool-switch: Switched to %tool%.
     setting-change: Set %setting% to %value%.
+    setting-info: '%setting% is currently set to %value%.'
     maze-not-built: Please build the maze first (without -roof or -floor flag).
     maze-not-editable: Cannot perform this action while your maze is built. /maze unbuild
     maze-build: Built your maze part with %count% blocks.

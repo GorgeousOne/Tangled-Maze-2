@@ -35,6 +35,7 @@ public class Message {
 			INFO_MAZE_WAND_USAGE,
 			INFO_PLUGIN_RELOAD,
 			INFO_SETTING_CHANGE,
+			INFO_SETTING_INFO,
 			INFO_TOOL_SWITCH,
 			ERROR_CLIPBOARD_MISSING,
 			ERROR_EXIT_MISSING,
@@ -99,6 +100,7 @@ public class Message {
 		INFO_MAZE_WAND_USAGE = createInfo("maze-wand-usage", infos);
 		INFO_TOOL_SWITCH = createInfo("tool-switch", infos);
 		INFO_SETTING_CHANGE = createInfo("setting-change", infos);
+		INFO_SETTING_INFO = createInfo("setting-info", infos);
 		INFO_MAZE_NOT_BUILT = createInfo("maze-not-built", infos);
 		INFO_MAZE_NOT_EDITABLE = createInfo("maze-not-editable", infos);
 		INFO_MAZE_BUILD = createInfo("maze-build", infos);
