@@ -86,8 +86,9 @@ public class SessionHandler {
 		return mazeBackups.containsKey(maze) && mazeBackups.get(maze).getMazeMap() != null;
 	}
 	
-	public void backupMaze(Clip maze, MazeSettings settings) {
-		mazeBackups.computeIfAbsent(maze, backup -> new MazeBackup(maze, settings));
+	public MazeBackup backupMaze(Clip maze, MazeSettings settings) {
+		return mazeBackups.computeIfAbsent(maze, backup -> new MazeBackup(maze, settings));
+
 	}
 	
 	public MazeBackup getBackup(Clip maze) {

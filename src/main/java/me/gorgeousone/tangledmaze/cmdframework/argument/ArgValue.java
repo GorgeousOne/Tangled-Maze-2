@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 
 public class ArgValue {
 	
-	private static final String exceptionText = ChatColor.RED + "'%value%' is not a %type%.";
+	private static final String EXCEPTION_TEXT = ChatColor.RED + "'%value%' is not a %type%.";
 	
 	private int intVal;
 	private double decimalVal;
@@ -51,7 +51,7 @@ public class ArgValue {
 					break;
 			}
 		} catch (Exception e) {
-			throw new IllegalArgumentException(exceptionText.replace("%value%", value).replace("%type%", type.simpleName()));
+			throw new IllegalArgumentException(EXCEPTION_TEXT.replace("%value%", value).replace("%type%", type.simpleName()));
 		}
 	}
 	

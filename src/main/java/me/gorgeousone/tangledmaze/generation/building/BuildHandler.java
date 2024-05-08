@@ -40,8 +40,7 @@ public class BuildHandler {
 		if (mazePart != MazePart.WALLS && !sessionHandler.isBuilt(maze)) {
 			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
 		}
-		sessionHandler.backupMaze(maze, settings);
-		MazeBackup backup = sessionHandler.getBackup(maze);
+		MazeBackup backup = sessionHandler.backupMaze(maze, settings);
 		backup.createMazeMapIfAbsent(settings);
 		MazeMap mazeMap = backup.getMazeMap();
 		
@@ -90,7 +89,7 @@ public class BuildHandler {
 				backup.removeAllMazeParts();
 				backup.getMaze().updateHeights();
 				backup.getMaze().setEditable(true);
-				Bukkit.getPluginManager().callEvent(new MazeUnbuildEvent(maze));
+				Bukkit.getPluginManager().callEvent(new MazeUnbuildEvent(maze, mazePart));
 				callback.run();
 			}).runTaskTimer(plugin, 0, 1);
 			return;
@@ -101,7 +100,7 @@ public class BuildHandler {
 		}
 		new BlockResetter(plugin, backup.getBlocks(mazePart), ConfigSettings.BLOCKS_PLACED_PER_TICK, () -> {
 			backup.removeMazePart(mazePart);
-			Bukkit.getPluginManager().callEvent(new MazeUnbuildEvent(maze));
+			Bukkit.getPluginManager().callEvent(new MazeUnbuildEvent(maze, mazePart));
 			callback.run();
 		}).runTaskTimer(plugin, 0, 1);
 	}

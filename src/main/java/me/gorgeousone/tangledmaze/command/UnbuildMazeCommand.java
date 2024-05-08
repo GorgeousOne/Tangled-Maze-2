@@ -42,6 +42,10 @@ public class UnbuildMazeCommand extends ArgCommand {
 			Message.ERROR_MAZE_MISSING.sendTo(sender);
 			return;
 		}
+		if (!sessionHandler.isBuilt(maze)) {
+			Message.INFO_MAZE_NOT_BUILT.sendTo(sender);
+			return;
+		}
 		MazePart mazePart = MazePart.WALLS;
 		
 		if (usedFlags.contains("floor")) {

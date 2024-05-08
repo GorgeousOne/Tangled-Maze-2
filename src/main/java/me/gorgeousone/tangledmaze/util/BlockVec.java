@@ -45,7 +45,7 @@ public class BlockVec {
 		this.z = z;
 	}
 	
-	public Location toLoc(World world) {
+	public Location toLocation(World world) {
 		return new Location(world, x, y, z);
 	}
 	

@@ -118,7 +118,7 @@ public class Message {
 		ERROR_INVALID_BLOCK_PROPERTY = createError("invalid-block-property", errors);
 	}
 
-	public static Text createHelpText(String header, ConfigurationSection section, String path) {
+	private static Text createHelpText(String header, ConfigurationSection section, String path) {
 		return new Text(ChatColor.DARK_GREEN + header + "\\n" + ChatColor.GREEN + section.get(path));
 	}
 
@@ -126,7 +126,7 @@ public class Message {
 		return new Text(Constants.prefix + section.getString(path));
 	}
 
-	public static Text createError(String path, ConfigurationSection section) {
+	private static Text createError(String path, ConfigurationSection section) {
 		return new Text(ChatColor.RED + section.getString(path));
 	}
 }
