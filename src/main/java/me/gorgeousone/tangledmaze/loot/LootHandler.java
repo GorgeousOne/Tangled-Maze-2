@@ -10,7 +10,6 @@ import me.gorgeousone.tangledmaze.util.Vec2;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockLocType;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import me.gorgeousone.tangledmaze.util.text.TextException;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -58,9 +57,9 @@ public class LootHandler {
 			Direction dir = wallDirs.get(wall);
 			removeNeighbors(walls, wall);
 			spawnLootChest(name, wall.toLocation(mazeMap.getWorld(), mazeMap.getY(wall) + 1), dir.getFace());
-
 		}
-		Bukkit.broadcastMessage("done");
+		//write all chests to the config and save the file
+		lootChestPlugin.getConfigFiles().saveData();
 		return null;
 	}
 
@@ -85,15 +84,15 @@ public class LootHandler {
 	}
 
 	private void spawnLootChest(String chestPrefabName, Location location, BlockFace facing) {
-		Bukkit.broadcastMessage("spawn " + chestPrefabName + " at " + location.toVector());
-
 		if (!chestExists(chestPrefabName)) {
 			throw new IllegalArgumentException("Could not find loot chest \"" + chestPrefabName + "\".");
 		}
 		Block chestBlock = placeChestBlock(location, facing);
 		String chestName = String.format("zz-%s-%s", chestPrefabName, UUID.randomUUID());
 		Lootchest prefab = lootChestPlugin.getLootChest().get(chestPrefabName);
-		createChestFromPrefab(chestName, chestBlock, prefab);
+		Lootchest newChest = new Lootchest(chestBlock, chestName);
+		lootChestPlugin.getLootChest().put(chestName, newChest);
+		copyChestPrefab(newChest, prefab);
 	}
 
 	private Block placeChestBlock(Location location, BlockFace facing) {
@@ -105,10 +104,27 @@ public class LootHandler {
 		return location.getBlock();
 	}
 
-	private Lootchest createChestFromPrefab(String name, Block chestBlock, Lootchest prefab) {
-		Lootchest newChest = new Lootchest(chestBlock, name);
-		lootChestPlugin.getLootChest().put(name, newChest);
-		lootChestPlugin.getUtils().copychest(prefab, newChest);
-		return newChest;
+	/**
+	 * Function to mimic LootChest's Utils#copychest, only skipping a few things to improve performance
+	 */
+	private void copyChestPrefab(Lootchest newChest, Lootchest prefab) {
+		//creates the most lag
+		//newChest.setHolo(prefab.getHolo());
+
+		for (int i = 0; i < prefab.getChances().length; ++i) {
+			newChest.setChance(i, prefab.getChances()[i]);
+		}
+		//disable fall animation (also creates lag idk)
+		newChest.setFall(false);
+
+		newChest.getInv().setContents(prefab.getInv().getContents());
+		newChest.setTime(prefab.getTime());
+		newChest.setParticle(prefab.getParticle());
+		newChest.setRespawn_cmd(prefab.getRespawn_cmd());
+		newChest.setRespawn_natural(prefab.getRespawn_natural());
+		newChest.setTake_msg(prefab.getTake_msg());
+		newChest.setRadius(prefab.getRadius());
+		newChest.spawn(true);
+		//skip saving config file, save after all chests are spawned
 	}
 }
