@@ -14,13 +14,13 @@ public class Room {
 
 	private final Vec2 gridMin;
 	private final Vec2 gridMax;
-	private final Set<Vec2> roomCells;
+	private final Set<Vec2> pathCells;
 	private final Set<Vec2> borderCells;
 
 	public Room(Vec2 gridPos, Vec2 gridSize) {
 		this.gridMin = gridPos.clone();
 		this.gridMax = gridPos.clone().add(gridSize);
-		roomCells = new HashSet<>();
+		pathCells = new HashSet<>();
 		borderCells = new HashSet<>();
 		listCells();
 	}
@@ -29,7 +29,7 @@ public class Room {
 		for (int x = gridMin.getX(); x < gridMax.getX(); x += 2) {
 			for (int z = gridMin.getZ(); z < gridMax.getZ(); z += 2) {
 				Vec2 gridPos = new Vec2(x, z);
-				roomCells.add(gridPos);
+				pathCells.add(gridPos);
 
 				if (x == gridMin.getX() || x == gridMax.getX() - 1 ||
 					z == gridMin.getZ() || z == gridMax.getZ()- 1) {
@@ -37,6 +37,10 @@ public class Room {
 				}
 			}
 		}
+	}
+
+	public Set<Vec2> getPathCells() {
+		return pathCells;
 	}
 
 	public Vec2 getGridMin() {
@@ -57,7 +61,8 @@ public class Room {
 	public void floodFillRoom(GridCell startCell, GridMap gridMap) {
 		PathTree pathTree = startCell.getTree();
 		List<Vec2> openEnds = new ArrayList<>();
-		Set<Vec2> unvisitedCells = new HashSet<>(roomCells);
+		Set<Vec2> unvisitedCells = new HashSet<>(pathCells);
+		unvisitedCells.remove(startCell.getGridPos());
 		openEnds.add(startCell.getGridPos());
 
 		while (!unvisitedCells.isEmpty() && !openEnds.isEmpty()) {
@@ -66,16 +71,17 @@ public class Room {
 
 			for (Direction facing : Direction.CARDINALS) {
 				Vec2 facingVec = facing.getVec2();
-				Vec2 newPos1 = gridPos.add(facingVec);
+				Vec2 newPos1 = gridPos.clone().add(facingVec);
 				Vec2 newPos2 = newPos1.clone().add(facingVec);
 
-				if (unvisitedCells.contains(newPos2)) {
-					GridCell roomCell = gridMap.getCell(newPos1);
-					pathTree.addSegment(roomCell, cell, false, false);
-					pathTree.addSegment(gridMap.getCell(newPos2), roomCell, borderCells.contains(newPos2), false);
-					openEnds.add(newPos2);
-					unvisitedCells.remove(newPos2);
+				if (!unvisitedCells.contains(newPos2)) {
+					continue;
 				}
+				GridCell roomCell = gridMap.getCell(newPos1);
+				pathTree.addSegment(roomCell, cell, false, false);
+				pathTree.addSegment(gridMap.getCell(newPos2), roomCell, borderCells.contains(newPos2), false);
+				openEnds.add(newPos2);
+				unvisitedCells.remove(newPos2);
 			}
 		}
 		markRoom(gridMap, PathType.PAVED);

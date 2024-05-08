@@ -53,10 +53,10 @@ public class PathTree {
 		cell.setTree(this);
 		cell.setParent(parent);
 		cells.add(cell);
-		
+
 		int exitDist = getExitDist(cell);
 		maxExitDist = Math.max(exitDist, maxExitDist);
-		
+
 		if (canBeJunction && cell.gridX() % 2 == 0 && cell.gridZ() % 2 == 0) {
 			junctions.add(cell);
 			openEnds.add(0, cell);
@@ -83,6 +83,13 @@ public class PathTree {
 	public int getExitDist(GridCell cell) {
 		int dist = 0;
 		while (cell.hasParent()) {
+			if (dist > 100000) {
+				throw new IllegalStateException(
+						"Exit distance exceeded infinite loop limit near:" +
+								"\ncell " + cell +
+								"\nparent cell " + cell.getParent() +
+								"\ngrandparent cell " + cell.getParent().getParent());
+			}
 			++dist;
 			cell = cell.getParent();
 		}
@@ -112,7 +119,8 @@ public class PathTree {
 	}
 	
 	/**
-	 *
+	 * Upon merging two trees, this method updates the parents of cells around the merge point
+	 * to keep the distance to the nearest exit of the tree as small as possible.
 	 */
 	private void balanceTree(GridCell seg1, GridCell seg2) {
 		int exitDist1 = getExitDist(seg1);

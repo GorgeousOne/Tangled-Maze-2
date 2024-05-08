@@ -21,7 +21,7 @@ public class RoomGen {
 		int wallWidth = settings.getValue(MazeProperty.WALL_WIDTH);
 
 		int cellsMin = calcCellsMin(7, pathWidth, wallWidth);
-		int cellsMax = settings.getValue(MazeProperty.ROOM_SIZE);
+		int cellsMax = Math.max(cellsMin, settings.getValue(MazeProperty.ROOM_SIZE));
 
 		//list free conjunctions to start at
 		Set<Vec2> freeCells = new HashSet<>();
@@ -40,11 +40,14 @@ public class RoomGen {
 				}
 			}
 		}
+		if (freeCells.isEmpty()) {
+			return;
+		}
 		int spawnedRooms = 0;
 		int spawnAttempts = 1000;
 		List<Vec2> freeCellsList = new ArrayList<>(freeCells);
 
-		while (spawnedRooms < roomCount && spawnAttempts > 0) {
+		while (!freeCellsList.isEmpty() && spawnedRooms < roomCount && spawnAttempts > 0) {
 			--spawnAttempts;
 			Room room = spawnRoom(gridMap, freeCellsList, cellsMin, cellsMax);
 
@@ -88,11 +91,13 @@ public class RoomGen {
 		}
 		Room room = new Room(rndCell, cellSize);
 		room.markRoom(gridMap, PathType.ROOM);
+		freeCells.removeAll(room.getPathCells());
 		return room;
 	}
 
 	private static int rndRoomSize(int cellsMin, int cellsMax) {
-		return cellsMin + RANDOM.nextInt((cellsMax - cellsMin) / 2) * 2;
+		int twoStep = (cellsMax - cellsMin) / 2;
+		return cellsMin + RANDOM.nextInt( twoStep + 1) * 2;
 	}
 
 	/**

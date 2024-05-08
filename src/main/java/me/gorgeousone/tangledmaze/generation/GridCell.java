@@ -132,10 +132,10 @@ public class GridCell {
 	
 	@Override
 	public String toString() {
-		return "GridCell{" +
-		       "gridPos=" + gridPos +
+		return "[" +
+		       "grid=" + gridPos +
 		       ", min=" + min +
 		       ", max=" + max +
-		       '}';
+		       ']';
 	}
 }
