@@ -11,7 +11,6 @@ import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.MathUtil;
 import me.gorgeousone.tangledmaze.util.text.Placeholder;
 import me.gorgeousone.tangledmaze.util.text.TextException;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.HashMap;
@@ -21,8 +20,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public class LootSpawnCommand extends ArgCommand {
-
-	private static final String EXCEPTION_TEXT = ChatColor.RED + "'%type%' is can only be %value%.";
 
 	private final SessionHandler sessionHandler;
 	private final LootHandler lootHandler;
@@ -43,7 +40,7 @@ public class LootSpawnCommand extends ArgCommand {
 	@Override
 	protected void executeArgs(CommandSender sender, List<ArgValue> argValues, Set<String> usedFlags) {
 		if (!isAvailable) {
-			Message.ERROR_INVALID_SETTING.sendTo(sender, new Placeholder("setting", "LootChest plugin not loaded"));
+			Message.INFO_LOOT_PLUGIN_NOT_FOUND.sendTo(sender);
 			return;
 		}
 		UUID playerId = getSenderId(sender);
@@ -69,8 +66,7 @@ public class LootSpawnCommand extends ArgCommand {
 			e.sendTextTo(sender);
 			return;
 		}
-		//TODO jsonfy
-		sender.sendMessage("Placed " + addedChests.size() + " chests");
+		Message.INFO_LOOT_SPAWN.sendTo(sender, new Placeholder("count", addedChests.size()));
 	}
 
 	/**
@@ -100,10 +96,9 @@ public class LootSpawnCommand extends ArgCommand {
 				chestName = inputString;
 			}
 			if (!lootHandler.chestExists(chestName)) {
-				//TODO add lang message
-				throw new TextException(Message.ERROR_INVALID_BLOCK_NAME, new Placeholder("block", chestName + " (chest)"));
+				throw new TextException(Message.ERROR_LOOT_CHEST_NAME_NOT_FOUND, new Placeholder("name", chestName));
 			}
-			chestAmounts.put(chestName, count);
+			chestAmounts.put(chestName, Math.max(0, Math.min(100, count)));
 		}
 		return chestAmounts;
 	}

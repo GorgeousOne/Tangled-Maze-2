@@ -27,6 +27,10 @@ public class Message {
 			TOOL_TRI,
 			TOOL_EXIT,
 			TOOL_BRUSH,
+			INFO_LOOT_PLUGIN_NOT_FOUND,
+			INFO_LOOT_REMOVE,
+			INFO_LOOT_RESPAWN,
+			INFO_LOOT_SPAWN,
 			INFO_MAZE_BUILD,
 			INFO_MAZE_NOT_EDITABLE,
 			INFO_MAZE_NOT_BUILT,
@@ -40,6 +44,7 @@ public class Message {
 			ERROR_CLIPBOARD_MISSING,
 			ERROR_EXIT_MISSING,
 			ERROR_INVALID_BLOCK_NAME,
+			ERROR_LOOT_CHEST_NAME_NOT_FOUND,
 			ERROR_MISSING_PERMISSION,
 			ERROR_INVALID_BLOCK_PROPERTY,
 			ERROR_INVALID_SETTING,
@@ -106,16 +111,22 @@ public class Message {
 		INFO_MAZE_BUILD = createInfo("maze-build", infos);
 		INFO_MAZE_UNBUILD = createInfo("maze-unbuild", infos);
 		INFO_MAZE_SINGLE_EXIT = createInfo("maze-single-exit", infos);
+		INFO_LOOT_PLUGIN_NOT_FOUND = createInfo("loot-plugin-not-found", infos);
+		INFO_LOOT_SPAWN = createInfo("loot-spawn", infos);
+		INFO_LOOT_RESPAWN = createInfo("loot-respawn", infos);
+		INFO_LOOT_REMOVE = createInfo("loot-remove", infos);
 
 		ConfigurationSection errors = langConfig.getConfigurationSection("errors");
 		ERROR_MISSING_PERMISSION = createError("missing-permission", errors);
 		ERROR_CLIPBOARD_MISSING = createError("clipboard-missing", errors);
 		ERROR_MAZE_MISSING = createError("maze-missing", errors);
 		ERROR_EXIT_MISSING = createError("no-exit-missing", errors);
+		ERROR_LOOT_CHEST_NAME_NOT_FOUND = createError("loot-chest-name-not-found", errors);
 		ERROR_INVALID_TOOL = createError("invalid-tool", errors);
 		ERROR_INVALID_SETTING = createError("invalid-setting", errors);
 		ERROR_INVALID_BLOCK_NAME = createError("invalid-block-name", errors);
 		ERROR_INVALID_BLOCK_PROPERTY = createError("invalid-block-property", errors);
+
 	}
 
 	private static Text createHelpText(String header, ConfigurationSection section, String path) {

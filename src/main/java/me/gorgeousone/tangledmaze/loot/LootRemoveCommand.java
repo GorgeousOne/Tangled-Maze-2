@@ -28,7 +28,7 @@ public class LootRemoveCommand extends BaseCommand {
 	@Override
 	protected void onCommand(CommandSender sender, String[] args) {
 		if (!isAvailable) {
-			Message.ERROR_INVALID_SETTING.sendTo(sender, new Placeholder("setting", "LootChest plugin not loaded"));
+			Message.INFO_LOOT_PLUGIN_NOT_FOUND.sendTo(sender);
 			return;
 		}
 		UUID playerId = getSenderId(sender);
@@ -39,7 +39,6 @@ public class LootRemoveCommand extends BaseCommand {
 			return;
 		}
 		int removedChestCount = lootHandler.removeChests(maze);
-		//TODO jsonfy
-		sender.sendMessage("remove " + removedChestCount + " chests");
+		Message.INFO_LOOT_REMOVE.sendTo(sender, new Placeholder("count", removedChestCount));
 	}
 }

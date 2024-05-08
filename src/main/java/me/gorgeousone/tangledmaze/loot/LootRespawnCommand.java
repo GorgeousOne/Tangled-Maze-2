@@ -26,7 +26,7 @@ public class LootRespawnCommand extends BaseCommand {
 	@Override
 	protected void onCommand(CommandSender sender, String[] args) {
 		if (!isAvailable) {
-			Message.ERROR_INVALID_SETTING.sendTo(sender, new Placeholder("setting", "LootChest plugin not loaded"));
+			Message.INFO_LOOT_PLUGIN_NOT_FOUND.sendTo(sender);
 			return;
 		}
 		UUID playerId = getSenderId(sender);
@@ -42,5 +42,6 @@ public class LootRespawnCommand extends BaseCommand {
 		}
 		MazeBackup backup = sessionHandler.getBackup(maze);
 		lootHandler.respawnChests(backup.getLootLocations().keySet());
+		Message.INFO_LOOT_RESPAWN.sendTo(sender, new Placeholder("count", backup.getLootLocations().size()));
 	}
 }

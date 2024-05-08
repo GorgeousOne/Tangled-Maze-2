@@ -16,6 +16,7 @@ import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockLocType;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
+import me.gorgeousone.tangledmaze.util.text.Placeholder;
 import me.gorgeousone.tangledmaze.util.text.TextException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -186,9 +187,9 @@ public class LootHandler {
 		return chestList;
 	}
 
-	private String spawnLootChest(String chestPrefabName, Location location, BlockFace facing) {
+	private String spawnLootChest(String chestPrefabName, Location location, BlockFace facing) throws TextException {
 		if (!chestExists(chestPrefabName)) {
-			throw new IllegalArgumentException("Could not find loot chest \"" + chestPrefabName + "\".");
+			throw new TextException(Message.ERROR_LOOT_CHEST_NAME_NOT_FOUND, new Placeholder("name", chestPrefabName));
 		}
 		Block chestBlock = placeChestBlock(location, facing);
 		String chestName = String.format("zz-%s-%s", chestPrefabName, UUID.randomUUID());

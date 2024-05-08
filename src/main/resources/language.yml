@@ -33,6 +33,10 @@ infos:
     maze-build: Built your maze part with %count% blocks.
     no-maze-to-unbuild: No maze found to remove.
     maze-single-exit: This maze only has one exit. It can't be solved.
+    loot-plugin-not-found: 'Loot chests can not be used because LootChest plugin was not found. Download at:\nhttps://www.spigotmc.org/resources/lootchest.61564/'
+    loot-spawn: Spawned %count% loot chests.
+    loot-respawn: Respawned %count% loot chests.
+    loot-remove: Removed %count% loot chests.
 errors:
     missing-permission: You do not have the permission for this command.
     clipboard-missing: No clipboard selected with the maze wand. /maze wand
@@ -44,3 +48,4 @@ errors:
     invalid-block-property: 'Invalid property ''%property%'' for block ''%block%''.'
     invalid-block-property-value: 'Invalid value ''%value%'' for property ''%property%''.'
     missing-block-property-value: 'Missing property value: ''%property%=...''.'
+    loot-chest-name-not-found: 'Could not find loot chest with name ''%name%''.'
