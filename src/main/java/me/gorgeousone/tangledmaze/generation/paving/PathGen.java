@@ -143,10 +143,8 @@ public class PathGen {
 		if (gridMap.getPathType(extendedPathEnd) != PathType.ROOM) {
 			return wasExtended;
 		}
-		System.out.println("Ended in room at " + extendedPathEnd.getGridPos());
 		Room room = gridMap.findRoom(extendedPathEnd.getGridPos());
 		if (room != null) {
-			System.out.println("Yep lets fill that room");
 			room.floodFillRoom(extendedPathEnd, gridMap);
 		}
 		return wasExtended;
@@ -199,8 +197,6 @@ public class PathGen {
 
 		if (gridMap.getPathType(newPath2) != PathType.ROOM) {
 			gridMap.setPathType(newPath2, PathType.PAVED);
-		} else {
-			System.out.println("Encountered room " + newPath2.getGridPos());
 		}
 		PathTree tree = pathEnd.getTree();
 		tree.addSegment(newPath1, pathEnd);

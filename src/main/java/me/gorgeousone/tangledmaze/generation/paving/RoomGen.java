@@ -31,7 +31,7 @@ public class RoomGen {
 				Vec2 gridPos = new Vec2(gridX, gridZ);
 				if (gridMap.getPathType(gridX, gridZ) == PathType.FREE) {
 					freeCells.add(gridPos);
-				//remove cells that cant fit 2x2 room
+				//remove cells that cant fit a 3x3 room
 				} else {
 					//TODO adapt to cellsMin
 					freeCells.remove(gridPos.add(0, -2));

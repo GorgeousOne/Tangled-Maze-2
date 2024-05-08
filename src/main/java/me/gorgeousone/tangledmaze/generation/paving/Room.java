@@ -4,7 +4,6 @@ import me.gorgeousone.tangledmaze.generation.GridCell;
 import me.gorgeousone.tangledmaze.generation.GridMap;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
-import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,18 +15,26 @@ public class Room {
 	private final Vec2 gridMin;
 	private final Vec2 gridMax;
 	private final Set<Vec2> roomCells;
+	private final Set<Vec2> borderCells;
 
 	public Room(Vec2 gridPos, Vec2 gridSize) {
 		this.gridMin = gridPos.clone();
 		this.gridMax = gridPos.clone().add(gridSize);
 		roomCells = new HashSet<>();
+		borderCells = new HashSet<>();
 		listCells();
 	}
 
 	private void listCells() {
 		for (int x = gridMin.getX(); x < gridMax.getX(); x += 2) {
 			for (int z = gridMin.getZ(); z < gridMax.getZ(); z += 2) {
-				roomCells.add(new Vec2(x, z));
+				Vec2 gridPos = new Vec2(x, z);
+				roomCells.add(gridPos);
+
+				if (x == gridMin.getX() || x == gridMax.getX() - 1 ||
+					z == gridMin.getZ() || z == gridMax.getZ()- 1) {
+					borderCells.add(gridPos);
+				}
 			}
 		}
 	}
@@ -64,8 +71,8 @@ public class Room {
 
 				if (unvisitedCells.contains(newPos2)) {
 					GridCell roomCell = gridMap.getCell(newPos1);
-					pathTree.addSegment(roomCell, cell);
-					pathTree.addSegment(gridMap.getCell(newPos2), roomCell);
+					pathTree.addSegment(roomCell, cell, false, false);
+					pathTree.addSegment(gridMap.getCell(newPos2), roomCell, borderCells.contains(newPos2), false);
 					openEnds.add(newPos2);
 					unvisitedCells.remove(newPos2);
 				}
@@ -78,7 +85,6 @@ public class Room {
 	 * Mark the cells of a room as ROOM type on the grid map.
 	 */
 	public void markRoom(GridMap gridMap, PathType pathType) {
-		Bukkit.broadcastMessage("mark " + gridMin);
 		for (int x = gridMin.getX(); x < gridMax.getX(); ++x) {
 			for (int z = gridMin.getZ(); z < gridMax.getZ(); ++z) {
 				gridMap.setPathType(x, z, pathType);
