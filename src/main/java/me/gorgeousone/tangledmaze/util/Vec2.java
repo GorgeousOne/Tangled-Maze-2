@@ -95,6 +95,16 @@ public class Vec2 implements Comparable<Vec2> {
 		return Math.toDegrees(Math.atan2(-x, z));
 	}
 
+	public int sqrDist(Vec2 other) {
+		int dx = x - other.x;
+		int dz = z - other.z;
+		return dx * dx + dz * dz;
+	}
+
+	public int manhattanDist(Vec2 other) {
+		return Math.abs(x - other.x) + Math.abs(z - other.z);
+	}
+
 	@Override
 	public Vec2 clone() {
 		return new Vec2(x, z);

@@ -60,7 +60,7 @@ public class GridMap {
 	}
 	
 	public List<ExitSegment> getExits() {
-		return exits;
+		return new ArrayList<>(exits);
 	}
 	
 	public List<GridCell> getPathStarts() {

@@ -6,6 +6,7 @@ import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -61,11 +62,13 @@ public class Room {
 	public void floodFillRoom(GridCell startCell, GridMap gridMap) {
 		PathTree pathTree = startCell.getTree();
 		List<Vec2> openEnds = new ArrayList<>();
-		Set<Vec2> unvisitedCells = new HashSet<>(pathCells);
-		unvisitedCells.remove(startCell.getGridPos());
-		openEnds.add(startCell.getGridPos());
+		Set<Vec2> unvisitedCells = new HashSet<>(borderCells);
+		Vec2 startPos = startCell.getGridPos();
+		unvisitedCells.remove(startPos);
+		openEnds.add(startPos);
 
 		while (!unvisitedCells.isEmpty() && !openEnds.isEmpty()) {
+			openEnds.sort(Comparator.comparingInt(pos -> pos.sqrDist(startPos)));
 			Vec2 gridPos = openEnds.remove(0);
 			GridCell cell = gridMap.getCell(gridPos);
 
@@ -79,7 +82,7 @@ public class Room {
 				}
 				GridCell roomCell = gridMap.getCell(newPos1);
 				pathTree.addSegment(roomCell, cell, false, false);
-				pathTree.addSegment(gridMap.getCell(newPos2), roomCell, borderCells.contains(newPos2), false);
+				pathTree.addSegment(gridMap.getCell(newPos2), roomCell, true, false);
 				openEnds.add(newPos2);
 				unvisitedCells.remove(newPos2);
 			}
