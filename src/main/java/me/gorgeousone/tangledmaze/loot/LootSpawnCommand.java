@@ -140,11 +140,11 @@ public class LootSpawnCommand extends ArgCommand {
 		} else if (MathUtil.isInt(tabbedArg)) {
 			factorString = tabbedArg + "*";
 		} else {
-			return MaterialUtil.getBlockNames();
+			return chestNames;
 		}
 
-		for (String blockName : MaterialUtil.getBlockNames()) {
-			tabList.add(factorString + blockName);
+		for (String chestName : chestNames) {
+			tabList.add(factorString + chestName);
 		}
 		return tabList;
 	}

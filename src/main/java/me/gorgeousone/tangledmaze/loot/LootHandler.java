@@ -64,6 +64,12 @@ public class LootHandler {
 		}
 	}
 
+	public List<String> getChestNames() {
+		return lootChestPlugin.getLootChest().keySet().stream()
+				.filter(s -> !s.startsWith("zz"))
+				.collect(Collectors.toList());
+	}
+
 	public boolean chestExists(String chestName) {
 		return lootChestPlugin.getLootChest().containsKey(chestName);
 	}
