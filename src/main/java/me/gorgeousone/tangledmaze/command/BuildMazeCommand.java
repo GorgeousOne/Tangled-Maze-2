@@ -57,14 +57,9 @@ public class BuildMazeCommand extends ArgCommand {
 			return;
 		}
 		MazeSettings settings = sessionHandler.getSettings(playerId);
-		MazePart mazePart = MazePart.WALLS;
-		
-		if (usedFlags.contains("floor")) {
-			mazePart = MazePart.FLOOR;
-		} else if (usedFlags.contains("roof")) {
-			mazePart = MazePart.ROOF;
-		}
-		if (argValues.size() != 0) {
+		MazePart mazePart = getMazePart(usedFlags);
+
+		if (!argValues.isEmpty()) {
 			try {
 				BlockPalette palette = deserializeBlockPalette(argValues);
 				settings.setPalette(mazePart, palette);
@@ -86,7 +81,18 @@ public class BuildMazeCommand extends ArgCommand {
 		maze.setEditable(false);
 		toolHandler.resetClipTool(playerId);
 	}
-	
+
+	private MazePart getMazePart(Set<String> usedFlags) {
+		if (usedFlags.contains("floor")) {
+			return MazePart.FLOOR;
+		} else if (usedFlags.contains("roof")) {
+			return MazePart.ROOF;
+		} else if (usedFlags.contains("loot")) {
+			return MazePart.LOOT_CHESTS;
+		}
+		return MazePart.WALLS;
+	}
+
 	/**
 	 * Converts a list of material strings in the format "count(optional)*material:subId(optional)" into a BlockPalette.
 	 * @param stringArgs the list of strings provided by the command sender

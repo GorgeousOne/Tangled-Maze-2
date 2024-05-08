@@ -4,6 +4,7 @@ import me.gorgeousone.tangledmaze.generation.GridCell;
 import me.gorgeousone.tangledmaze.generation.GridMap;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
+import org.bukkit.block.BlockFace;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -27,13 +28,13 @@ public class Room {
 	}
 
 	private void listCells() {
-		for (int x = gridMin.getX(); x < gridMax.getX(); x += 2) {
-			for (int z = gridMin.getZ(); z < gridMax.getZ(); z += 2) {
+		for (int x = gridMin.getX(); x < gridMax.getX(); ++x) {
+			for (int z = gridMin.getZ(); z < gridMax.getZ(); ++x) {
 				Vec2 gridPos = new Vec2(x, z);
 				pathCells.add(gridPos);
 
 				if (x == gridMin.getX() || x == gridMax.getX() - 1 ||
-					z == gridMin.getZ() || z == gridMax.getZ()- 1) {
+					z == gridMin.getZ() || z == gridMax.getZ() - 1) {
 					borderCells.add(gridPos);
 				}
 			}
@@ -41,7 +42,11 @@ public class Room {
 	}
 
 	public Set<Vec2> getPathCells() {
-		return pathCells;
+		return new HashSet<>(pathCells);
+	}
+
+	public Set<Vec2> getBorderCells() {
+		return new HashSet<>(borderCells);
 	}
 
 	public Vec2 getGridMin() {
@@ -57,6 +62,19 @@ public class Room {
 		       gridPos.getZ() >= gridMin.getZ() &&
 		       gridPos.getX() < gridMax.getX() &&
 		       gridPos.getZ() < gridMax.getZ();
+	}
+
+	public Direction getWallFacing(Vec2 gridPos) {
+		if (gridPos.getZ() == gridMin.getZ()) {
+			return Direction.NORTH;
+		} else if (gridPos.getZ() == gridMax.getZ() - 1) {
+			return Direction.SOUTH;
+		} else if (gridPos.getX() == gridMin.getX()) {
+			return Direction.WEST;
+		} else if (gridPos.getX() == gridMax.getX() - 1) {
+			return Direction.EAST;
+		}
+		return null;
 	}
 
 	public void floodFillRoom(GridCell startCell, GridMap gridMap) {

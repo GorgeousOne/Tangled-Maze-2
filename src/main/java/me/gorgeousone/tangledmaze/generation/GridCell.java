@@ -111,6 +111,20 @@ public class GridCell {
 		}
 		return facings;
 	}
+
+	public Set<Vec2> getWalls(Direction direction) {
+		Vec2 iter = direction.isPositive() ? min.clone() : max.clone().add(-1, -1);
+		Vec2 step = direction.getVec2();
+		Vec2 cellSize = max.clone().sub(min);
+		int limit = direction.isCollinearX() ? cellSize.getX() : cellSize.getZ();
+		Set<Vec2> walls = new HashSet<>();
+
+		for (int i = 0; i < limit; ++i) {
+			walls.add(iter.clone());
+			iter.add(step);
+		}
+		return walls;
+	}
 	
 	@Override
 	public boolean equals(Object o) {
