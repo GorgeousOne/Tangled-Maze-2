@@ -86,14 +86,14 @@ public class LootHandler {
 
 	private void spawnLootChest(String chestPrefabName, Location location, BlockFace facing) {
 		Bukkit.broadcastMessage("spawn " + chestPrefabName + " at " + location.toVector());
+
 		if (!chestExists(chestPrefabName)) {
 			throw new IllegalArgumentException("Could not find loot chest \"" + chestPrefabName + "\".");
 		}
 		Block chestBlock = placeChestBlock(location, facing);
 		String chestName = String.format("zz-%s-%s", chestPrefabName, UUID.randomUUID());
-		Lootchest chest = registerLootChest(chestName, chestBlock);
 		Lootchest prefab = lootChestPlugin.getLootChest().get(chestPrefabName);
-		lootChestPlugin.getUtils().copychest(chest, prefab);
+		createChestFromPrefab(chestName, chestBlock, prefab);
 	}
 
 	private Block placeChestBlock(Location location, BlockFace facing) {
@@ -105,11 +105,10 @@ public class LootHandler {
 		return location.getBlock();
 	}
 
-	private Lootchest registerLootChest(String name, Block chest) {
-		Lootchest loot = new Lootchest(chest, name);
-		lootChestPlugin.getLootChest().put(name, loot);
-		lootChestPlugin.getLootChest().get(name).spawn(true);
-		lootChestPlugin.getUtils().updateData(Main.getInstance().getLootChest().get(name));
-		return loot;
+	private Lootchest createChestFromPrefab(String name, Block chestBlock, Lootchest prefab) {
+		Lootchest newChest = new Lootchest(chestBlock, name);
+		lootChestPlugin.getLootChest().put(name, newChest);
+		lootChestPlugin.getUtils().copychest(prefab, newChest);
+		return newChest;
 	}
 }
