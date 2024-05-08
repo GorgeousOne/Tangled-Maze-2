@@ -6,6 +6,7 @@ import me.gorgeousone.tangledmaze.cmdframework.command.BaseCommand;
 import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.maze.MazeBackup;
 import me.gorgeousone.tangledmaze.util.text.Placeholder;
+import me.gorgeousone.tangledmaze.util.text.TextException;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -37,14 +38,7 @@ public class LootRemoveCommand extends BaseCommand {
 			Message.ERROR_MAZE_MISSING.sendTo(sender);
 			return;
 		}
-		if (!sessionHandler.isBuilt(maze)) {
-			Message.INFO_MAZE_NOT_BUILT.sendTo(sender);
-			return;
-		}
-		MazeBackup backup = sessionHandler.getBackup(maze);
-		lootHandler.removeChests(backup.getLootLocations().keySet());
-		sender.sendMessage("removed " + backup.getLootLocations().size() + " chests");
-		backup.clearLootLocations();
-		Bukkit.getPluginManager().callEvent(new LootChangeEvent(maze));
+		int removedChestCount = lootHandler.removeChests(maze);
+		sender.sendMessage("remove " + removedChestCount + " chests");
 	}
 }

@@ -29,6 +29,7 @@ import me.gorgeousone.tangledmaze.listener.ClickListener;
 import me.gorgeousone.tangledmaze.listener.PlayerQuitListener;
 import me.gorgeousone.tangledmaze.listener.UiListener;
 import me.gorgeousone.tangledmaze.loot.LootHandler;
+import me.gorgeousone.tangledmaze.loot.UnbuildListener;
 import me.gorgeousone.tangledmaze.menu.UiHandler;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
@@ -121,6 +122,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 		manager.registerEvents(new BlockChangeListener(this, sessionHandler), this);
 		manager.registerEvents(new ChangeWorldListener(toolHandler, renderHandler), this);
 		manager.registerEvents(new UiListener(uiHandler), this);
+		manager.registerEvents(new UnbuildListener(lootHandler), this);
 	}
 
 	private void registerCommands() {
@@ -179,10 +181,11 @@ public final class TangledMazePlugin extends JavaPlugin {
 		Logger logger = Bukkit.getLogger();
 		if (Bukkit.getServer().getPluginManager().getPlugin("LootChest") != null) {
 			Main lootChestPlugin = Main.getInstance();
-			lootHandler = new LootHandler(lootChestPlugin);
-			logger.info("LootChest detected");
+			lootHandler = new LootHandler(sessionHandler, lootChestPlugin);
+			logger.info("Successfully detected LootChest plugin for spawning loot chests.");
 		} else {
-			logger.info("LootChest not found");
+			logger.info("LootChest plugin not detected. Loot chests can't be used.");
+			logger.info("Download available at: https://www.spigotmc.org/resources/lootchest.61564/");
 		}
 	}
 }

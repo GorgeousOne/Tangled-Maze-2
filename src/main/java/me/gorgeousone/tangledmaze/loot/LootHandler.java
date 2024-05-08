@@ -4,8 +4,11 @@ import fr.black_eyes.lootchest.Config;
 import fr.black_eyes.lootchest.Lootchest;
 import fr.black_eyes.lootchest.Main;
 import fr.black_eyes.lootchest.Utils;
+import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
+import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
+import me.gorgeousone.tangledmaze.maze.MazeBackup;
 import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
@@ -31,11 +34,13 @@ import java.util.UUID;
 
 public class LootHandler {
 
+	private final SessionHandler sessionHandler;
 	private final Main lootChestPlugin;
 	private final Map<BlockFace, Integer> legacyDirIds;
 	private Method lootChestCreateChest;
 
-	public LootHandler(Main lootChestPlugin) {
+	public LootHandler(SessionHandler sessionHandler, Main lootChestPlugin) {
+		this.sessionHandler = sessionHandler;
 		this.lootChestPlugin = lootChestPlugin;
 		this.legacyDirIds = new HashMap<>();
 
@@ -60,14 +65,20 @@ public class LootHandler {
 		return lootChestPlugin.getLootChest().containsKey(chestName);
 	}
 
-	public Map<String, BlockVec> spawnChests(MazeMap mazeMap, Map<String, Integer> chestAmounts, Collection<BlockVec> existingChests) throws TextException {
+	public Map<String, BlockVec> spawnChests(Clip maze, Map<String, Integer> chestAmounts) throws TextException {
+		if (!sessionHandler.isBuilt(maze)) {
+			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
+		}
+		MazeBackup backup = sessionHandler.getBackup(maze);
+		MazeMap mazeMap = backup.getMazeMap();
+
 		List<String> chestPrefabList = listChests(chestAmounts);
 		Map<Vec2, Direction> wallDirs = LootChestLocator.findRoomWallCells(mazeMap);
 		List<Vec2> walls = new ArrayList<>(wallDirs.keySet());
 
 		Collections.shuffle(chestPrefabList);
 		Collections.shuffle(walls);
-		Map<String, BlockVec> lootLocations = new HashMap<>();
+		Map<String, BlockVec> addedChests = new HashMap<>();
 
 		while (!chestPrefabList.isEmpty() && !walls.isEmpty()) {
 			String prefabName = chestPrefabList.remove(0);
@@ -78,11 +89,13 @@ public class LootHandler {
 			removeNeighbors(walls, wall);
 
 			String copyName = spawnLootChest(prefabName, wall.toLocation(mazeMap.getWorld(), blockY), dir.getFace());
-			lootLocations.put(copyName, new BlockVec(wall, blockY));
+			addedChests.put(copyName, new BlockVec(wall, blockY));
 		}
 		//write all chests to the config and save the file
 		lootChestPlugin.getConfigFiles().saveData();
-		return lootLocations;
+		backup.addLootLocations(addedChests);
+		Bukkit.getPluginManager().callEvent(new LootChangeEvent(maze));
+		return addedChests;
 	}
 
 	public void respawnChests(Set<String> chestNames) {
@@ -109,8 +122,11 @@ public class LootHandler {
 		}
 	}
 
-	public void removeChests(Set<String> chestNames) {
+	public int removeChests(Clip maze) {
+		MazeBackup backup = sessionHandler.getBackup(maze);
 		FileConfiguration dataConfig = lootChestPlugin.getConfigFiles().getData();
+		Collection<String> chestNames = backup.getLootLocations().keySet();
+		int removedChestCount = 0;
 
 		for (String chestName : chestNames) {
 			Lootchest chest = lootChestPlugin.getLootChest().get(chestName);
@@ -120,8 +136,15 @@ public class LootHandler {
 			}
 			dataConfig.set("chests." + chestName, null);
 			Utils.deleteChest(chest);
+			++removedChestCount;
+		}
+		if (removedChestCount == 0) {
+			return 0;
 		}
 		lootChestPlugin.getConfigFiles().saveData();
+		backup.clearLootLocations();
+		Bukkit.getPluginManager().callEvent(new LootChangeEvent(maze));
+		return removedChestCount;
 	}
 
 	private List<String> listChests(Map<String, Integer> chestAmounts) {

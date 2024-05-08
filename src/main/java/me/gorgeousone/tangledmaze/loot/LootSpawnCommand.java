@@ -53,24 +53,17 @@ public class LootSpawnCommand extends ArgCommand {
 			Message.ERROR_MAZE_MISSING.sendTo(sender);
 			return;
 		}
-		if (!sessionHandler.isBuilt(maze)) {
-			Message.INFO_MAZE_NOT_BUILT.sendTo(sender);
-			return;
-		}
-		MazeBackup backup = sessionHandler.getBackup(maze);
 		Map<String, Integer> chestAmounts;
 		Map<String, BlockVec> addedChests;
 
 		try {
 			chestAmounts = deserializeLootChestPrefabs(argValues);
-			addedChests = lootHandler.spawnChests(backup.getMazeMap(), chestAmounts, backup.getLootLocations().values());
+			addedChests = lootHandler.spawnChests(maze, chestAmounts);
 		} catch (TextException e) {
 			e.sendTextTo(sender);
 			return;
 		}
-		backup.addLootLocations(addedChests);
-		sender.sendMessage("Placed total " + backup.getLootLocations().size() + " chests");
-		Bukkit.getPluginManager().callEvent(new LootChangeEvent(maze));
+		sender.sendMessage("Placed " + addedChests.size() + " chests");
 	}
 
 	/**
