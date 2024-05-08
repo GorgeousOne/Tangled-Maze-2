@@ -67,7 +67,7 @@ public class LootChestLocator {
 
 			for (Direction dir : wallDirs) {
 				for (Vec2 block : cell.getWalls(dir)) {
-					blocks.put(block, dir);
+					blocks.put(block, dir.getOpposite());
 				}
 			}
 			blocks.keySet().removeAll(occupiedBlocks);
@@ -76,7 +76,10 @@ public class LootChestLocator {
 				availableCells.remove(cell);
 				continue;
 			}
-			Vec2 rndBlock = blocks.keySet().stream().skip(RND.nextInt(blocks.size())).findFirst().orElse(null);
+			Vec2 rndBlock = blocks.keySet().stream()
+					.skip(RND.nextInt(blocks.size()))
+					.findFirst()
+					.orElse(null);
 			spawns.put(rndBlock, blocks.get(rndBlock));
 			markOccupiedSpawns(occupiedBlocks, rndBlock);
 		}
