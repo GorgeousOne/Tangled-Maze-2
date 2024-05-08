@@ -91,10 +91,6 @@ public class LootHandler {
 		Set<Vec2> existingSpawns = backup.getLootLocations().values().stream()
 				.map(BlockVec::toVec2)
 				.collect(Collectors.toSet());
-		//add maze exits where loot also should not be spawned
-		existingSpawns.addAll(gridMap.getExits().stream()
-				.map(e -> gridMap.getGridPos(e.getMin()))
-				.collect(Collectors.toList()));
 
 		List<String> chestPrefabList = listChests(chestAmounts);
 		Collections.shuffle(chestPrefabList);

@@ -178,7 +178,7 @@ public class MazeMapFactory {
 			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {
 				PathType pathType = gridMap.getPathType(gridX, gridZ);
 
-				if (pathType == PathType.PAVED || pathType == PathType.ROOM) {
+				if (pathType == PathType.PAVED || pathType == PathType.EXIT || pathType == PathType.ROOM) {
 					GridCell cell = gridMap.getCell(gridX, gridZ);
 					mazeMap.setType(cell.getMin(), cell.getMax(), AreaType.PATH);
 				}

@@ -5,7 +5,7 @@ import me.gorgeousone.tangledmaze.generation.paving.PathType;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +29,7 @@ public abstract class MazeSolver {
 
 		solutionPath.addAll(goals);
 		GridCell start = goals.remove(0);
-		Set<GridCell> visited = new HashSet<>(Arrays.asList(start));
+		Set<GridCell> visited = new HashSet<>(Collections.singletonList(start));
 		recursiveSearch(gridMap, start, null, new HashSet<>(goals), visited, solutionPath);
 
 		//add exit segments to path solution for rendering the blocks

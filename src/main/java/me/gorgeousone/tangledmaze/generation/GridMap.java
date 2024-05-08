@@ -175,7 +175,7 @@ public class GridMap {
 		calculateGridProperties(entranceEnd);
 
 		Vec2 entranceGridPos = getGridPos(entranceEnd);
-		setPathType(entranceGridPos, PathType.PAVED);
+		setPathType(entranceGridPos, PathType.EXIT);
 		pathStarts.add(getCell(entranceGridPos));
 	}
 
@@ -196,7 +196,7 @@ public class GridMap {
 		ExitSegment rightTurn = new ExitSegment(exitEnd, right, pathWidth);
 		leftTurn.extend(getDistToPathGrid(leftTurn.getEnd(), left, true));
 		rightTurn.extend(getDistToPathGrid(rightTurn.getEnd(), right, true));
-
+		//bruh
 		boolean leftIsFree = Arrays.asList(PathType.PAVED, PathType.FREE).contains(getPathType(getGridPos(leftTurn.getEnd())));
 		boolean rightIsFree = Arrays.asList(PathType.PAVED, PathType.FREE).contains(getPathType(getGridPos(leftTurn.getEnd())));
 
@@ -221,7 +221,7 @@ public class GridMap {
 		exits.add(exit);
 		exits.add(chosenTurn);
 		Vec2 endGridPos = getGridPos(chosenTurn.getEnd());
-		setPathType(endGridPos, PathType.PAVED);
+		setPathType(endGridPos, PathType.EXIT);
 		pathStarts.add(getCell(endGridPos));
 	}
 
@@ -352,7 +352,7 @@ public class GridMap {
 
 		for (Direction dir : Direction.CARDINALS) {
 			PathType pathType = getPathType(x + dir.getX(), z + dir.getZ());
-			if (pathType == PathType.PAVED || pathType == PathType.ROOM) {
+			if (pathType == PathType.PAVED || pathType == PathType.EXIT || pathType == PathType.ROOM) {
 				++pathNeighbors;
 			}
 		}

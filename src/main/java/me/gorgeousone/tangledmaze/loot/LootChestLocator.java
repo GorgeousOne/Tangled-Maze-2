@@ -41,10 +41,8 @@ public class LootChestLocator {
 				}
 				boolean isDeadEnd = !isRoom && gridMap.isDeadEnd(x, z);
 
-				if (!isLootInDeadEnds && isDeadEnd) {
-					continue;
-				}
-				if (!isLootInHallways && !isRoom && !isDeadEnd) {
+				if (!isLootInDeadEnds && isDeadEnd ||
+						!isLootInHallways && !isRoom && !isDeadEnd) {
 					continue;
 				}
 				availableCells.add(gridMap.getCell(x, z));
