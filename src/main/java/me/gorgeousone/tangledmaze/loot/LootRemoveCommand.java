@@ -6,6 +6,7 @@ import me.gorgeousone.tangledmaze.cmdframework.command.BaseCommand;
 import me.gorgeousone.tangledmaze.data.Message;
 import me.gorgeousone.tangledmaze.maze.MazeBackup;
 import me.gorgeousone.tangledmaze.util.text.Placeholder;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import java.util.UUID;
@@ -17,7 +18,7 @@ public class LootRemoveCommand extends BaseCommand {
 	private final boolean isAvailable;
 
 	public LootRemoveCommand(SessionHandler sessionHandler, LootHandler lootHandler, boolean isAvailable) {
-		super("loot");
+		super("remove");
 		this.sessionHandler = sessionHandler;
 		this.lootHandler = lootHandler;
 		this.isAvailable = isAvailable;
@@ -42,6 +43,8 @@ public class LootRemoveCommand extends BaseCommand {
 		}
 		MazeBackup backup = sessionHandler.getBackup(maze);
 		lootHandler.removeChests(backup.getLootLocations().keySet());
-		backup.removeLoot();
+		sender.sendMessage("removed " + backup.getLootLocations().size() + " chests");
+		backup.clearLootLocations();
+		Bukkit.getPluginManager().callEvent(new LootChangeEvent(maze));
 	}
 }

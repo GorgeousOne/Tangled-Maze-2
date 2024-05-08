@@ -27,7 +27,7 @@ public class MazeBackup {
 	private MazeMap mazeMap;
 	private final Map<MazePart, BlockCollection> partBlockLocs;
 	private final Map<MazePart, Set<BlockLocType>> partBlocksTypes;
-	private final Map<String, BlockVec> lootLocations;
+	private Map<String, BlockVec> lootLocations;
 
 	public MazeBackup(Clip maze, MazeSettings settings) {
 		this.maze = maze;
@@ -103,15 +103,25 @@ public class MazeBackup {
 		mazeMap = null;
 	}
 
-	public void addLoot(Map<String, BlockVec> chestLocations) {
+	public void addLootLocations(Map<String, BlockVec> chestLocations) {
+		if (lootLocations == null) {
+			lootLocations = new HashMap<>();
+		}
 		lootLocations.putAll(chestLocations);
 	}
 
-	public void removeLoot() {
+	public void clearLootLocations() {
+		if (lootLocations == null) {
+			lootLocations = new HashMap<>();
+		}
 		lootLocations.clear();
 	}
 
 	public Map<String, BlockVec> getLootLocations() {
+		//workaround to load maze backups from <2.5.0
+		if (lootLocations == null) {
+			lootLocations = new HashMap<>();
+		}
 		return new HashMap<>(lootLocations);
 	}
 }

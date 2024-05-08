@@ -17,7 +17,7 @@ public class LootRespawnCommand extends BaseCommand {
 	private final boolean isAvailable;
 
 	public LootRespawnCommand(SessionHandler sessionHandler, LootHandler lootHandler, boolean isAvailable) {
-		super("loot");
+		super("respawn");
 		this.sessionHandler = sessionHandler;
 		this.lootHandler = lootHandler;
 		this.isAvailable = isAvailable;

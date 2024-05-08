@@ -32,7 +32,7 @@ public class LootSpawnCommand extends ArgCommand {
 	private final boolean isAvailable;
 
 	public LootSpawnCommand(SessionHandler sessionHandler, LootHandler lootHandler, boolean isAvailable) {
-		super("loot");
+		super("spawn");
 		addArg(new Argument("x*chest...", ArgType.STRING));
 
 		this.sessionHandler = sessionHandler;
@@ -59,16 +59,18 @@ public class LootSpawnCommand extends ArgCommand {
 		}
 		MazeBackup backup = sessionHandler.getBackup(maze);
 		Map<String, Integer> chestAmounts;
-		argValues.remove(0);
+		Map<String, BlockVec> addedChests;
 
 		try {
 			chestAmounts = deserializeLootChestPrefabs(argValues);
-			Map<String, BlockVec> addedChests = lootHandler.spawnChests(backup.getMazeMap(), chestAmounts, backup.getLootLocations().values());
-			backup.addLoot(addedChests);
+			addedChests = lootHandler.spawnChests(backup.getMazeMap(), chestAmounts, backup.getLootLocations().values());
 		} catch (TextException e) {
 			e.sendTextTo(sender);
+			return;
 		}
-
+		backup.addLootLocations(addedChests);
+		sender.sendMessage("Placed total " + backup.getLootLocations().size() + " chests");
+		Bukkit.getPluginManager().callEvent(new LootChangeEvent(maze));
 	}
 
 	/**
@@ -101,7 +103,6 @@ public class LootSpawnCommand extends ArgCommand {
 				//TODO add lang message
 				throw new TextException(Message.ERROR_INVALID_BLOCK_NAME, new Placeholder("block", chestName + " (chest)"));
 			}
-			Bukkit.broadcastMessage("spawn " + count + " * " + chestName);
 			chestAmounts.put(chestName, count);
 		}
 		return chestAmounts;

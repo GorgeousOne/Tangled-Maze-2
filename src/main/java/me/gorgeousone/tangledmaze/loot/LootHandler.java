@@ -4,6 +4,7 @@ import fr.black_eyes.lootchest.Config;
 import fr.black_eyes.lootchest.Lootchest;
 import fr.black_eyes.lootchest.Main;
 import fr.black_eyes.lootchest.Utils;
+import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.generation.MazeMap;
 import me.gorgeousone.tangledmaze.util.BlockVec;
 import me.gorgeousone.tangledmaze.util.Direction;
@@ -11,6 +12,7 @@ import me.gorgeousone.tangledmaze.util.Vec2;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockLocType;
 import me.gorgeousone.tangledmaze.util.blocktype.BlockType;
 import me.gorgeousone.tangledmaze.util.text.TextException;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -47,7 +49,7 @@ public class LootHandler {
 
 	private void hackyHackLootChest() {
 		try {
-			lootChestCreateChest = Lootchest.class.getDeclaredMethod("createChest", Block.class, Location.class);
+			lootChestCreateChest = Lootchest.class.getDeclaredMethod("createchest", Block.class, Location.class);
 			lootChestCreateChest.setAccessible(true);
 		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(e);
@@ -70,11 +72,13 @@ public class LootHandler {
 		while (!chestPrefabList.isEmpty() && !walls.isEmpty()) {
 			String prefabName = chestPrefabList.remove(0);
 			Vec2 wall = walls.remove(0);
+			int blockY = mazeMap.getY(wall) + 1;
 
 			Direction dir = wallDirs.get(wall);
 			removeNeighbors(walls, wall);
-			spawnLootChest(prefabName, wall.toLocation(mazeMap.getWorld(), mazeMap.getY(wall) + 1), dir.getFace());
 
+			String copyName = spawnLootChest(prefabName, wall.toLocation(mazeMap.getWorld(), blockY), dir.getFace());
+			lootLocations.put(copyName, new BlockVec(wall, blockY));
 		}
 		//write all chests to the config and save the file
 		lootChestPlugin.getConfigFiles().saveData();
@@ -109,9 +113,13 @@ public class LootHandler {
 		FileConfiguration dataConfig = lootChestPlugin.getConfigFiles().getData();
 
 		for (String chestName : chestNames) {
-			Lootchest lc = lootChestPlugin.getLootChest().get(chestName);
+			Lootchest chest = lootChestPlugin.getLootChest().get(chestName);
+
+			if (chest == null) {
+				continue;
+			}
 			dataConfig.set("chests." + chestName, null);
-			Utils.deleteChest(lc);
+			Utils.deleteChest(chest);
 		}
 		lootChestPlugin.getConfigFiles().saveData();
 	}
@@ -136,7 +144,7 @@ public class LootHandler {
 		}
 	}
 
-	private void spawnLootChest(String chestPrefabName, Location location, BlockFace facing) {
+	private String spawnLootChest(String chestPrefabName, Location location, BlockFace facing) {
 		if (!chestExists(chestPrefabName)) {
 			throw new IllegalArgumentException("Could not find loot chest \"" + chestPrefabName + "\".");
 		}
@@ -146,6 +154,7 @@ public class LootHandler {
 		Lootchest newChest = new Lootchest(chestBlock, chestName);
 		lootChestPlugin.getLootChest().put(chestName, newChest);
 		copyChestPrefab(newChest, prefab);
+		return chestName;
 	}
 
 	private Block placeChestBlock(Location location, BlockFace facing) {
