@@ -192,7 +192,7 @@ public class LootHandler {
 			throw new TextException(Message.ERROR_LOOT_CHEST_NAME_NOT_FOUND, new Placeholder("name", chestPrefabName));
 		}
 		Block chestBlock = placeChestBlock(location, facing);
-		String chestName = String.format("zz-%s-%s", chestPrefabName, UUID.randomUUID());
+		String chestName = findFreeNameIndex(chestPrefabName, getChestNames());
 		Lootchest prefab = lootChestPlugin.getLootChest().get(chestPrefabName);
 		Lootchest newChest = new Lootchest(chestBlock, chestName);
 		lootChestPlugin.getLootChest().put(chestName, newChest);
@@ -200,9 +200,25 @@ public class LootHandler {
 		return chestName;
 	}
 
+	public static String findFreeNameIndex(String name, List<String> nameList) {
+		String result;
+		int i = 1;
+
+		while (true) {
+			String candidate = name + "#" + i;
+
+			if (!nameList.contains(candidate)) {
+				result = candidate;
+				break;
+			}
+			++i;
+		}
+		return result;
+	}
+
 	private Block placeChestBlock(Location location, BlockFace facing) {
 		BlockType blockType = BlockType.get(
-				String.format("CHEST[facing=%s]", facing.name()),
+				String.format("minecraft:chest[facing=%s]", facing.name().toLowerCase()),
 				"CHEST:" + legacyDirIds.get(facing));
 		BlockLocType chestBlock = new BlockLocType(location, blockType);
 		chestBlock.updateBlock(false);
