@@ -4,10 +4,7 @@ import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.cmdframework.command.BaseCommand;
 import me.gorgeousone.tangledmaze.data.Message;
-import me.gorgeousone.tangledmaze.maze.MazeBackup;
 import me.gorgeousone.tangledmaze.util.text.Placeholder;
-import me.gorgeousone.tangledmaze.util.text.TextException;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import java.util.UUID;

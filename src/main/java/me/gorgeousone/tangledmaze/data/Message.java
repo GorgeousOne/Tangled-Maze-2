@@ -90,7 +90,7 @@ public class Message {
 		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "wallheight", helps, "settings.wall-height"));
 		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "pathwidth", helps, "settings.path-width"));
 		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "wallwidth", helps, "settings.wall-width"));
-		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "roodwidth", helps, "settings.roof-width"));
+		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "roofwidth", helps, "settings.roof-width"));
 		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "curliness", helps, "settings.curliness"));
 
 		COMMAND_UNDO = createHelpText("/maze undo", helps, "undo-command");

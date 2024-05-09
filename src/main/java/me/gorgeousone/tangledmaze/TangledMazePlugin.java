@@ -122,7 +122,6 @@ public final class TangledMazePlugin extends JavaPlugin {
 		manager.registerEvents(new BlockChangeListener(this, sessionHandler), this);
 		manager.registerEvents(new ChangeWorldListener(toolHandler, renderHandler), this);
 		manager.registerEvents(new UiListener(uiHandler), this);
-		manager.registerEvents(new UnbuildListener(lootHandler), this);
 	}
 
 	private void registerCommands() {
@@ -179,13 +178,16 @@ public final class TangledMazePlugin extends JavaPlugin {
 
 	private void hookLootChestPlugin() {
 		Logger logger = Bukkit.getLogger();
-		if (Bukkit.getServer().getPluginManager().getPlugin("LootChest") != null) {
+		PluginManager manager = Bukkit.getPluginManager();
+
+		if (manager.getPlugin("LootChest") != null) {
 			Main lootChestPlugin = Main.getInstance();
 			lootHandler = new LootHandler(sessionHandler, lootChestPlugin);
-			logger.info("Successfully detected LootChest plugin for spawning loot chests.");
+			manager.registerEvents(new UnbuildListener(lootHandler), this);
+			logger.info("    Successfully detected LootChest plugin for spawning loot chests.");
 		} else {
-			logger.info("LootChest plugin not detected. Loot chests can't be used.");
-			logger.info("Download available at: https://www.spigotmc.org/resources/lootchest.61564/");
+			logger.info("    LootChest plugin not detected. Loot chests can't be used.");
+			logger.info("    Download available at: https://www.spigotmc.org/resources/lootchest.61564/");
 		}
 	}
 }

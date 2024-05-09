@@ -2,6 +2,7 @@ name: TangledMaze
 version: ${project.version}
 main: me.gorgeousone.tangledmaze.TangledMazePlugin
 api-version: 1.13
+softdepend: [LootChest]
 
 commands:
     tangledmaze:
