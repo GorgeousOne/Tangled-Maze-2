@@ -14,6 +14,7 @@ public class Message {
 			COMMAND_ADD,
 			COMMAND_BUILD,
 			COMMAND_CUT,
+			COMMAND_LOOT,
 			COMMAND_SETTING,
 			COMMAND_SOLVE,
 			COMMAND_START,
@@ -63,7 +64,8 @@ public class Message {
 				COMMAND_BUILD,
 				COMMAND_UNBUILD,
 				COMMAND_TELEPORT,
-				COMMAND_SOLVE
+				COMMAND_SOLVE,
+				COMMAND_LOOT
 		};
 	}
 
@@ -92,12 +94,15 @@ public class Message {
 		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "wallwidth", helps, "settings.wall-width"));
 		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "roofwidth", helps, "settings.roof-width"));
 		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "curliness", helps, "settings.curliness"));
+		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "roomcount", helps, "settings.room-count"));
+		COMMAND_SETTING.add(createHelpText(ChatColor.YELLOW + "roomsize", helps, "settings.room-size"));
 
 		COMMAND_UNDO = createHelpText("/maze undo", helps, "undo-command");
 		COMMAND_BUILD = createHelpText("/maze build [maze part] <blocks>...", helps, "build-command");
 		COMMAND_UNBUILD = createHelpText("/maze unbuild [maze part]", helps, "unbuild-command");
 		COMMAND_TELEPORT = createHelpText("/maze teleport", helps, "teleport-command");
 		COMMAND_SOLVE = createHelpText("/maze solve", helps, "solve-command");
+		COMMAND_LOOT = createHelpText("/maze loot <spawn/respawn/remove>", helps, "loot-command");
 
 
 		ConfigurationSection infos = langConfig.getConfigurationSection("infos");

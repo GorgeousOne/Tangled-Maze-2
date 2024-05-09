@@ -12,7 +12,7 @@ public enum MazeProperty {
 	CURLINESS(3, 10),
 	ROOF_WIDTH(1, 64),
 	ROOM_COUNT(0, 100, 0),
-	ROOM_SIZE(15, 32, 3);
+	ROOM_SIZE(15, 65, 3);
 	
 	private final int maxVal;
 	private final int minVal;

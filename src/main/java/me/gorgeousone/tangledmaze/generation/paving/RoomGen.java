@@ -19,9 +19,12 @@ public class RoomGen {
 		int roomCount = settings.getValue(MazeProperty.ROOM_COUNT);
 		int pathWidth = settings.getValue(MazeProperty.PATH_WIDTH);
 		int wallWidth = settings.getValue(MazeProperty.WALL_WIDTH);
+		int maxRoomSize = settings.getValue(MazeProperty.ROOM_SIZE);
 
-		int cellsMin = calcCellsMin(7, pathWidth, wallWidth);
-		int cellsMax = Math.max(cellsMin, settings.getValue(MazeProperty.ROOM_SIZE));
+		//make rooms at lease 7 blocks wide, but smaller if requested by player's settings
+		//absolut minimum 3x3 grid cells
+		int cellsMin = calcCellsMin(Math.min(7, maxRoomSize), pathWidth, wallWidth);
+		int cellsMax = Math.max(cellsMin, maxRoomSize);
 
 		//list free conjunctions to start at
 		Set<Vec2> freeCells = new HashSet<>();
@@ -73,8 +76,14 @@ public class RoomGen {
 		return cellSize;
 	}
 
+	/**
+	 * Attempts to spawn a room at a random free conjunction with random size.
+	 * @return Room instance if successful, null if the random spot was not free.
+	 */
 	private static Room spawnRoom(GridMap gridMap, List<Vec2> freeCells, int cellsMin, int cellsMax) {
+		//create first random dimension
 		int size1 = rndRoomSize(cellsMin, cellsMax);
+		//create second random size so that rooms are never large in both dimensions
 		//cellsMin + (cellsMax - cellsMin) - (size1 - cellsMin)
 		int size2 = rndRoomSize(cellsMin, cellsMin + cellsMax - size1);
 
@@ -95,6 +104,9 @@ public class RoomGen {
 		return room;
 	}
 
+	/**
+	 * Returns random integer in the range of cellsMin to cellsMax, that is an odd number.
+	 */
 	private static int rndRoomSize(int cellsMin, int cellsMax) {
 		int twoStep = (cellsMax - cellsMin) / 2;
 		return cellsMin + RANDOM.nextInt( twoStep + 1) * 2;
