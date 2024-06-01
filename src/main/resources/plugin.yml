@@ -1,8 +1,7 @@
-name: TangledMaze
+name: BadAppleMaze
 version: ${project.version}
-main: me.gorgeousone.tangledmaze.TangledMazePlugin
+main: me.gorgeousone.badapplemaze.BadApplePlugin
 api-version: 1.13
-softdepend: [LootChest]
 
 commands:
     tangledmaze:
