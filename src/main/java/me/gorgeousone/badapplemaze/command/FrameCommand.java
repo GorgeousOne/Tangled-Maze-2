@@ -20,7 +20,6 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -48,16 +47,13 @@ public class FrameCommand extends ArgCommand {
 		Vec2 min = new Vec2(0, 0);
 		//first block after maze corner
 		Vec2 max = new Vec2(FrameLoader.WIDTH + 5, FrameLoader.HEIGHT + 5);
+
 		MazeMap map = new MazeMap(world, min, max, BadApplePlugin.FLOOR_Y);
 		MazeSettings settings = BadApplePlugin.SETTINGS;
 
 		for (int z = 0; z < max.getZ(); ++z) {
 			for (int x = 0; x < max.getX(); ++x) {
-				if (x == 0 || z == 0 || x == max.getX() - 1 || z == max.getX() - 1) {
-					map.setType(x, z, AreaType.WALL);
-				} else {
-					map.setType(x, z, AreaType.FREE);
-				}
+				map.setType(x, z, AreaType.FREE);
 			}
 		}
 		//inset frame 2blocks to make maze go around whole frame
@@ -67,11 +63,15 @@ public class FrameCommand extends ArgCommand {
 				map.setType(x + 3, z + 3, getType(newFrame, x, z));
 			}
 		}
+		int midZ = max.getZ() / 2 - 1;
 		MazeMapFactory.createPaths(
 				map,
-				Arrays.asList(new Vec2(0, 1), max.clone().sub(1, 2)),
+				Arrays.asList(new Vec2(0, midZ)),
 				settings,
 				BlockUtil.getWorldMinHeight(world));
+		//theres some buggy behavior for mazes with >1 exits in narrow passages
+		//placing 2n exit manually :(
+		map.setType(max.getX() - 1, midZ, AreaType.PATH);
 		map.flip();
 		setAsync(sender);
 

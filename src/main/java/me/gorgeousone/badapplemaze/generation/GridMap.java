@@ -2,12 +2,10 @@ package me.gorgeousone.badapplemaze.generation;
 
 import me.gorgeousone.badapplemaze.generation.paving.ExitSegment;
 import me.gorgeousone.badapplemaze.generation.paving.PathType;
-import me.gorgeousone.badapplemaze.generation.paving.Room;
 import me.gorgeousone.badapplemaze.util.Direction;
 import me.gorgeousone.badapplemaze.util.Vec2;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -34,7 +32,6 @@ public class GridMap {
 
 	private final List<ExitSegment> exits;
 	private final List<GridCell> pathStarts;
-	private final List<Room> rooms;
 
 	public GridMap(Vec2 mapMin,
 	               Vec2 mapMax,
@@ -47,7 +44,6 @@ public class GridMap {
 		gridMeshSize = pathWidth + wallWidth;
 		exits = new ArrayList<>();
 		pathStarts = new ArrayList<>();
-		rooms = new ArrayList<>();
 	}
 
 	public int getWidth() {
@@ -189,57 +185,10 @@ public class GridMap {
 		exit.extend(getDistToPathGrid(exit.getEnd(), facing, false));
 
 		Vec2 exitEnd = exit.getEnd();
-		Direction left = facing.getLeft();
-		Direction right = facing.getRight();
-
-		ExitSegment leftTurn = new ExitSegment(exitEnd, left, pathWidth);
-		ExitSegment rightTurn = new ExitSegment(exitEnd, right, pathWidth);
-		leftTurn.extend(getDistToPathGrid(leftTurn.getEnd(), left, true));
-		rightTurn.extend(getDistToPathGrid(rightTurn.getEnd(), right, true));
-		//bruh
-		boolean leftIsFree = Arrays.asList(PathType.PAVED, PathType.FREE).contains(getPathType(getGridPos(leftTurn.getEnd())));
-		boolean rightIsFree = Arrays.asList(PathType.PAVED, PathType.FREE).contains(getPathType(getGridPos(leftTurn.getEnd())));
-
-		if (!leftIsFree && !rightIsFree) {
-			return;
-		}
-		ExitSegment chosenTurn;
-
-		if (leftIsFree && rightIsFree) {
-			boolean chooseLeft = leftTurn.length() > rightTurn.length();
-			chosenTurn = chooseLeft ? leftTurn : rightTurn;
-			ExitSegment otherTurn = chooseLeft ? rightTurn : leftTurn;
-
-			//places a blocked path at tje opposite side of chosen turn
-			//to prevent path generator to connect a second path to the exit
-			if (otherTurn.length() > otherTurn.width() && otherTurn.length() < 2 * otherTurn.width() + 1) {
-				setPathType(getGridPos(otherTurn.getEnd()), PathType.BLOCKED);
-			}
-		} else {
-			chosenTurn = leftIsFree ? leftTurn : rightTurn;
-		}
 		exits.add(exit);
-		exits.add(chosenTurn);
-		Vec2 endGridPos = getGridPos(chosenTurn.getEnd());
+		Vec2 endGridPos = getGridPos(exitEnd);
 		setPathType(endGridPos, PathType.EXIT);
 		pathStarts.add(getCell(endGridPos));
-	}
-
-	public void addRoom(Room room) {
-		rooms.add(room);
-	}
-
-	public Room findRoom(Vec2 gridPos) {
-		for (Room room : rooms) {
-			if (room.contains(gridPos)) {
-				return room;
-			}
-		}
-		return null;
-	}
-
-	public List<Room> getRooms() {
-		return new ArrayList<>(rooms);
 	}
 
 	/**
@@ -333,30 +282,5 @@ public class GridMap {
 				gridZ % 2 == 0 ? pathWidth : wallWidth);
 
 		return new GridCell(segmentStart, segmentSize, new Vec2(gridX, gridZ));
-	}
-
-	public List<Direction> getWallDirs(GridCell cell) {
-		Vec2 gridPos = cell.getGridPos();
-		List<Direction> wallDirs = new ArrayList<>();
-
-		for (Direction dir : Direction.CARDINALS) {
-			PathType pathType = getPathType(gridPos.clone().add(dir.getVec2()));
-			if (pathType == PathType.BLOCKED || pathType == PathType.FREE) {
-				wallDirs.add(dir);
-			}
-		}
-		return wallDirs;
-	}
-
-	public boolean isDeadEnd(int x, int z) {
-		int pathNeighbors = 0;
-
-		for (Direction dir : Direction.CARDINALS) {
-			PathType pathType = getPathType(x + dir.getX(), z + dir.getZ());
-			if (pathType == PathType.PAVED || pathType == PathType.EXIT || pathType == PathType.ROOM) {
-				++pathNeighbors;
-			}
-		}
-		return pathNeighbors == 1;
 	}
 }

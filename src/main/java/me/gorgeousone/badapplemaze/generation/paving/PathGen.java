@@ -4,7 +4,6 @@ import me.gorgeousone.badapplemaze.generation.GridCell;
 import me.gorgeousone.badapplemaze.generation.GridMap;
 import me.gorgeousone.badapplemaze.util.Direction;
 import me.gorgeousone.badapplemaze.util.Vec2;
-import org.bukkit.Bukkit;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -33,11 +32,9 @@ public class PathGen {
 	
 	public static Random RANDOM;
 	private static final int maxLinkedSegmentCount = 4;
-	private static int xyz = 0;
 
 	public static void genPaths(GridMap gridMap, int curliness) {
 		RANDOM = new Random(0);
-		xyz = 0;
 
 		List<PathTree> pathTrees = createPathTrees(gridMap.getPathStarts());
 		List<PathTree> openPathTrees = new ArrayList<>(pathTrees);
@@ -135,10 +132,6 @@ public class PathGen {
 	                                           int curliness,
 	                                           boolean tryExtendSegment) {
 		Direction rndFacing = availableDirs.get(RANDOM.nextInt(availableDirs.size()));
-		++xyz;
-		if (xyz < 10) {
-			System.out.println(currentPathEnd.getGridPos().toString() + " " + rndFacing.name());
-		}
 		GridCell pathConnection = gridMap.getCell(currentPathEnd, rndFacing);
 		GridCell newPathEnd = gridMap.getCell(pathConnection, rndFacing);
 		pavePath(currentPathEnd, pathConnection, newPathEnd, gridMap);
@@ -151,10 +144,6 @@ public class PathGen {
 
 		if (gridMap.getPathType(extendedPathEnd) != PathType.ROOM) {
 			return wasExtended;
-		}
-		Room room = gridMap.findRoom(extendedPathEnd.getGridPos());
-		if (room != null) {
-			room.floodFillRoom(extendedPathEnd, gridMap);
 		}
 		return wasExtended;
 	}

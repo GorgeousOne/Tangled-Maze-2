@@ -25,7 +25,7 @@ public class MazeMapFactory {
 				mazeMap.getMax(),
 				settings.getValue(MazeProperty.PATH_WIDTH),
 				settings.getValue(MazeProperty.WALL_WIDTH));
-		
+		System.out.println(exits);
 		for (int i = 0; i < exits.size(); i++) {
 			Vec2 exitLoc = exits.get(i);
 			
@@ -44,14 +44,14 @@ public class MazeMapFactory {
 	private static Direction getExitFacing(Vec2 exit, MazeMap mazeMap) {
 		for (Direction dir : Direction.CARDINALS) {
 			Vec2 neighbor = exit.clone().add(dir.getVec2());
-			
+
 			if (mazeMap.getType(neighbor) == AreaType.FREE) {
 				return dir;
 			}
 		}
 		throw new IllegalArgumentException("Exit " + exit + " does not touch the maze.");
 	}
-	
+
 	private static void copyMazeOntoGrid(MazeMap mazeMap, GridMap gridMap, int wallHeight, int worldMinY) {
 		for (int gridX = 0; gridX < gridMap.getWidth(); ++gridX) {
 			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {

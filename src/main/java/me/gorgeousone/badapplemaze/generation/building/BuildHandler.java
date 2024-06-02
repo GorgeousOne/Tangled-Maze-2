@@ -7,10 +7,7 @@ import me.gorgeousone.badapplemaze.generation.generator.WallBlockGen;
 import me.gorgeousone.badapplemaze.maze.MazePart;
 import me.gorgeousone.badapplemaze.maze.MazeSettings;
 import me.gorgeousone.badapplemaze.util.BlockVec;
-import me.gorgeousone.badapplemaze.util.blocktype.BlockType;
 import me.gorgeousone.badapplemaze.util.text.TextException;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashSet;
@@ -40,9 +37,6 @@ public class BuildHandler {
 		Set<BlockVec> newAir = new HashSet<>();
 		filterBlocks(BadApplePlugin.LAST_BLOCKS, nextBlocks, newBlocks, newAir);
 		BadApplePlugin.LAST_BLOCKS = nextBlocks;
-		Bukkit.broadcastMessage("next " + nextBlocks.size());
-		Bukkit.broadcastMessage("add  " + newBlocks.size());
-		Bukkit.broadcastMessage("rm   " + newAir.size());
 
 		new BlockPlacer(
 				newFrame.getWorld(),
