@@ -1,6 +1,7 @@
 package me.gorgeousone.tangledmaze.util;
 
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,24 +9,19 @@ import java.util.Properties;
 
 public final class VersionUtil {
 	
-	public static final Version PLUGIN_VERSION = new Version(getProjectVersion());
-	public static final Version SERVER_VERSION = new Version(getServerVersionString(), "_");
-	public static final boolean IS_LEGACY_SERVER = SERVER_VERSION.isBelow(new Version("1.13.0"));
+	public static Version PLUGIN_VERSION;
+	public static Version SERVER_VERSION;
+	public static boolean IS_LEGACY_SERVER;
 	
 	private VersionUtil() {}
-	
-	public static String getServerVersionString() {
-		return Bukkit.getServer().getClass().getName().split("\\.")[3].replaceAll("[a-zA-Z]", "");
+
+	public static void setup(String tangledMazeVersion) {
+		PLUGIN_VERSION = new Version(tangledMazeVersion);
+		SERVER_VERSION = new Version(getServerVersionString());
+		IS_LEGACY_SERVER = SERVER_VERSION.isBelow(new Version("1.13.0"));
 	}
-	
-	private static String getProjectVersion() {
-		try (InputStream inputStream = VersionUtil.class.getClassLoader().getResourceAsStream("project.properties")) {
-			Properties properties = new Properties();
-			properties.load(inputStream);
-			return properties.getProperty("version");
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+
+	public static String getServerVersionString() {
+		return Bukkit.getBukkitVersion().split("-")[0];
 	}
 }

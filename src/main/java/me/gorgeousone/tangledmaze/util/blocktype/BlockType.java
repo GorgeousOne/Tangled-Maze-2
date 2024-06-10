@@ -1,5 +1,6 @@
 package me.gorgeousone.tangledmaze.util.blocktype;
 
+import me.gorgeousone.tangledmaze.util.VersionUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -10,8 +11,6 @@ import org.bukkit.entity.Player;
  * A wrapper class for block materials and their (block-) data to support copying blocks across legacy and aquatic Minecraft versions.
  */
 public abstract class BlockType {
-	
-	private static Boolean isLegacyServer;
 	
 	public abstract Material getType();
 	
@@ -27,23 +26,16 @@ public abstract class BlockType {
 	
 	public abstract BlockType clone();
 	
-	/**
-	 * Sets whether BlockType.of() will create a LegacyBlockType or an AquaticBlockType
-	 */
-	public static void configureVersion(boolean isLegacyServer) {
-		BlockType.isLegacyServer = isLegacyServer;
-	}
-	
 	public static BlockType get(Block block) {
-		return isLegacyServer ? new BlockTypeLegacy(block) : new BlockTypeAquatic(block);
+		return VersionUtil.IS_LEGACY_SERVER ? new BlockTypeLegacy(block) : new BlockTypeAquatic(block);
 	}
 	
 	public static BlockType get(Material material) {
-		return isLegacyServer ? new BlockTypeLegacy(material) : new BlockTypeAquatic(material);
+		return VersionUtil.IS_LEGACY_SERVER ? new BlockTypeLegacy(material) : new BlockTypeAquatic(material);
 	}
 	
 	public static BlockType get(BlockState state) {
-		return isLegacyServer ? new BlockTypeLegacy(state) : new BlockTypeAquatic(state);
+		return VersionUtil.IS_LEGACY_SERVER ? new BlockTypeLegacy(state) : new BlockTypeAquatic(state);
 	}
 
 	public static BlockType get(String serialized) {
@@ -51,9 +43,9 @@ public abstract class BlockType {
 	}
 
 	public static BlockType get(String serialized, String legacySerialized) {
-		return isLegacyServer ? new BlockTypeLegacy(legacySerialized) : new BlockTypeAquatic(serialized, false);
+		return VersionUtil.IS_LEGACY_SERVER ? new BlockTypeLegacy(legacySerialized) : new BlockTypeAquatic(serialized, false);
 	}
 	public static BlockType get(String serialized, boolean randomizeFacing) {
-		return isLegacyServer ? new BlockTypeLegacy(serialized) : new BlockTypeAquatic(serialized, randomizeFacing);
+		return VersionUtil.IS_LEGACY_SERVER ? new BlockTypeLegacy(serialized) : new BlockTypeAquatic(serialized, randomizeFacing);
 	}
 }

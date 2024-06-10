@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  */
 public class MazeBackup {
 	
-	private final String versionString = VersionUtil.PLUGIN_VERSION.toString();
+	private final String versionString;
 	
 	private final Clip maze;
 	private final MazeSettings settings;
@@ -32,6 +32,7 @@ public class MazeBackup {
 	public MazeBackup(Clip maze, MazeSettings settings) {
 		this.maze = maze;
 		this.settings = settings;
+		this.versionString = VersionUtil.PLUGIN_VERSION.toString();
 		partBlockLocs = new HashMap<>();
 		partBlocksTypes = new HashMap<>();
 		lootLocations = new HashMap<>();
