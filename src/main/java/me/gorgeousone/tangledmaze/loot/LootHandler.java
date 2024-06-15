@@ -33,7 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class LootHandler {
@@ -41,12 +42,14 @@ public class LootHandler {
 	private final SessionHandler sessionHandler;
 	private final Main lootChestPlugin;
 	private final Map<BlockFace, Integer> legacyDirIds;
+	private final Logger logger;
 	private Method lootChestCreateChest;
 
-	public LootHandler(SessionHandler sessionHandler, Main lootChestPlugin) {
+	public LootHandler(SessionHandler sessionHandler, Main lootChestPlugin, Logger logger) {
 		this.sessionHandler = sessionHandler;
 		this.lootChestPlugin = lootChestPlugin;
 		this.legacyDirIds = new HashMap<>();
+		this.logger = logger;
 
 		legacyDirIds.put(BlockFace.NORTH, 2);
 		legacyDirIds.put(BlockFace.SOUTH, 3);
@@ -66,13 +69,23 @@ public class LootHandler {
 	}
 
 	public List<String> getChestNames() {
-		return lootChestPlugin.getLootChest().keySet().stream()
-				.filter(s -> !s.startsWith("zz"))
-				.collect(Collectors.toList());
+		try {
+			return lootChestPlugin.getLootChest().keySet().stream()
+					.filter(s -> !s.startsWith("zz"))
+					.collect(Collectors.toList());
+		} catch (NoSuchMethodError e) {
+			logger.log(Level.SEVERE, e.toString(), e);
+			return new ArrayList<>();
+		}
 	}
 
 	public boolean chestExists(String chestName) {
-		return lootChestPlugin.getLootChest().containsKey(chestName);
+		try {
+			return lootChestPlugin.getLootChest().containsKey(chestName);
+		} catch (NoSuchMethodError e) {
+			logger.log(Level.SEVERE, e.toString(), e);
+			return false;
+		}
 	}
 
 	public Map<String, BlockVec> spawnChests(
@@ -81,6 +94,26 @@ public class LootHandler {
 			boolean isLootInHallways,
 			boolean isLootInDeadEnds,
 			boolean isLootInRooms) throws TextException {
+		try {
+			return spawnChestsUnsafe(
+					maze,
+					sanitizeNames(chestAmounts),
+					isLootInHallways,
+					isLootInDeadEnds,
+					isLootInRooms);
+		} catch (NoSuchMethodError e) {
+			logger.log(Level.SEVERE, e.toString(), e);
+			return new HashMap<>();
+		}
+	}
+
+	private Map<String, BlockVec> spawnChestsUnsafe(
+			Clip maze,
+			Map<String, Integer> chestAmounts,
+			boolean isLootInHallways,
+			boolean isLootInDeadEnds,
+			boolean isLootInRooms) throws TextException {
+
 		if (!sessionHandler.isBuilt(maze)) {
 			throw new TextException(Message.INFO_MAZE_NOT_BUILT);
 		}
@@ -125,9 +158,22 @@ public class LootHandler {
 	}
 
 	public void respawnChests(Set<String> chestNames) {
+		try {
+			respawnChestsUnsafe(chestNames);
+		} catch (NoSuchMethodError e) {
+			logger.log(Level.SEVERE, e.toString(), e);
+		}
+	}
+
+	public void respawnChestsUnsafe(Set<String> chestNames) {
 		Config lootChestConfig = Config.getInstance();
-		Boolean saveSetting = lootChestConfig.save_Chest_Locations_At_Every_Spawn;
-		lootChestConfig.save_Chest_Locations_At_Every_Spawn = false;
+		Boolean saveSetting = null;
+		try {
+			saveSetting = lootChestConfig.save_Chest_Locations_At_Every_Spawn;
+			lootChestConfig.save_Chest_Locations_At_Every_Spawn = false;
+		} catch (NoSuchFieldError e) {
+			logger.log(Level.SEVERE, e.toString(), e);
+		}
 
 		try {
 			for (String chestName : chestNames) {
@@ -141,14 +187,25 @@ public class LootHandler {
 		} catch (InvocationTargetException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
-		lootChestConfig.save_Chest_Locations_At_Every_Spawn = saveSetting;
 
+		if (saveSetting != null) {
+			lootChestConfig.save_Chest_Locations_At_Every_Spawn = saveSetting;
+		}
 		if (lootChestConfig.save_Chest_Locations_At_Every_Spawn) {
 			lootChestPlugin.getUtils().updateData();
 		}
 	}
 
 	public int removeChests(Clip maze) {
+		try {
+			return removeChestsUnsafe(maze);
+		} catch (NoSuchMethodError e) {
+			logger.log(Level.SEVERE, e.toString(), e);
+			return 0;
+		}
+	}
+
+	public int removeChestsUnsafe(Clip maze) {
 		MazeBackup backup = sessionHandler.getBackup(maze);
 		FileConfiguration dataConfig = lootChestPlugin.getConfigFiles().getData();
 		Collection<String> chestNames = backup.getLootLocations().keySet();
@@ -200,12 +257,12 @@ public class LootHandler {
 		return chestName;
 	}
 
-	public static String findFreeNameIndex(String name, List<String> nameList) {
+	private static String findFreeNameIndex(String name, List<String> nameList) {
 		String result;
 		int i = 1;
 
 		while (true) {
-			String candidate = name + "#" + i;
+			String candidate = name + "-" + i;
 
 			if (!nameList.contains(candidate)) {
 				result = candidate;
@@ -247,5 +304,18 @@ public class LootHandler {
 		newChest.setRadius(prefab.getRadius());
 		newChest.spawn(true);
 		//skip saving config file, save after all chests are spawned
+	}
+
+	private static Map<String, Integer> sanitizeNames(Map<String, Integer> dirtyMap) {
+		HashMap<String, Integer> cleanMap = new HashMap<>();
+
+		for (String key : dirtyMap.keySet()) {
+			cleanMap.put(sanitize(key), dirtyMap.get(key));
+		}
+		return cleanMap;
+	}
+
+	private static String sanitize(String input) {
+		return input.replaceAll("[^a-zA-Z0-9\\-_]", "");
 	}
 }
