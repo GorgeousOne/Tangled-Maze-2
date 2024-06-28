@@ -15,12 +15,12 @@ public class Version {
 	public Version(String versionString, String delimiter) {
 		String[] split = versionString.split(delimiter);
 		major = Integer.parseInt(split[0]);
-		if (split.length >= 1) {
+		if (split.length > 1) {
 			minor = Integer.parseInt(split[1]);
 		} else {
 			minor = 0;
 		}
-		if (split.length >= 2) {
+		if (split.length > 2) {
 			patch = Integer.parseInt(split[2]);
 		} else {
 			patch = 0;
