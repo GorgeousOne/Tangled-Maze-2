@@ -1,9 +1,8 @@
 package me.gorgeousone.tangledmaze.loot;
 
-import fr.black_eyes.lootchest.Config;
+import fr.black_eyes.api.LootChestAPI;
 import fr.black_eyes.lootchest.Lootchest;
 import fr.black_eyes.lootchest.Main;
-import fr.black_eyes.lootchest.Utils;
 import me.gorgeousone.tangledmaze.SessionHandler;
 import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.data.Message;
@@ -22,10 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.file.FileConfiguration;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,7 +39,6 @@ public class LootHandler {
 	private final Main lootChestPlugin;
 	private final Map<BlockFace, Integer> legacyDirIds;
 	private final Logger logger;
-	private Method lootChestCreateChest;
 
 	public LootHandler(SessionHandler sessionHandler, Main lootChestPlugin, Logger logger) {
 		this.sessionHandler = sessionHandler;
@@ -55,30 +50,27 @@ public class LootHandler {
 		legacyDirIds.put(BlockFace.SOUTH, 3);
 		legacyDirIds.put(BlockFace.WEST, 4);
 		legacyDirIds.put(BlockFace.EAST, 5);
-
-		hackyHackLootChest();
 	}
-
-	private void hackyHackLootChest() {
-		try {
-			lootChestCreateChest = Lootchest.class.getDeclaredMethod("createchest", Block.class, Location.class);
-			lootChestCreateChest.setAccessible(true);
-		} catch (NoSuchMethodException e) {
-			throw new RuntimeException(e);
-		}
+	
+	/**
+	 * Returns list of all chest names that are not copies (do not end with "-###")
+	 */
+	public List<String> getOgChestNames() {
+		return getChestNames().stream()
+				.filter(s -> !s.matches("-\\d+$"))
+				.collect(Collectors.toList());
 	}
-
+	
 	public List<String> getChestNames() {
 		try {
-			return lootChestPlugin.getLootChest().keySet().stream()
-					.filter(s -> !s.startsWith("zz"))
-					.collect(Collectors.toList());
+			return new ArrayList<>(LootChestAPI.getAllLootChests().keySet());
 		} catch (NoSuchMethodError e) {
 			logger.log(Level.SEVERE, e.toString(), e);
 			return new ArrayList<>();
 		}
 	}
 
+	//TODO replace once LootChestApi.checkNameAvalability is public
 	public boolean chestExists(String chestName) {
 		try {
 			return lootChestPlugin.getLootChest().containsKey(chestName);
@@ -107,7 +99,7 @@ public class LootHandler {
 		}
 	}
 
-	private Map<String, BlockVec> spawnChestsUnsafe(
+		private Map<String, BlockVec> spawnChestsUnsafe(
 			Clip maze,
 			Map<String, Integer> chestAmounts,
 			boolean isLootInHallways,
@@ -150,8 +142,7 @@ public class LootHandler {
 			String copyName = spawnLootChest(prefabName, pos.toLocation(mazeMap.getWorld(), blockY), dir.getFace());
 			addedChests.put(copyName, new BlockVec(pos, blockY));
 		}
-		//write all chests to the config and save the file
-		lootChestPlugin.getConfigFiles().saveData();
+		LootChestAPI.saveAllLootChests();
 		backup.addLootLocations(addedChests);
 		Bukkit.getPluginManager().callEvent(new LootChangeEvent(maze));
 		return addedChests;
@@ -166,33 +157,12 @@ public class LootHandler {
 	}
 
 	public void respawnChestsUnsafe(Set<String> chestNames) {
-		Config lootChestConfig = Config.getInstance();
-		Boolean saveSetting = null;
-		try {
-			saveSetting = lootChestConfig.save_Chest_Locations_At_Every_Spawn;
-			lootChestConfig.save_Chest_Locations_At_Every_Spawn = false;
-		} catch (NoSuchFieldError e) {
-			logger.log(Level.SEVERE, e.toString(), e);
-		}
+		for (String chestName : chestNames) {
+			Lootchest chest = LootChestAPI.getLootChest(chestName);
 
-		try {
-			for (String chestName : chestNames) {
-				Lootchest chest = lootChestPlugin.getLootChest().get(chestName);
-
-				if (chest != null) {
-					Location chestPos = chest.getActualLocation();
-					lootChestCreateChest.invoke(chest, chestPos.getBlock(), chestPos);
-				}
+			if (chest != null) {
+				chest.spawn(true);
 			}
-		} catch (InvocationTargetException | IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
-
-		if (saveSetting != null) {
-			lootChestConfig.save_Chest_Locations_At_Every_Spawn = saveSetting;
-		}
-		if (lootChestConfig.save_Chest_Locations_At_Every_Spawn) {
-			lootChestPlugin.getUtils().updateData();
 		}
 	}
 
@@ -207,24 +177,20 @@ public class LootHandler {
 
 	public int removeChestsUnsafe(Clip maze) {
 		MazeBackup backup = sessionHandler.getBackup(maze);
-		FileConfiguration dataConfig = lootChestPlugin.getConfigFiles().getData();
 		Collection<String> chestNames = backup.getLootLocations().keySet();
 		int removedChestCount = 0;
 
 		for (String chestName : chestNames) {
-			Lootchest chest = lootChestPlugin.getLootChest().get(chestName);
-
-			if (chest == null) {
-				continue;
-			}
-			dataConfig.set("chests." + chestName, null);
-			Utils.deleteChest(chest);
-			++removedChestCount;
+			//TODO remove try once removeLootChest can't throw NPEs anymore
+			try {
+				LootChestAPI.removeLootChest(chestName);
+				++removedChestCount;
+			} catch (NullPointerException ignored) {}
 		}
 		if (removedChestCount == 0) {
 			return 0;
 		}
-		lootChestPlugin.getConfigFiles().saveData();
+		LootChestAPI.saveAllLootChests();
 		backup.clearLootLocations();
 		Bukkit.getPluginManager().callEvent(new LootChangeEvent(maze));
 		return removedChestCount;
@@ -250,13 +216,16 @@ public class LootHandler {
 		}
 		Block chestBlock = placeChestBlock(location, facing);
 		String chestName = findFreeNameIndex(chestPrefabName, getChestNames());
-		Lootchest prefab = lootChestPlugin.getLootChest().get(chestPrefabName);
+		Lootchest prefab = LootChestAPI.getLootChest(chestPrefabName);
 		Lootchest newChest = new Lootchest(chestBlock, chestName);
-		lootChestPlugin.getLootChest().put(chestName, newChest);
-		copyChestPrefab(newChest, prefab);
+		LootChestAPI.addLootChest(chestName, newChest);
+		LootChestAPI.copyToExistingChest(prefab, newChest);
 		return chestName;
 	}
-
+	
+	/**
+	 * Returns the first String with pattern "name-#" which is not used as chest name yet
+	 */
 	private static String findFreeNameIndex(String name, List<String> nameList) {
 		String result;
 		int i = 1;
@@ -281,31 +250,7 @@ public class LootHandler {
 		chestBlock.updateBlock(false);
 		return location.getBlock();
 	}
-
-	/**
-	 * Function to mimic LootChest's Utils#copychest, only skipping a few things to improve performance
-	 */
-	private void copyChestPrefab(Lootchest newChest, Lootchest prefab) {
-		//creates the most lag
-		//newChest.setHolo(prefab.getHolo());
-
-		for (int i = 0; i < prefab.getChances().length; ++i) {
-			newChest.setChance(i, prefab.getChances()[i]);
-		}
-		//disable fall animation (also creates lag idk)
-		newChest.setFall(false);
-
-		newChest.getInv().setContents(prefab.getInv().getContents());
-		newChest.setTime(prefab.getTime());
-		newChest.setParticle(prefab.getParticle());
-		newChest.setRespawn_cmd(prefab.getRespawn_cmd());
-		newChest.setRespawn_natural(prefab.getRespawn_natural());
-		newChest.setTake_msg(prefab.getTake_msg());
-		newChest.setRadius(prefab.getRadius());
-		newChest.spawn(true);
-		//skip saving config file, save after all chests are spawned
-	}
-
+	
 	private static Map<String, Integer> sanitizeNames(Map<String, Integer> dirtyMap) {
 		HashMap<String, Integer> cleanMap = new HashMap<>();
 

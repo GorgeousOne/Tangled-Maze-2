@@ -113,7 +113,7 @@ public class LootSpawnCommand extends ArgCommand {
 		if (!tabList.isEmpty() || !isAvailable) {
 			return tabList;
 		}
-		List<String> chestNames = lootHandler.getChestNames();
+		List<String> chestNames = lootHandler.getOgChestNames();
 
 		String tabbedArg = stringArgs[stringArgs.length - 1];
 		String factorString;
