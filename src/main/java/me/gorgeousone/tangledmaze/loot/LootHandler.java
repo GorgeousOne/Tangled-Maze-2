@@ -1,7 +1,6 @@
 package me.gorgeousone.tangledmaze.loot;
 
 import fr.black_eyes.api.LootChestAPI;
-import fr.black_eyes.lootchest.Config;
 import fr.black_eyes.lootchest.Lootchest;
 import fr.black_eyes.lootchest.Main;
 import me.gorgeousone.tangledmaze.SessionHandler;
@@ -23,7 +22,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,10 +51,13 @@ public class LootHandler {
 		legacyDirIds.put(BlockFace.WEST, 4);
 		legacyDirIds.put(BlockFace.EAST, 5);
 	}
-
+	
+	/**
+	 * Returns list of all chest names that are not copies (do not end with "-###")
+	 */
 	public List<String> getOgChestNames() {
 		return getChestNames().stream()
-				.filter(s -> !s.matches(".*-\\d+$"))
+				.filter(s -> !s.matches("-\\d+$"))
 				.collect(Collectors.toList());
 	}
 	
@@ -98,7 +99,7 @@ public class LootHandler {
 		}
 	}
 
-	private Map<String, BlockVec> spawnChestsUnsafe(
+		private Map<String, BlockVec> spawnChestsUnsafe(
 			Clip maze,
 			Map<String, Integer> chestAmounts,
 			boolean isLootInHallways,
@@ -156,28 +157,12 @@ public class LootHandler {
 	}
 
 	public void respawnChestsUnsafe(Set<String> chestNames) {
-		Config lootChestConfig = Config.getInstance();
-		Boolean saveSetting = null;
-		try {
-			saveSetting = lootChestConfig.save_Chest_Locations_At_Every_Spawn;
-			lootChestConfig.save_Chest_Locations_At_Every_Spawn = false;
-		} catch (NoSuchFieldError e) {
-			logger.log(Level.SEVERE, e.toString(), e);
-		}
-
 		for (String chestName : chestNames) {
 			Lootchest chest = LootChestAPI.getLootChest(chestName);
 
 			if (chest != null) {
 				chest.spawn(true);
 			}
-		}
-
-		if (saveSetting != null) {
-			lootChestConfig.save_Chest_Locations_At_Every_Spawn = saveSetting;
-		}
-		if (lootChestConfig.save_Chest_Locations_At_Every_Spawn) {
-			LootChestAPI.saveAllLootChests();
 		}
 	}
 
@@ -205,8 +190,7 @@ public class LootHandler {
 		if (removedChestCount == 0) {
 			return 0;
 		}
-		//TODO use once removeLootChest doesnt perform config saves anymore each
-//		LootChestAPI.saveAllLootChests();
+		LootChestAPI.saveAllLootChests();
 		backup.clearLootLocations();
 		Bukkit.getPluginManager().callEvent(new LootChangeEvent(maze));
 		return removedChestCount;
@@ -235,10 +219,13 @@ public class LootHandler {
 		Lootchest prefab = LootChestAPI.getLootChest(chestPrefabName);
 		Lootchest newChest = new Lootchest(chestBlock, chestName);
 		LootChestAPI.addLootChest(chestName, newChest);
-		copyChestPrefab(newChest, prefab);
+		LootChestAPI.copyToExistingChest(prefab, newChest);
 		return chestName;
 	}
-
+	
+	/**
+	 * Returns the first String with pattern "name-#" which is not used as chest name yet
+	 */
 	private static String findFreeNameIndex(String name, List<String> nameList) {
 		String result;
 		int i = 1;
@@ -263,31 +250,7 @@ public class LootHandler {
 		chestBlock.updateBlock(false);
 		return location.getBlock();
 	}
-
-	/**
-	 * Function to mimic LootChest's Utils#copychest, only skipping a few things to improve performance
-	 */
-	private void copyChestPrefab(Lootchest newChest, Lootchest prefab) {
-		//creates the most lag
-		//newChest.setHolo(prefab.getHolo());
-
-		for (int i = 0; i < prefab.getChances().length; ++i) {
-			newChest.setChance(i, prefab.getChances()[i]);
-		}
-		//disable fall animation (also creates lag idk)
-		newChest.setFall(false);
-
-		newChest.getInv().setContents(prefab.getInv().getContents());
-		newChest.setTime(prefab.getTime());
-		newChest.setParticle(prefab.getParticle());
-		newChest.setRespawn_cmd(prefab.getRespawn_cmd());
-		newChest.setRespawn_natural(prefab.getRespawn_natural());
-		newChest.setTake_msg(prefab.getTake_msg());
-		newChest.setRadius(prefab.getRadius());
-		newChest.spawn(true);
-		//skip saving config file, save after all chests are spawned
-	}
-
+	
 	private static Map<String, Integer> sanitizeNames(Map<String, Integer> dirtyMap) {
 		HashMap<String, Integer> cleanMap = new HashMap<>();
 
