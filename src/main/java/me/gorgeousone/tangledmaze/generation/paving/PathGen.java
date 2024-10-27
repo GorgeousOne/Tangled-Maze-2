@@ -274,7 +274,7 @@ public class PathGen {
 		for (Map.Entry<GridCell, GridCell> entry : treeLinks) {
 			GridCell seg1 = entry.getKey();
 			GridCell seg2 = entry.getValue();
-			int dist = seg1.getTree().getExitDist(seg1) + seg2.getTree().getExitDist(seg2);
+			int dist = seg1.getExitDist() + seg2.getExitDist();
 			
 			if (dist > maxDist) {
 				maxEntry = entry;

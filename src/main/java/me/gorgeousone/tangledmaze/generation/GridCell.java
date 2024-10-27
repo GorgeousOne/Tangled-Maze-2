@@ -18,9 +18,10 @@ public class GridCell {
 	private final Vec2 min;
 	private final Vec2 max;
 	private final Vec2 gridPos;
-
+	
 	private transient PathTree tree;
 	private transient GridCell parent;
+	private int exitDist;
 
 	public GridCell(Vec2 min, Vec2 size, Vec2 gridPos) {
 		this.min = min.clone();
@@ -75,8 +76,13 @@ public class GridCell {
 
 	public void setParent(GridCell parent) {
 		this.parent = parent;
+		this.exitDist = parent == null ? 0 : parent.getExitDist() + 1;
 	}
-
+	
+	public int getExitDist() {
+		return exitDist;
+	}
+	
 	/**
 	 * Returns a set of directions in which the world x and z coordinate are border of the grid cell
 	 *

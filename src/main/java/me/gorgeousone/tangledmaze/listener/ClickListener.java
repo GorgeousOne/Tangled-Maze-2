@@ -8,7 +8,7 @@ import me.gorgeousone.tangledmaze.clip.ClipType;
 import me.gorgeousone.tangledmaze.data.ConfigSettings;
 import me.gorgeousone.tangledmaze.data.Constants;
 import me.gorgeousone.tangledmaze.event.ClipToolChangeEvent;
-import me.gorgeousone.tangledmaze.menu.UiHandler;
+import me.gorgeousone.tangledmaze.ui.UiHandler;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.render.RenderSession;
 import me.gorgeousone.tangledmaze.tool.ClipTool;

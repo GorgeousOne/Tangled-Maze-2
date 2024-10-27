@@ -30,7 +30,7 @@ import me.gorgeousone.tangledmaze.listener.PlayerQuitListener;
 import me.gorgeousone.tangledmaze.listener.UiListener;
 import me.gorgeousone.tangledmaze.loot.LootHandler;
 import me.gorgeousone.tangledmaze.loot.UnbuildListener;
-import me.gorgeousone.tangledmaze.menu.UiHandler;
+import me.gorgeousone.tangledmaze.ui.UiHandler;
 import me.gorgeousone.tangledmaze.render.RenderHandler;
 import me.gorgeousone.tangledmaze.tool.ToolHandler;
 import me.gorgeousone.tangledmaze.updatecheck.UpdateCheck;

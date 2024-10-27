@@ -1,7 +1,7 @@
 package me.gorgeousone.tangledmaze.listener;
 
 import me.gorgeousone.tangledmaze.data.Constants;
-import me.gorgeousone.tangledmaze.menu.UiHandler;
+import me.gorgeousone.tangledmaze.ui.UiHandler;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
