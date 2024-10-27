@@ -53,9 +53,7 @@ public class PathTree {
 		cell.setTree(this);
 		cell.setParent(parent);
 		cells.add(cell);
-
-		int exitDist = getExitDist(cell);
-		maxExitDist = Math.max(exitDist, maxExitDist);
+		maxExitDist = Math.max(cell.getExitDist(), maxExitDist);
 
 		if (canBeJunction && cell.gridX() % 2 == 0 && cell.gridZ() % 2 == 0) {
 			junctions.add(cell);
@@ -77,25 +75,6 @@ public class PathTree {
 		return junctions;
 	}
 
-	/**
-	 * Returns the distance from the given cell to the root / exit of the tree.
-	 */
-	public int getExitDist(GridCell cell) {
-		int dist = 0;
-		while (cell.hasParent()) {
-			if (dist > 100000) {
-				throw new IllegalStateException(
-						"Exit distance exceeded infinite loop limit near:" +
-								"\ncell " + cell +
-								"\nparent cell " + cell.getParent() +
-								"\ngrandparent cell " + cell.getParent().getParent());
-			}
-			++dist;
-			cell = cell.getParent();
-		}
-		return dist;
-	}
-	
 	public GridCell getLastEnd() {
 		return openEnds.get(0);
 	}
@@ -123,10 +102,10 @@ public class PathTree {
 	 * to keep the distance to the nearest exit of the tree as small as possible.
 	 */
 	private void balanceTree(GridCell seg1, GridCell seg2) {
-		int exitDist1 = getExitDist(seg1);
-		int exitDist2 = getExitDist(seg2);
+		int exitDist1 = seg1.getExitDist();
+		int exitDist2 = seg2.getExitDist();
 		int distDiff = Math.abs(exitDist2 - exitDist1);
-		maxExitDist = Math.max(maxExitDist, (exitDist2 + exitDist1) / 2);
+		maxExitDist = Math.max(maxExitDist, (int) Math.ceil(exitDist2 + exitDist1 / 20d));
 		
 		GridCell furtherSeg = exitDist1 > exitDist2 ? seg1 : seg2;
 		GridCell closerSeg = exitDist1 <= exitDist2 ? seg1 : seg2;
