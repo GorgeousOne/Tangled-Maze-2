@@ -187,18 +187,30 @@ public class GridMap {
 		Vec2 exitStart = calculateExitStart(exitBlockLoc, facing, pathWidth);
 		ExitSegment exit = new ExitSegment(exitStart, facing, pathWidth);
 		exit.extend(getDistToPathGrid(exit.getEnd(), facing, false));
-
+		exits.add(exit);
+		
 		Vec2 exitEnd = exit.getEnd();
 		Direction left = facing.getLeft();
 		Direction right = facing.getRight();
-
+		
+		int leftGridDist = getDistToPathGrid(exitEnd, left, true);
+		int rightGridDist = getDistToPathGrid(exitEnd, right, true);
+		
+		//don't add extra bends to the exit if it perfectly landed on the path grid
+		if (leftGridDist == 0) {
+			Vec2 endGridPos = getGridPos(exit.getEnd());
+			setPathType(endGridPos, PathType.EXIT);
+			pathStarts.add(getCell(endGridPos));
+			return;
+		}
 		ExitSegment leftTurn = new ExitSegment(exitEnd, left, pathWidth);
 		ExitSegment rightTurn = new ExitSegment(exitEnd, right, pathWidth);
-		leftTurn.extend(getDistToPathGrid(leftTurn.getEnd(), left, true));
-		rightTurn.extend(getDistToPathGrid(rightTurn.getEnd(), right, true));
+		leftTurn.extend(leftGridDist);
+		rightTurn.extend(rightGridDist);
+		
 		//bruh
 		boolean leftIsFree = Arrays.asList(PathType.PAVED, PathType.FREE).contains(getPathType(getGridPos(leftTurn.getEnd())));
-		boolean rightIsFree = Arrays.asList(PathType.PAVED, PathType.FREE).contains(getPathType(getGridPos(leftTurn.getEnd())));
+		boolean rightIsFree = Arrays.asList(PathType.PAVED, PathType.FREE).contains(getPathType(getGridPos(rightTurn.getEnd())));
 
 		if (!leftIsFree && !rightIsFree) {
 			return;
@@ -210,15 +222,14 @@ public class GridMap {
 			chosenTurn = chooseLeft ? leftTurn : rightTurn;
 			ExitSegment otherTurn = chooseLeft ? rightTurn : leftTurn;
 
-			//places a blocked path at tje opposite side of chosen turn
-			//to prevent path generator to connect a second path to the exit
+			//places a blocked path at the opposite side of chosen turn
+			//to prevent path generator to connect a second path to this exit
 			if (otherTurn.length() > otherTurn.width() && otherTurn.length() < 2 * otherTurn.width() + 1) {
 				setPathType(getGridPos(otherTurn.getEnd()), PathType.BLOCKED);
 			}
 		} else {
 			chosenTurn = leftIsFree ? leftTurn : rightTurn;
 		}
-		exits.add(exit);
 		exits.add(chosenTurn);
 		Vec2 endGridPos = getGridPos(chosenTurn.getEnd());
 		setPathType(endGridPos, PathType.EXIT);
@@ -248,10 +259,11 @@ public class GridMap {
 	 */
 	private Vec2 calculateExitStart(Vec2 exitBlockLoc, Direction facing, int exitWidth) {
 		Vec2 exitStart = exitBlockLoc.clone();
-
+		//get offset on z axis
 		if (!facing.isPositive()) {
 			exitStart.sub(0, exitWidth - 1);
 		}
+		//get offset on x axis
 		if (facing.isPositive() ^ facing.isCollinearX()) {
 			exitStart.sub(exitWidth - 1, 0);
 		}
@@ -260,7 +272,7 @@ public class GridMap {
 
 	/**
 	 * Calculates the distance in blocks that a secondary exit has to be extended by for it to reach the nearest grid path
-	 *
+	 * in it's facing direction.
 	 * @param exitLoc   current end location of the exit
 	 * @param facing    direction to extend towards
 	 * @param allowZero set false if returned distance must be greater than 0
@@ -276,14 +288,15 @@ public class GridMap {
 			gridShift = gridOffset.getZ();
 			exitCoord = exitLoc.getZ();
 		}
-		int gridMeshSize = pathWidth + wallWidth;
+		//calculate the positive offset to the previous grid mesh start
 		int gridDist = Math.floorMod(exitCoord - gridShift, gridMeshSize);
-
+		
+		//invert distance for exits that need the distance to the next mesh start
 		if (facing.isPositive()) {
 			gridDist = (gridMeshSize - gridDist) % gridMeshSize;
 		}
 		if (!allowZero && gridDist == 0) {
-			gridDist += gridMeshSize;
+			return gridMeshSize;
 		}
 		return gridDist;
 	}

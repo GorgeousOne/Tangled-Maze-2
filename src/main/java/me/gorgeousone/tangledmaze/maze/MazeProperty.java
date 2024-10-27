@@ -9,7 +9,7 @@ public enum MazeProperty {
 	WALL_HEIGHT(2, 128),
 	WALL_WIDTH(1, 64),
 	PATH_WIDTH(1, 64),
-	CURLINESS(3, 10),
+	CURLINESS(2, 10),
 	ROOF_WIDTH(1, 64),
 	ROOM_COUNT(0, 100, 0),
 	ROOM_SIZE(15, 65, 3);
