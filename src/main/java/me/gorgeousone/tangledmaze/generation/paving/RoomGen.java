@@ -13,14 +13,16 @@ import java.util.Set;
 
 public class RoomGen {
 
-	private final static Random RANDOM = new Random();
+	private static Random RANDOM;
 
 	public static void genRooms(GridMap gridMap, MazeSettings settings) {
 		int roomCount = settings.getValue(MazeProperty.ROOM_COUNT);
 		int pathWidth = settings.getValue(MazeProperty.PATH_WIDTH);
 		int wallWidth = settings.getValue(MazeProperty.WALL_WIDTH);
 		int maxRoomSize = settings.getValue(MazeProperty.ROOM_SIZE);
-
+		int seed = settings.getValue(MazeProperty.SEED);
+		
+		RANDOM = seed == 0 ? new Random() : new Random(seed);
 		//make rooms at lease 7 blocks wide, but smaller if requested by player's settings
 		//absolut minimum 3x3 grid cells
 		int cellsMin = calcCellsMin(Math.min(7, maxRoomSize), pathWidth, wallWidth);

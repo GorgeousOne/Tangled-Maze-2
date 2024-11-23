@@ -30,10 +30,11 @@ import java.util.stream.Collectors;
  */
 public class PathGen {
 	
-	private static final Random RANDOM = new Random();
+	private static Random RANDOM;
 	private static final int maxLinkedSegmentCount = 4;
-
-	public static void genPaths(GridMap gridMap, int curliness) {
+	
+	public static void genPaths(GridMap gridMap, int curliness, int seed) {
+		RANDOM = seed == 0 ? new Random() : new Random(seed);
 		List<PathTree> pathTrees = createPathTrees(gridMap.getPathStarts());
 		List<PathTree> openPathTrees = new ArrayList<>(pathTrees);
 		
@@ -52,7 +53,7 @@ public class PathGen {
 			//picks new random path end after n connected segments
 			} else {
 				currentTree = getSmallestTree(openPathTrees);
-				currentPathEnd = currentTree.getRndEnd();
+				currentPathEnd = currentTree.getRndEnd(RANDOM);
 				linkedSegmentCount = 1;
 			}
 			List<Direction> availableDirs = getAvailableDirs(currentPathEnd, gridMap);

@@ -48,6 +48,9 @@ public class SettingsCommand extends ArgCommand {
 					sender,
 					new Placeholder("setting", property.textName()),
 					new Placeholder("value", currentValue));
+			if (property == MazeProperty.SEED) {
+				Message.INFO_SETTING_SEED_INFO.sendTo(sender);
+			}
 			return;
 		}
 		int outputValue = settings.setValue(property, inputValue);
@@ -55,5 +58,8 @@ public class SettingsCommand extends ArgCommand {
 				sender,
 				new Placeholder("setting", property.textName()),
 				new Placeholder("value", outputValue));
+		if (property == MazeProperty.SEED) {
+			Message.INFO_SETTING_SEED_INFO.sendTo(sender);
+		}
 	}
 }

@@ -13,7 +13,6 @@ import java.util.Set;
  */
 public class PathTree {
 	
-	private final static Random RANDOM = new Random();
 	private final List<GridCell> openEnds;
 	private final Set<GridCell> cells;
 	private final Set<GridCell> junctions;
@@ -79,8 +78,8 @@ public class PathTree {
 		return openEnds.get(0);
 	}
 	
-	public GridCell getRndEnd() {
-		return openEnds.get(RANDOM.nextInt(openEnds.size()));
+	public GridCell getRndEnd(Random random) {
+		return openEnds.get(random.nextInt(openEnds.size()));
 	}
 	
 	public void removeEnd(GridCell pathEnd) {

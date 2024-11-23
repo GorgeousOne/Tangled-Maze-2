@@ -101,7 +101,7 @@ public class MazeMapFactory {
 		}
 		mazeMap.setGridMap(gridMap);
 		RoomGen.genRooms(gridMap, settings);
-		PathGen.genPaths(gridMap, settings.getValue(MazeProperty.CURLINESS));
+		PathGen.genPaths(gridMap, settings.getValue(MazeProperty.CURLINESS), settings.getValue(MazeProperty.SEED));
 		copyPathsOntoMazeMap(gridMap, mazeMap);
 	}
 	

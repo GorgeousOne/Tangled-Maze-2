@@ -19,6 +19,7 @@ help-pages:
         curliness: '1: short stretches of path, many turns \n10: long alleys, fewer turns'
         room-count: number of rooms attempted to be built in the maze
         room-size: maximum width of rooms in blocks (sizes are random)
+        seed: a number to lock in the layout of a maze, so it always generates with the same paths. Use 0 as seed to make your maze random again.
     undo-command: Undo the last change to your maze layout like adding or cutting away a clipboard.
     build-command: Builds your maze. Type in names of blocks to build with, e.g.\n&e/maze build 5*oak_leaves 2*oak_log[axis=y] glowstone&a \nUse the flags -floor or -roof to build different parts of the maze.
     unbuild-command: Deconstructs your maze. Use the flags -floor or -roof to unbuild different parts of the maze.
@@ -31,6 +32,7 @@ infos:
     tool-switch: Switched to %tool%.
     setting-change: Set %setting% to %value%.
     setting-info: '%setting% is currently set to %value%.'
+    setting-seed-info: Use 0 as seed to make your maze random again.
     maze-not-built: Please build the maze first (without -roof or -floor flag).
     maze-not-editable: Cannot perform this action while your maze is built. /maze unbuild
     maze-build: Built your maze part with %count% blocks.
