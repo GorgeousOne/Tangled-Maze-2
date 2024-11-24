@@ -1,82 +1,20 @@
 package me.gorgeousone.tangledmaze.generation;
 
-import me.gorgeousone.tangledmaze.clip.Clip;
 import me.gorgeousone.tangledmaze.generation.paving.ExitSegment;
 import me.gorgeousone.tangledmaze.generation.paving.PathGen;
 import me.gorgeousone.tangledmaze.generation.paving.PathType;
 import me.gorgeousone.tangledmaze.generation.paving.RoomGen;
 import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
-import me.gorgeousone.tangledmaze.util.BlockUtil;
 import me.gorgeousone.tangledmaze.util.Direction;
 import me.gorgeousone.tangledmaze.util.Vec2;
 
-import java.util.AbstractMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A factory class to create the maze map for building a maze from a maze clip and settings.
  */
 public class MazeMapFactory {
-	
-	/**
-	 * Generates a maze map with
-	 */
-	public static MazeMap createMazeMapOf(Clip maze, MazeSettings settings, int worldMinY) {
-		Map.Entry<Vec2, Vec2> clipBounds = calculateClipBounds(maze);
-		MazeMap map = new MazeMap(maze.getWorld(), clipBounds.getKey(), clipBounds.getValue(), worldMinY);
-		copyMazeOntoMazeMap(maze, map);
-		
-		TerrainEditor.levelOffSpikes(map);
-		MazeMapFactory.createPaths(map, maze.getExits(), settings, BlockUtil.getWorldMinHeight(maze.getWorld()));
-		map.flip();
-		TerrainEditor.cleanWallEdges(map);
-		return map;
-	}
-	
-	/**
-	 * Returns a pair of Vec2 marking the smallest and greatest x/z coordinates of clip
-	 */
-	private static Map.Entry<Vec2, Vec2> calculateClipBounds(Clip clip) {
-		Vec2 min = null;
-		Vec2 max = null;
-		
-		for (Vec2 loc : clip.getFill().keySet()) {
-			if (min == null) {
-				min = loc.clone();
-				max = loc.clone();
-				continue;
-			}
-			int x = loc.getX();
-			int z = loc.getZ();
-			
-			if (x < min.getX()) {
-				min.setX(x);
-			} else if (x > max.getX()) {
-				max.setX(x);
-			}
-			if (z < min.getZ()) {
-				min.setZ(loc.getZ());
-			} else if (z > max.getZ()) {
-				max.setZ(z);
-			}
-		}
-		return new AbstractMap.SimpleEntry<>(min, max);
-	}
-	
-	/**
-	 * Copies the shape of a maze clip onto a maze map
-	 */
-	private static void copyMazeOntoMazeMap(Clip maze, MazeMap map) {
-		for (Vec2 loc : maze.getFill().keySet()) {
-			map.setType(loc, AreaType.FREE);
-			map.setY(loc, maze.getY(loc));
-		}
-		for (Vec2 loc : maze.getBorder()) {
-			map.setType(loc, AreaType.WALL);
-		}
-	}
 	
 	/**
 	 * Creates a grid map for the maze and generates the paths on it.
