@@ -21,8 +21,8 @@ public class MazeMap {
 	
 	public MazeMap(World world, Vec2 min, Vec2 max, int worldMinY) {
 		this.world = world;
-		this.mapMin = min;
-		this.mapMax = max.add(1, 1);
+		this.mapMin = min.clone();
+		this.mapMax = max.clone();
 		
 		int sizeX = max.getX() - min.getX();
 		int sizeZ = max.getZ() - min.getZ();

@@ -36,31 +36,23 @@ public class PathTree {
 	public boolean isComplete() {
 		return openEnds.isEmpty();
 	}
-
-
-	public void addSegment(GridCell cell, GridCell parent) {
-		addSegment(cell, parent, true, true);
-	}
-
+	
 	/**
 	 * Adds a new path segment to the tree with the previous path segment as parent.
 	 * Also adds junction segments to the list of open ends / junctions to explore.
-	 * @param canBeJunction set false, if this cell should not be counted as a junction (e.g. inside rooms)
-	 * @param incrementSize set false, if this cell should not be counted as part of the tree (e.g. room elements)
+	 *
 	 */
-	public void addSegment(GridCell cell, GridCell parent, boolean canBeJunction, boolean incrementSize) {
+	public void addSegment(GridCell cell, GridCell parent) {
 		cell.setTree(this);
 		cell.setParent(parent);
 		cells.add(cell);
 		maxExitDist = Math.max(cell.getExitDist(), maxExitDist);
-
-		if (canBeJunction && cell.gridX() % 2 == 0 && cell.gridZ() % 2 == 0) {
+		
+		if (cell.gridX() % 2 == 0 && cell.gridZ() % 2 == 0) {
 			junctions.add(cell);
 			openEnds.add(0, cell);
 		}
-		if (incrementSize) {
-			++size;
-		}
+		++size;
 	}
 	
 	public Set<GridCell> getCells() {
@@ -73,7 +65,7 @@ public class PathTree {
 	public Set<GridCell> getJunctions() {
 		return junctions;
 	}
-
+	
 	public GridCell getLastEnd() {
 		return openEnds.get(0);
 	}

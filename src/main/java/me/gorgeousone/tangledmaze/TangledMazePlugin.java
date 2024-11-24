@@ -1,6 +1,7 @@
 package me.gorgeousone.tangledmaze;
 
 import me.gorgeousone.tangledmaze.badapple.BadApple;
+import me.gorgeousone.tangledmaze.badapple.ClearCommand;
 import me.gorgeousone.tangledmaze.badapple.FrameCommand;
 import me.gorgeousone.tangledmaze.cmdframework.command.ParentCommand;
 import me.gorgeousone.tangledmaze.cmdframework.handler.CommandHandler;
@@ -24,6 +25,7 @@ public final class TangledMazePlugin extends JavaPlugin {
 		mazeCmd.addAlias("maze");
 		mazeCmd.addAlias("tm");
 		mazeCmd.addChild(new FrameCommand(buildHandler));
+		mazeCmd.addChild(new ClearCommand());
 		
 		CommandHandler cmdHandler = new CommandHandler(this);
 		cmdHandler.registerCommand(mazeCmd);

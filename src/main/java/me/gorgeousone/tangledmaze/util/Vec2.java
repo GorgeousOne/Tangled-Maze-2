@@ -31,16 +31,18 @@ public class Vec2 implements Comparable<Vec2> {
 		return x;
 	}
 	
-	public void setX(int x) {
+	public Vec2 setX(int x) {
 		this.x = x;
+		return this;
 	}
 	
 	public int getZ() {
 		return z;
 	}
 	
-	public void setZ(int z) {
+	public Vec2 setZ(int z) {
 		this.z = z;
+		return this;
 	}
 	
 	public Vec2 add(Vec2 other) {

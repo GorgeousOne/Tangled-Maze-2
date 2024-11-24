@@ -3,7 +3,6 @@ package me.gorgeousone.tangledmaze.generation;
 import me.gorgeousone.tangledmaze.generation.paving.ExitSegment;
 import me.gorgeousone.tangledmaze.generation.paving.PathGen;
 import me.gorgeousone.tangledmaze.generation.paving.PathType;
-import me.gorgeousone.tangledmaze.generation.paving.RoomGen;
 import me.gorgeousone.tangledmaze.maze.MazeProperty;
 import me.gorgeousone.tangledmaze.maze.MazeSettings;
 import me.gorgeousone.tangledmaze.util.Direction;
@@ -30,15 +29,15 @@ public class MazeMapFactory {
 		for (int i = 0; i < exits.size(); i++) {
 			Vec2 exitLoc = exits.get(i);
 			
+			//work around for exit facing because no border stuff
 			if (i == 0) {
-				gridMap.setEntrance(exitLoc, getExitFacing(exitLoc, mazeMap));
+				gridMap.setEntrance(exitLoc, Direction.EAST);
 				copyMazeOntoGrid(mazeMap, gridMap, settings.getValue(MazeProperty.WALL_HEIGHT), worldMinY);
 			} else {
-				gridMap.setExit(exitLoc, getExitFacing(exitLoc, mazeMap));
+				gridMap.setExit(exitLoc, Direction.WEST);
 			}
 		}
 		mazeMap.setGridMap(gridMap);
-		RoomGen.genRooms(gridMap, settings);
 		PathGen.genPaths(gridMap, settings.getValue(MazeProperty.CURLINESS), settings.getValue(MazeProperty.SEED));
 		copyPathsOntoMazeMap(gridMap, mazeMap);
 	}
@@ -116,7 +115,7 @@ public class MazeMapFactory {
 			for (int gridZ = 0; gridZ < gridMap.getHeight(); ++gridZ) {
 				PathType pathType = gridMap.getPathType(gridX, gridZ);
 
-				if (pathType == PathType.PAVED || pathType == PathType.EXIT || pathType == PathType.ROOM) {
+				if (pathType == PathType.PAVED || pathType == PathType.EXIT) {
 					GridCell cell = gridMap.getCell(gridX, gridZ);
 					mazeMap.setType(cell.getMin(), cell.getMax(), AreaType.PATH);
 				}

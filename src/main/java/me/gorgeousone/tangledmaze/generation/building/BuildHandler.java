@@ -38,9 +38,6 @@ public class BuildHandler {
 		Set<BlockVec> newAir = new HashSet<>();
 		filterBlocks(BadApple.LAST_BLOCKS, nextBlocks, newBlocks, newAir);
 		BadApple.LAST_BLOCKS = nextBlocks;
-		Bukkit.broadcastMessage("next " + nextBlocks.size());
-		Bukkit.broadcastMessage("add  " + newBlocks.size());
-		Bukkit.broadcastMessage("rm   " + newAir.size());
 		
 		new BlockPlacer(
 				newFrame.getWorld(),

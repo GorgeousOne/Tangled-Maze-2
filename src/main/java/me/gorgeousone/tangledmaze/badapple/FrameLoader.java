@@ -17,9 +17,8 @@ public class FrameLoader {
 	
 	public static byte[] loadFrame(int index) {
 		try {
-			//			BufferedImage.GRAY
+//			BufferedImage.GRAY
 			File file = new File(String.format(FRAME_URL, index));
-			Bukkit.broadcastMessage("Load " + file.getAbsolutePath());
 			BufferedImage frame = ImageIO.read(file);
 			return ((DataBufferByte) frame.getRaster().getDataBuffer()).getData();
 		}catch (IOException e) {
